@@ -6,4 +6,4 @@ class GenreList:
                  ('Fantasy','Fantasy'),('Commedia romantica','Commedia romantica')
                  ('Commedia d\'azione','Commedia d\'azione'),('Supereroi','Supereroi'),
                  ('Storico','Storico'),('Biografico','Biografico'),('Documentario','Documentario'),
-                 ('Musical','Musical'),('Guerra','Guerra'),('Western',('Western')]
+                 ('Musical','Musical'),('Guerra','Guerra'),('Western','Western')]
