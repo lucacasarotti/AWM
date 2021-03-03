@@ -38,7 +38,8 @@ def index(request):
     :param request: request utente.
     :return: redirect alla view lista_annunci.
     """
+    return render(request,'main/index.html',None)
     #da cambiare
-    return HttpResponseRedirect(reverse('utenti:registrazione'))
+    #return HttpResponseRedirect(reverse('utenti:registrazione'))
 
 

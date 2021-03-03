@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -9,6 +10,33 @@ from utenti.forms import UserForm
 from utenti.forms import UtenteCineDateForm
 
 
+def login_user(request):
+    """
+    Permette agli utenti di effettuare il login.
+
+    :param request: request utente.
+    :return: render della pagina login.
+    """
+
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('main:index'))
+    else:
+        if request.method == "POST":
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(reverse('main:index'))
+                else:
+                    return render(request, 'utenti/login.html', {'error_message': 'Il tuo account è stato disattivato'})
+            else:
+
+                return render(request, 'utenti/login.html', {'error_message': 'Login invalido'})
+        else:
+            return render(request, 'utenti/login.html')
 
 
 def registrazione(request):
