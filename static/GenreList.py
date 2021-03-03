@@ -1,9 +1,9 @@
 class GenreList:
     ListaGeneri=[('Commedia','Commedia'),('Fantascienza','Fantascienza'),
-                 ('Horror','Horror'),('Romantico','Romantico'),('Azione','Azione')
-                 ('Thriller','Thriller'),('Drammatico','Drammatico'),('Mistero','Mistero')
-                 ('Giallo','Giallo'),('Animazione','Animazione'),('Avventura','Avventura')
-                 ('Fantasy','Fantasy'),('Commedia romantica','Commedia romantica')
+                 ('Horror','Horror'),('Romantico','Romantico'),('Azione','Azione'),
+                 ('Thriller','Thriller'),('Drammatico','Drammatico'),('Mistero','Mistero'),
+                 ('Giallo','Giallo'),('Animazione','Animazione'),('Avventura','Avventura'),
+                 ('Fantasy','Fantasy'),('Commedia romantica','Commedia romantica'),
                  ('Commedia d\'azione','Commedia d\'azione'),('Supereroi','Supereroi'),
                  ('Storico','Storico'),('Biografico','Biografico'),('Documentario','Documentario'),
-                 ('Musical','Musical'),('Guerra','Guerra'),('Western',('Western'))]
+                 ('Musical','Musical'),('Guerra','Guerra'),('Western','Western')]

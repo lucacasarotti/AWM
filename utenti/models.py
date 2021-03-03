@@ -12,7 +12,7 @@ class Profile(models.Model):
     indirizzo = models.CharField(max_length=100)
     citta = models.CharField(max_length=50)
 
-    sesso=models.CharField(max_length=10)
+    sesso=models.CharField(max_length=10,default="")
     eta=models.IntegerField(null=True)
     provincia = models.CharField(max_length=2)
     regione = models.CharField(max_length=50)
@@ -24,7 +24,7 @@ class Profile(models.Model):
     guidatore = models.BooleanField(default=False)
     posti_macchina=models.IntegerField(default=0)
 
-    generi_preferiti =models.CharField(max_length=500)
+    generi_preferiti =models.CharField(max_length=500,default="")
 
     feedback_user=models.FloatField(default=0)
     feedback_guidatore=models.FloatField(default=0)
