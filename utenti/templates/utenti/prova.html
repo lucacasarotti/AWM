@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
+{% extends 'main/base_visitor.html' %}
+{%  block title%}
+    <title>CineDate-Registrazione</title>
+{% endblock %}
+{% block body %}
 <form method="post">
     {% csrf_token %}
     {{ form_user.as_p }}
     {{ form_cine.as_p }}
-
+<button type="submit" class="btn btn-success">Registrati</button>
 </form>
-</body>
-</html>
+{% endblock %}
