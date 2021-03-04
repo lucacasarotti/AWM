@@ -1,0 +1,18 @@
+{% extends "inviti/base.html" %}
+{% block content %}
+    {% for i in inviti %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="#">{{ i.utente }}</a>
+                    <!-- NB: date_posted is formatted!!!  -->
+                    <small class="text-muted">{{ i.data_invito }}</small>
+                </div>
+                <h2><a class="article-title" href="#">{{ i.film }}</a></h2>
+                <h3><a class="article-title" href="#">{{ i.cinema }} - {{ i.data }} - {{ i.orario }}</a></h3>
+                <p class="article-content">Genere: {{ i.genere }}</p>
+                <p class="article-content">Massimo numero persone: {{ i.limite_persone }}</p>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

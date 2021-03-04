@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'utenti.apps.UtentiConfig',
     'main.apps.MainConfig',
+    'inviti.apps.InvitiConfig',
 
 ]
 
