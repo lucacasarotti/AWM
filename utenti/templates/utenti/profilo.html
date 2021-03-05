@@ -1,0 +1,77 @@
+{% extends base_template %}
+{% load static%}
+{% block title %}CineDate - Profilo{% endblock %}
+
+{% block body %}
+
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-8 toppad" style="float: none; margin: 0 auto;">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ view_user.username }}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+
+                        <div class=" col-md-9 col-lg-9 ">
+                            <table class="table table-user-information">
+                                <tbody>
+                                    <tr>
+                                        <td>Nome</td>
+                                        <td>{{ view_user.first_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cognome</td>
+                                        <td>{{ view_user.last_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email</td>
+                                        <td><a href="mailto:{{ view_user.email }}">{{ view_user.email }}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Indirizzo</td>
+                                        <td>{{ user_profile.indirizzo }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Città</td>
+                                        <td>{{ user_profile.citta }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Provincia</td>
+                                        <td>{{ user_profile.provincia }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Regione</td>
+                                        <td>{{ user_profile.regione }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Telefono</td>
+                                        <td>{{ user_profile.telefono }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Generi Preferiti</td>
+                                        <td>{{ user_profile.generi_preferiti.choices}}</td>
+                                        {% for x,y in user_profile.generi_preferiti.choices %}
+                                        {{ x }},{{ y }}
+                                         {% endfor %}
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

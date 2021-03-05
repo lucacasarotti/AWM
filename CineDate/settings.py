@@ -76,6 +76,7 @@ TEMPLATES = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+
     # # per login tramite google
 )
 
@@ -144,3 +145,5 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ['static']
+
+LOGIN_REDIRECT_URL = '/'

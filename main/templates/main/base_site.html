@@ -31,8 +31,13 @@
                     </div>
                     <!-- Navbar Right Side (# is a dead link) -->
                     <div class="navbar-nav">
+                        {% if not user.is_authenticated %}
                         <a class="nav-item nav-link" href="{% url 'utenti:utenti_login' %}">Login</a>
-                        <a class="nav-item nav-link" href="{%  url 'utenti:registrazione' %}">Register</a>
+                        {% else %}
+                        <a class="nav-item nav-link" href="{% url 'utenti:view_profile' oid=user.pk%}">Profilo</a>
+                        <a class="nav-item nav-link" href="{%  url 'utenti:logout_user' %}">Logout</a>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>

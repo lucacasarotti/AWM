@@ -158,7 +158,7 @@ class UtenteCineDateForm(forms.ModelForm):
     def clean_posti_macchina(self):
         if not re.match("^[0-9]$", str(self.cleaned_data['posti_macchina'])):
             raise ValidationError(_('Errore: il numero posti macchina può contenere solo un numero.'))
-        if not (1 <= int(self.cleaned_data['posti_macchina']) <= 8):
+        if not (0 <= int(self.cleaned_data['posti_macchina']) <= 8):
             raise ValidationError(_('Errore: il numero posti macchina deve essere compresa fra 1 e 8.'))
-        return self.cleaned_data['eta']
+        return self.cleaned_data['posti_macchina']
 
