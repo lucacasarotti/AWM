@@ -31,12 +31,7 @@ class UserForm(forms.ModelForm):
                   'last_name',
                   'email')
 
-    #def __init__(self, *args, **kwargs):
-    #    oauth_user = kwargs.pop('oauth_user')
-    #    super(UserForm, self).__init__(*args, **kwargs)
-    #    if oauth_user == 1:
-    #        del self.fields['password']
-    #        del self.fields['conferma_password']
+
 
     def clean_username(self):
         if not re.match("^[A-Za-z0-9]+$", self.cleaned_data['username']):
@@ -94,6 +89,7 @@ class UtenteCineDateForm(forms.ModelForm):
     regione = forms.ChoiceField(choices=GeoList.Anagrafica.ListaRegioni)
 
     class Meta:
+
         model = Profile
         fields = ['indirizzo',
                   'citta',
@@ -108,6 +104,9 @@ class UtenteCineDateForm(forms.ModelForm):
                   'posti_macchina'
                   ]
 
+    #    if oauth_user == 1:
+    #        del self.fields['password']
+    #        del self.fields['conferma_password']
     def clean_indirizzo(self):
         # controllo indirizzo
         if not re.match("^[A-Za-z0-9/ 'èòàùì]+$", self.cleaned_data['indirizzo']):
@@ -162,3 +161,6 @@ class UtenteCineDateForm(forms.ModelForm):
             raise ValidationError(_('Errore: il numero posti macchina deve essere compresa fra 1 e 8.'))
         return self.cleaned_data['posti_macchina']
 
+    def clean_generi_preferiti(self):
+        self.cleaned_data['generi_preferiti']=str(self.cleaned_data['generi_preferiti']).replace('[','').replace(']','').replace('\'','')
+        return self.cleaned_data['generi_preferiti']

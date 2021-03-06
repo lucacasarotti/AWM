@@ -16,14 +16,7 @@ from utenti.models import Profile
 import requests
 
 def calcola_lat_lon(request, profile):
-    """
-    Dato il profilo di un utente con i dati relativi alla sua residenza, viene fatta una query a un API esterna che
-    recupera latitudine e longitudine relative alla posizione dell'utente.
 
-    :param request: request utente.
-    :param profile: profilo utente.
-    :return: latitudine, longitudine restituite dall'API.
-    """
 
     response = requests.get('https://open.mapquestapi.com/geocoding/v1/address?'
                             'key=pnGtLbDVt29CZbfiqMMyjUmZHACj4gNX&location=' + profile.indirizzo.replace("/", "")
@@ -35,12 +28,6 @@ def calcola_lat_lon(request, profile):
 
 
 def login_user(request):
-    """
-    Permette agli utenti di effettuare il login.
-
-    :param request: request utente.
-    :return: render della pagina login.
-    """
 
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('main:index'))
@@ -64,12 +51,7 @@ def login_user(request):
 
 
 def registrazione(request):
-    """
-    Permette agli utenti di registrarsi al sito.
 
-    :param request: request utente.
-    :return: render della pagina di registrazione o redirect a pagina principale.
-    """
 
     #if nega_accesso_senza_profilo(request):
     #    return HttpResponseRedirect(reverse('utenti:scelta_profilo_oauth'))
@@ -137,6 +119,7 @@ def view_profile(request,oid):
         raise Http404
 
     user_profile = Profile.objects.filter(user=user.pk).first()
+
     if user_profile is None:
         raise Http404
 
@@ -150,14 +133,7 @@ def view_profile(request,oid):
 
 @login_required(login_url='/utenti/login/')
 def edit_profile(request, oid):
-    """
-    Permette agli utenti di modificare il proprio profilo, cambiando i loro dati.
 
-    :param request: request utente.
-    :param oid: id dell'utente di cui si vuole modificare il profilo (con controllo che sia == all'id
-    dell'utente loggato).
-    :return: render pagina modifica profilo o errore 404.
-    """
 
     context = {'base_template': 'main/base_site.html'}
     if int(oid) == int(request.user.pk):
@@ -207,6 +183,7 @@ def edit_profile(request, oid):
             form = UserForm(instance=request.user)
             profile_form = UtenteCineDateForm(instance=profile)
 
+        profile_form.fields['generi_preferiti'].initial=profile.generi_preferiti
         context.update({'form': form})
         context.update({'profileForm': profile_form})
         context['user_profile'] = profile

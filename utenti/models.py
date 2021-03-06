@@ -34,6 +34,7 @@ class Profile(models.Model):
 
     def foto_profilo_or_default(self, default_path=static("/images/user_default.jpg")):
         if self.foto_profilo:
+            print(settings.MEDIA_URL + str(self.foto_profilo))
             return settings.MEDIA_URL + str(self.foto_profilo)
         return default_path
     class Meta:
