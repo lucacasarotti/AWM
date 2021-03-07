@@ -1,6 +1,7 @@
 import re
 
 from django import forms
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -97,7 +98,7 @@ class UtenteCineDateForm(forms.ModelForm):
                   'regione',
                   'telefono',
                   'sesso',
-                  'eta',
+                  'data_nascita',
                   'generi_preferiti',
                   'foto_profilo',
                   'guidatore',
@@ -146,13 +147,6 @@ class UtenteCineDateForm(forms.ModelForm):
             return files
         return None
 
-    def clean_eta(self):
-        # controllo eta
-        if not re.match("^[0-9]+$", str(self.cleaned_data['eta'])):
-            raise ValidationError(_('Errore: l\'età può contenere solo numeri.'))
-        if not (0 <= int(self.cleaned_data['eta']) <= 100):
-            raise ValidationError(_('Errore: l\'età deve essere compresa fra 0 e 100.'))
-        return self.cleaned_data['eta']
 
     def clean_posti_macchina(self):
         if not re.match("^[0-9]$", str(self.cleaned_data['posti_macchina'])):
@@ -161,6 +155,38 @@ class UtenteCineDateForm(forms.ModelForm):
             raise ValidationError(_('Errore: il numero posti macchina deve essere compresa fra 1 e 8.'))
         return self.cleaned_data['posti_macchina']
 
-    def clean_generi_preferiti(self):
-        self.cleaned_data['generi_preferiti']=str(self.cleaned_data['generi_preferiti']).replace('[','').replace(']','').replace('\'','')
-        return self.cleaned_data['generi_preferiti']
+
+
+"""
+class UserModifyForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name','email')
+    def clean_username(self):
+        if not re.match("^[A-Za-z0-9]+$", self.cleaned_data['username']):
+            return 'Errore: lo username può contenere solo lettere e numeri.'
+        if not (3 <= len(self.cleaned_data['username']) <= 30):
+            return 'Errore: lo username deve avere lunghezza fra 3 e 30 caratteri.'
+        return self.cleaned_data['username']
+
+    def clean_first_name(self):
+        if not re.match("^[A-Za-z 'èòàùì]+$", self.cleaned_data['first_name']):
+            raise ValidationError(_('Errore: il nome può contenere solo lettere.'))
+        if not (1 <= len(self.cleaned_data['first_name']) <= 30):
+            raise ValidationError(_('Errore: il nome deve avere lunghezza fra 1 e 30 caratteri.'))
+        return self.cleaned_data['first_name']
+
+    def clean_last_name(self):
+        # controllo cognome
+        if not re.match("^[A-Za-z 'èòàùì]+$", self.cleaned_data['last_name']):
+            raise ValidationError(_('Errore: il cognome può contenere solo lettere.'))
+        if not (1 <= len(self.cleaned_data['last_name']) <= 30):
+            raise ValidationError(_('Errore: il cognome deve avere lunghezza fra 1 e 30 caratteri.'))
+        return self.cleaned_data['last_name']
+
+    def clean_email(self):
+        # controllo email
+        if not (5 <= len(self.cleaned_data['email']) <= 50):
+            raise ValidationError(_('Errore: la mail deve essere compresa gra 5 e 50 caratteri.'))
+        return self.cleaned_data['email']
+"""

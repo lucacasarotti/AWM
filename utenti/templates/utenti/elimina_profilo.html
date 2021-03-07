@@ -1,0 +1,28 @@
+{% extends base_template %}
+{% block title %}CineDate - Elimina profilo{% endblock %}
+
+{% load static %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6" style="float: none; margin: 0 auto;">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div style="text-align: center;">
+                        <h3>Attenzione, azione potenzialmente pericolosa.</h3><br>
+                        <h4>Confermi di voler eliminare il tuo profilo e
+                            tutti gli annunci e i dati ad esso associati?</h4><br>
+
+                        <a href="{% url 'utenti:view_profile' oid=user.pk %}" class="btn btn-primary">Indietro</a>&nbsp;&nbsp;
+                        <a href="{% url 'utenti:elimina_profilo_conferma' oid=user.pk %}" class="btn btn-danger">
+                            Conferma</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

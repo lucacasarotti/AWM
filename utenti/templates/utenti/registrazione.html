@@ -126,22 +126,22 @@
 		</select>
 	</div>
 
-    <div class="form-group input-group">
+    <div class="form-group input-group ">
         <div class="input-group-prepend">
             <span class="input-group-text"> <i class="fas fa-stopwatch"></i> </span>
         </div>
-        <input name="eta" class="form-control" placeholder="Eta" type="number" required id="id_eta">
+        <input name="data_nascita" autocomplete="off" class="form-control it-date-datepicker" placeholder="Data nascita" type="text" required id="id_data_nascita">
     </div> <!-- form-group// -->
 
     <div class="form-group input-group">
     	<div class="input-group-prepend">
 		    <span class="input-group-text"> <i class="fa fa-film"></i> </span>
 		</div>
-		<ul class="form-control" id="id_generi_preferiti">
+		<label class="form-control container" id="id_generi_preferiti">
             {% for genere in profileForm.generi_preferiti%}
                 {{ genere }}
             {% endfor %}
-		</ul>
+		</label>
 	</div> <!-- form-group end.// -->
 
     <div class="form-group input-group">
@@ -160,6 +160,7 @@
         <input name="guidatore" class="form-control" type="checkbox" id="id_guidatore">
         <input name="posti_macchina" class="form-control" type="number" id="id_posti_macchina" value="0">
     </div> <!-- form-group// -->
+    <script type="text/javascript" src="{% static 'prova.js' %}"></script>
 
     <div class="form-group">
         <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
@@ -173,30 +174,6 @@
 <!--container end.//-->
 
 {% endblock %}
-<!--
-
-.divider-text {
-    position: relative;
-    text-align: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-.divider-text span {
-    padding: 7px;
-    font-size: 12px;
-    position: relative;
-    z-index: 2;
-}
-.divider-text:after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    border-bottom: 1px solid #ddd;
-    top: 55%;
-    left: 0;
-    z-index: 1;
-}
--->
 
 
 

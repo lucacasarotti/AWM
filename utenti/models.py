@@ -13,7 +13,7 @@ class Profile(models.Model):
     citta = models.CharField(max_length=50)
 
     sesso=models.CharField(max_length=10,default="")
-    eta=models.IntegerField(null=True)
+    data_nascita=models.DateField(null=True)
     provincia = models.CharField(max_length=2)
     regione = models.CharField(max_length=50)
     latitudine = models.FloatField(null=True, default=0, blank=True)

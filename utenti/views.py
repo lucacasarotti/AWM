@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -83,7 +85,7 @@ def registrazione(request):
         profile.guidatore=cineform.cleaned_data['guidatore']
         profile.posti_macchina=cineform.cleaned_data['posti_macchina']
         profile.latitudine, profile.longitudine = calcola_lat_lon(request, profile)
-        profile.eta=cineform.cleaned_data['eta']
+        profile.data_nascita=cineform.cleaned_data['data_nascita']
         profile.sesso=cineform.cleaned_data['sesso']
         profile.save()
 
@@ -143,6 +145,8 @@ def edit_profile(request, oid):
         profile = Profile.objects.filter(user=user_profile.pk).first()
         #generi_past=profile.generi_preferiti
         profile_form=UtenteCineDateForm(data=request.POST or None, instance=profile,files=request.FILES)
+        print(profile_form.errors)
+        print(form.errors)
         if form.is_valid() and profile_form.is_valid():
 
             if form.cleaned_data['password'] != form.cleaned_data['conferma_password']:
@@ -187,9 +191,53 @@ def edit_profile(request, oid):
         context.update({'form': form})
         context.update({'profileForm': profile_form})
         context['user_profile'] = profile
-
         return render(request, 'utenti/modifica_profilo.html', context)
 
     else:
         raise Http404
+
+
+@login_required(login_url='/utenti/login/')
+def elimina_profilo(request, oid):
+    """
+    Permette agli utenti di eliminare il proprio profilo, mostrando prima una pagina di conferma.
+
+    :param request: request utente.
+    :param oid: id dell'utente da eliminare (con controllo che sia == all'id dell'utente loggato).
+    :return: render della pagina elimina_profilo.
+    """
+
+    #if nega_accesso_senza_profilo(request):
+    #    return HttpResponseRedirect(reverse('utenti:scelta_profilo_oauth'))
+
+    user = User.objects.filter(id=oid).first()
+    if user == User.objects.get(username=request.user):
+        context = {'user': user, 'base_template': 'main/base_site.html'}
+
+        return render(request, 'utenti/elimina_profilo.html', context)
+    else:
+        raise Http404
+
+
+@login_required(login_url='/utenti/login/')
+def elimina_profilo_conferma(request, oid):
+    """
+    Dopo aver confermato, elimina effettivamente il profilo utente.
+
+    :param request: request utente.
+    :param oid: id dell'utente da eliminare.
+    :return: render della pagina principale.
+    """
+
+    #if nega_accesso_senza_profilo(request):
+    #    return HttpResponseRedirect(reverse('utenti:scelta_profilo_oauth'))
+
+    user = User.objects.filter(id=oid).first()
+
+    if user == User.objects.get(username=request.user):
+        User.objects.filter(id=oid).delete()
+    else:
+        raise Http404
+
+    return HttpResponseRedirect(reverse('main:index'))
 

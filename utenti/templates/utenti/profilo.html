@@ -59,6 +59,11 @@
                                         <td>{{ user_profile.generi_preferiti}}</td>
 
                                     </tr>
+                                    <tr>
+                                        <td>Data Nascita</td>
+                                        <td>{{ user_profile.data_nascita|date:"d/m/Y"}}</td>
+
+                                    </tr>
 
                                 </tbody>
                             </table>
@@ -74,7 +79,8 @@
                 <span class="pull-right">
                     <a href="{% url 'utenti:edit_profile' oid=user.pk %}" class="btn btn-primary">
                         Modifica profilo</a>
-
+                    <a href="{% url 'utenti:elimina_profilo' oid=user.pk %}" class="btn btn-danger">
+                                Elimina profilo</a>
                         </span>
 
                 </div>
