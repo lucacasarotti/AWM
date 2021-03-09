@@ -1,0 +1,20 @@
+{% extends "inviti/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Accetta Invito</legend>
+                <h2>Sei sicuro di voler partecipare al seguente evento?</h2>
+            </fieldset>
+            <div class="media-body">
+                <h2><a class="article-title">{{ invito.film }}</a></h2>
+                <h3><a class="article-title">{{ invito.cinema }} - {{ invito.data|date:"F d, Y" }} - {{ invito.orario }}</a></h3>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-info" type="submit">Sì, voglio partecipare</button>
+                <a class="btn btn-outline-secondary" href="{% url 'invito-detail' invito.id %}">Annulla</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

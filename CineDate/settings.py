@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'utenti.apps.UtentiConfig',
     'main.apps.MainConfig',
     'inviti.apps.InvitiConfig',
+    'crispy_forms',
 
 ]
 
@@ -146,5 +147,7 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ['static']
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = '/'
