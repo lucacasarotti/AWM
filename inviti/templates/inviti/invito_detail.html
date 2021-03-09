@@ -1,0 +1,27 @@
+{% extends "inviti/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <!-- img class="rounded-circle article-img" srg={ post.author.profile }} ...-->
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'inviti-utente' invito.utente.username %}">{{ invito.utente }}</a>
+                <small class="text-muted">{{ invito.data_invito }}</small>
+            </div>
+            <h2><a class="article-title">{{ invito.film }}</a></h2>
+            <h3><a class="article-title">{{ invito.cinema }} - {{ invito.data|date:"F d, Y" }} - {{ invito.orario }}</a></h3>
+            {% if invito.utente == user %}
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'invito-update' invito.id %}">Aggiorna</a>
+                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'invito-delete' invito.id %}">Elimina</a>
+            {% endif %}
+
+            <p class="article-content">Genere: {{ invito.genere }}</p>
+            <p class="article-content">Massimo numero persone: {{ invito.limite_persone }}</p>
+            <p class="article-content">{{ invito.commento }}</p>
+        </div>
+    <div>
+        {% if user.is_authenticated and invito.utente != user %}
+            <a class="btn btn-outline-info" href="#">Partecipa!</a>
+        {% endif %}
+    </div>
+    </article>
+{% endblock content %}

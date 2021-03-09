@@ -1,11 +1,11 @@
 {% extends "inviti/base.html" %}
 {% block content %}
+    <h1 class="mb-3">Inviti di {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
     {% for i in inviti %}
         <article class="media content-section">
             <div class="media-body">
                 <div class="article-metadata">
                     <a class="mr-2" href="{% url 'inviti-utente' i.utente.username %}">{{ i.utente }}</a>
-                    <!-- NB: date_posted is formatted!!!  -->
                     <small class="text-muted">{{ i.data_invito }}</small>
                 </div>
                 <h2><a class="article-title" href="{% url 'invito-detail' i.id %}">{{ i.film }}</a></h2>

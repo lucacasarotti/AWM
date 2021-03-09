@@ -35,8 +35,14 @@
                     </div>
                     <!-- Navbar Right Side (# is a dead link) -->
                     <div class="navbar-nav">
-                        <a class="nav-item nav-link" href="#">Login</a>
-                        <a class="nav-item nav-link" href="#">Register</a>
+                        {% if user.is_authenticated %}
+                            <a class="nav-item nav-link" href="{% url 'invito-create' %}">Nuovo Invito</a>
+                            <a class="nav-item nav-link" href="{%  url 'utenti:logout_user' %}">Logout</a>
+                            <a class="nav-item nav-link" href="{% url 'utenti:view_profile' oid=user.pk%}">Profile</a>
+                        {% else %}
+                            <a class="nav-item nav-link" href="{% url 'utenti:utenti_login' %}">Login</a>
+                            <a class="nav-item nav-link" href="#">Register</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -47,6 +53,13 @@
         <div class="row">
             <!-- left column with content -->
             <div class="col-md-8">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}"></div>
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+
                 {% block content %}{% endblock %}
             </div>
             <!-- right column with sidebar -->

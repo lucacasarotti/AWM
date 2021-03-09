@@ -1,0 +1,16 @@
+{% extends "inviti/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Elimina Invito</legend>
+                <h2>Sei sicuro di voler cancellare questo invito per il film {{ invito.film }}? </h2>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">Sì, elimina</button>
+                <a class="btn btn-outline-secondary" href="{% url 'invito-detail' invito.id %}">Annulla</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
