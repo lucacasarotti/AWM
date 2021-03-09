@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +11,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.urls import reverse
 
+from CineDate import settings
 from main.views import nega_accesso_senza_profilo
 from static import GenreList
 from utenti.forms import UserForm
@@ -74,6 +76,7 @@ def registrazione(request):
         profile=Profile.objects.get(user=user)
         try:
             profile.foto_profilo=request.FILES['foto_profilo']
+            profile.foto_profilo.name=user.username+'.'+profile.foto_profilo.name.split('.')[1]
         except Exception:
             profile.foto_profilo=None
         profile.indirizzo=cineform.cleaned_data['indirizzo']
@@ -143,10 +146,7 @@ def edit_profile(request, oid):
 
         form=UserForm(data=request.POST or None, instance=request.user)
         profile = Profile.objects.filter(user=user_profile.pk).first()
-        #generi_past=profile.generi_preferiti
         profile_form=UtenteCineDateForm(data=request.POST or None, instance=profile,files=request.FILES)
-        print(profile_form.errors)
-        print(form.errors)
         if form.is_valid() and profile_form.is_valid():
 
             if form.cleaned_data['password'] != form.cleaned_data['conferma_password']:
@@ -159,6 +159,9 @@ def edit_profile(request, oid):
 
             profile.latitudine, profile.longitudine = calcola_lat_lon(request, profile)
 
+
+            if profile_form.cleaned_data['foto_profilo']:
+                profile.foto_profilo.name = form.cleaned_data['username'] + '.' + profile_form.cleaned_data['foto_profilo'].name.split('.')[1]
             user = form.save(commit=False)
 
             password = form.cleaned_data['password']

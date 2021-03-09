@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
 
+
     'utenti.apps.UtentiConfig',
     'main.apps.MainConfig',
     'inviti.apps.InvitiConfig',
 
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
