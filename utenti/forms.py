@@ -1,5 +1,8 @@
 import re
 
+from crispy_forms.bootstrap import InlineRadios, InlineCheckboxes
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, MultiField, Fieldset
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -32,6 +35,13 @@ class UserForm(forms.ModelForm):
                   'email')
 
 
+    def __init__(self, *args, **kwargs):
+        oauth_user = kwargs.pop('oauth_user')
+        super(UserForm, self).__init__(*args, **kwargs)
+        if oauth_user == 1:
+            del self.fields['password']
+            del self.fields['conferma_password']
+            del self.fields['email']
 
     def clean_username(self):
         if not re.match("^[A-Za-z0-9]+$", self.cleaned_data['username']):
@@ -104,9 +114,15 @@ class UtenteCineDateForm(forms.ModelForm):
                   'posti_macchina'
                   ]
 
-    #    if oauth_user == 1:
-    #        del self.fields['password']
-    #        del self.fields['conferma_password']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset('','indirizzo','citta','provincia','regione','telefono','sesso','data_nascita'),
+            InlineCheckboxes('generi_preferiti'),
+            Fieldset('','foto_profilo', 'guidatore', 'posti_macchina'),
+        )
     def clean_indirizzo(self):
         # controllo indirizzo
         if not re.match("^[A-Za-z0-9/ 'èòàùì]+$", self.cleaned_data['indirizzo']):

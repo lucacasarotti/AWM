@@ -8,4 +8,5 @@
         autoclose: true,
       };
       date_input.datepicker(options);
+
  })

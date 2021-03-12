@@ -1,4 +1,6 @@
 {% extends 'main/base_site.html' %}
+{% load crispy_forms_tags %}
+{%  load static %}
 {% block title %}
     <title>CineDate - Login</title>
 {% endblock %}
@@ -6,52 +8,49 @@
 
 {% block body %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12 col-md-6" style="float: none; margin: 0 auto;">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div style="text-align: center;">
-                        <h3>Log in</h3>
+    <div class="card bg-light">
+       <article class="card-body mx-auto" style="max-width: 400px;">
+           <h4 class="card-title mt-3 text-center">Login</h4>
+            <p class="divider-text">
+                <div style="text-align: center;"><span class="bg-light"></span></div>
+            </p>
+            <br>
+            {% if error_message %}
+                <p><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            <form role="form" action="{% url 'utenti:utenti_login'%}" method="post">
+                {%  csrf_token %}
+                 <div class="form-group">
+                    <label  for="id_username"> Username </label>
+                    <div>
+                        <input class="form-control" id="id_username" maxlength="30" name="username" type="text">
                     </div>
-                    <br>
-                    {% if error_message %}
-                        <p><strong>{{ error_message }}</strong></p>
-                    {% endif %}
-                    <form class="form-horizontal" role="form" action="{% url 'utenti:utenti_login'%}" method="post"
-                          enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="id_username">
-                                Username
-                            </label>
-                            <div class="col-sm-10">
-                                <input id="id_username" maxlength="30" name="username" type="text">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="id_password">
-                                Password
-                            </label>
-                            <div class="col-sm-10">
-                                <input id="id_password" maxlength="30" name="password" type="password">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-success">Accedi</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="panel-footer">
-                    Non hai un account? <a href="{% url 'utenti:registrazione' %}">Clicca qui</a> per registrarti.
-                    <br><br>
-                    <h4 style="display: inline">Oppure:&nbsp;</h4>
-
-                </div>
+                 </div>
+                 <div class="form-group">
+                    <label for="id_password"> Password </label>
+                    <div>
+                        <input class="form-control" id="id_password" maxlength="30" name="password" type="password">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-block">Accedi</button>
+                    </div>
+                 </div>
+            </form>
+            <div class="panel-footer">
+                Non hai un account? <a href="{% url 'utenti:registrazione' %}">Clicca qui</a> per registrarti.
+                <br><br>
+                <h4 style="display: inline">Oppure:&nbsp;</h4>
+                <a class="btn btn-outline-dark" href="{% url 'social:begin' 'google-oauth2' %}" role="button" style="text-transform:none">
+      <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+      Login with Google
+    </a>
             </div>
-        </div>
+       </article>
     </div>
 </div>
+
+
 
 {% endblock %}

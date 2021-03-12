@@ -1,178 +1,36 @@
 {% extends base_template %}
 {% load static%}
-{% block title %}CineDate - Modifica profilo{% endblock %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <title>CineDate - Modifica profilo</title>
+{% endblock %}
 
 
 {% block body %}
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.0/css/all.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.0/css/all.css">
 
-<div class="container">
+<div class="container-fluid">
 
 <div class="card bg-light">
-<article class="card-body mx-auto" style="max-width: 400px;">
-	<h4 class="card-title mt-3 text-center">Modifica Account</h4>
-
-<form role="form" action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-	<div class="form-group input-group">
-		<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-user"></i> </span>
-		 </div>
-
-        <input name="username" class="form-control" placeholder="Username" value="{{ form.username.value }}" type="text"  id="id_username">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-lock"></i> </span>
-		</div>
-
-        <input class="form-control" placeholder="Create password" type="password" name="password" id="password" required>
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-		</div>
-
-        <input class="form-control" placeholder="Repeat password" type="password" name="conferma_password" id="id_conferma_password">
-    </div> <!-- form-group// -->
-
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-address-card"></i> </span>
-		</div>
-        <input name="first_name" class="form-control" placeholder="Nome" value="{{ form.first_name.value }}" type="text" id="id_first_name">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-address-card"></i> </span>
-        </div>
-
-        <input name="last_name" class="form-control" placeholder="Cognome" value="{{ form.last_name.value }}" type="text" id="id_last_name">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-envelope"></i> </span>
-        </div>
-
-        <input name="email" class="form-control" placeholder="Indirizzo email" value="{{ form.email.value }}" type="email" id="id_email">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-phone"></i> </span>
-        </div>
-        <input name="telefono" class="form-control" placeholder="Numero di telefono" value="{{ profileForm.telefono.value }}" type="text"  id="id_telefono">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-location-arrow"></i> </span>
-        </div>
-        <input name="indirizzo" class="form-control" placeholder="Indirizzo" value="{{ profileForm.indirizzo.value }}" type="text"  id="id_indirizzo">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-building"></i> </span>
-        </div>
-
-        <input name="citta" class="form-control" placeholder="Citta" value="{{ profileForm.citta.value }}" type="text" id="id_citta">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-city"></i> </span>
-		</div>
-
-		<select class="form-control" name="provincia" id="id_provincia">
-            {% for provincia in profileForm.provincia%}
-                {{ provincia }}
-            {% endfor %}
-		</select>
-	</div> <!-- form-group end.// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fas fa-city"></i> </span>
-		</div>
-
-		<select class="form-control" name="regione" id="id_regione">
-            {% for regione in profileForm.regione%}
-               {{ regione }}
-            {% endfor %}
-		</select>
-	</div> <!-- form-group end.// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fa fa-venus-mars"></i> </span>
-		</div>
-		<select class="form-control" name="sesso" id="id_sesso">
-            {% for sesso in profileForm.sesso%}
-                {{ sesso }}
-            {% endfor %}
-		</select>
-	</div>
-
-    <div class="form-group input-group ">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-stopwatch"></i> </span>
-        </div>
-        <input name="data_nascita" autocomplete="off" class="form-control it-date-datepicker" value="{{ profileForm.data_nascita.value|date:"d/m/Y" }}" placeholder="Data nascita" type="text"  id="id_data_nascita">
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-    	<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fa fa-film"></i> </span>
-		</div>
-		<label class="form-control container" id="id_generi_preferiti">
-            {% for genere in profileForm.generi_preferiti%}
-                {% if genere.data.value in user_profile.generi_preferiti %}
-                    <label for="id_generi_preferiti_{{forloop.counter0}}"><input type="checkbox" name="generi_preferiti" value="{{ genere.data.value }}" checked id="id_generi_preferiti_{{ forloop.counter0}} "> {{ genere.data.value }}</label>
-                {% else %}
-                    <label for="id_generi_preferiti_{{forloop.counter0}} "><input type="checkbox" name="generi_preferiti" value="{{ genere.data.value }}" id="id_generi_preferiti_{{forloop.counter0}}"> {{ genere.data.value }}</label>
-                {% endif %}
-            {% endfor %}
-
-		</label>
-	</div> <!-- form-group end.// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-image"></i> </span>
-        </div>
-       <label class="form-control container" >
-        <input name="foto_profilo" class="form-control" type="file" id="id_foto_profilo" >
-
-
-        <input type="checkbox" name="foto_profilo-clear" id="foto_profilo-clear_id">
-        <label for="foto_profilo-clear_id" >Elimina Foto</label>
-         </label>
-
-    </div> <!-- form-group// -->
-
-    <div class="form-group input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"> <i class="fas fa-car"></i> </span>
-        </div>
-
-        <input name="guidatore" class="form-control" type="checkbox" id="id_guidatore">
-        <input name="posti_macchina" class="form-control" type="number" id="id_posti_macchina" value="{{ profileForm.posti_macchina.value }}">
-    </div> <!-- form-group// -->
-    <script type="text/javascript" src="{% static 'prova.js' %}"></script>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary btn-block"> Modifica Account  </button>
-        <a href="{% url 'utenti:view_profile' oid=user.pk %}" class="btn btn-secondary btn-block" role="button" aria-pressed="true">Annulla Modifiche</a>
-    </div> <!-- form-group// -->
-</form>
-</article>
+    <article class="card-body mx-auto" style="max-width: 400px;">
+	    <h4 class="card-title mt-3 text-center">Modifica Account</h4>
+        <p class="divider-text">
+            <div style="text-align: center;"><span class="bg-light"></span></div>
+        </p>
+        <form role="form" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                    {{ form|crispy}}
+            </fieldset>
+            <fieldset class="form-group">
+                {% crispy profileForm %}
+            </fieldset>
+            <script type="text/javascript" src="{% static 'prova.js' %}"></script>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block"> Modifica Account  </button>
+                <a href="{% url 'utenti:view_profile' oid=user.pk %}" class="btn btn-secondary btn-block" role="button" aria-pressed="true">Annulla Modifiche</a>
+            </div> <!-- form-group// -->
+        </form>
+    </article>
 </div>
 
 </div>
