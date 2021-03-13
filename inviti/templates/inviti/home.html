@@ -1,20 +1,29 @@
 {% extends "inviti/base.html" %}
+{% load static %}
+
 {% block content %}
     {% for i in inviti %}
-        <article class="media content-section">
-            <div class="media-body">
-                <div class="article-metadata">
-                    <a class="mr-2" href="{% url 'inviti-utente' i.utente.username %}">{{ i.utente }}</a>
-                    <!-- NB: date_posted is formatted!!!  -->
-                    <small class="text-muted">{{ i.data_invito }}</small>
-                </div>
-                <h2><a class="article-title" href="{% url 'invito-detail' i.id %}">{{ i.film }}</a></h2>
-                <h3><a class="article-title">{{ i.cinema }} - {{ i.data|date:"F d, Y" }} - {{ i.orario }}</a></h3>
-                <p class="article-content">Genere: {{ i.genere }}</p>
-                <p class="article-content">Massimo numero persone: {{ i.limite_persone }}</p>
+        <div class="invito-item">
+            <div class="invito-item__img">
+                <img src="{% static 'images/images.jpg' %}" alt="">
             </div>
-        </article>
+            <div class="invito-item__info">
+                <div class="invito-item__user">
+                    <a href="{% url 'inviti-utente' i.utente.username %}">{{ i.utente }}</a>
+                </div>
+                <div class="invito-item__date">
+                    <span>{{ i.data|date:"j/n/y" }}</span>
+                    <span>{{ i.orario|time:"G:i" }} - {{ i.cinema }}</span>
+                </div>
+                <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>
+                <p class="invito-item__text">Posti Rimasti: {{ i.posti_rimasti }}</p>
+                {% for g in i.genere %}
+                    <a href="#" class="invito-item__cta">{{ g }}</a>
+                {% endfor %}
+            </div>
+        </div>
     {% endfor %}
+
     {% if is_paginated %}
 
         {% if page_obj.has_previous %}

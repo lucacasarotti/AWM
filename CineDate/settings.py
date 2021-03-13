@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'inviti.apps.InvitiConfig',
     'crispy_forms',
+    'multiselectfield',
 
 
     'django_cleanup.apps.CleanupConfig',

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
 from static import GeoList, GenreList, CinemaList
+from multiselectfield import MultiSelectField
 
 
 class Invito(models.Model):
@@ -12,15 +13,17 @@ class Invito(models.Model):
     data = models.DateField()
     orario = models.TimeField()
     limite_persone = models.PositiveSmallIntegerField()
-    posti_rimanenti = models.PositiveSmallIntegerField(default=1)
-    genere = models.CharField(max_length=100, choices=GenreList.GenreList.ListaGeneri)
+    genere = MultiSelectField(max_length=100, choices=GenreList.GenreList.ListaGeneri)
 
     utente = models.ForeignKey(User, on_delete=models.CASCADE)
-    commento = models.TextField()
+    commento = models.TextField(blank=True)
     data_invito = models.DateTimeField(default=timezone.now)
 
-    # partecipanti = models.CharField(max_length=100, default="")
     partecipanti = models.ManyToManyField(User, related_name='partecipanti', blank=True)
+
+    @property
+    def posti_rimasti(self):
+        return self.limite_persone - self.partecipanti.count()
 
     class Meta:
         verbose_name = 'Invito'
