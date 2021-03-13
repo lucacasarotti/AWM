@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Invito
 from django import forms
+from django.db.models import Q
 
 
 def about(request):
@@ -45,6 +46,20 @@ class UtenteInvitoListView(ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Invito.objects.filter(utente=user).order_by('-data_invito')
+
+
+class GenereInvitoListView(ListView):
+    '''
+    Questa classe serve a visualizzare tutti i post di un genere
+    '''
+    model = Invito
+    template_name = 'inviti/inviti_genere.html'
+    context_object_name = 'inviti'
+    paginate_by = 5
+
+    def get_queryset(self):
+        # print(self.kwargs.get('genere'))
+        return Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere'))).order_by('-data_invito')
 
 
 # ---------------    DETAIL VIEWS    ---------------

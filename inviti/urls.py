@@ -7,7 +7,8 @@ from .views import (
     InvitoUpdateView,
     InvitoDeleteView,
     UtenteInvitoListView,
-    InvitoPartecipa
+    InvitoPartecipa,
+    GenereInvitoListView
 )
 
 #app_name = 'inviti'
@@ -17,6 +18,8 @@ urlpatterns = [
     path('', InvitoListView.as_view(), name='inviti-home'),
     # /inviti/utente/<username>
     path('utente/<str:username>', UtenteInvitoListView.as_view(), name='inviti-utente'),
+    # /inviti/utente/<username>
+    path('genere/<str:genere>', GenereInvitoListView.as_view(), name='inviti-genere'),
     # /inviti/invito/<id_invito>
     path('invito/<int:pk>/', InvitoDetailView.as_view(), name='invito-detail'),
     # /inviti/invito/<id_invito>/partecipa

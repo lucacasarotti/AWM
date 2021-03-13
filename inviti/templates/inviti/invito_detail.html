@@ -9,7 +9,7 @@
         <div class="invito-item__info">
             <div class="invito-item__user">
 
-                <a href="{% url 'inviti-utente' invito.utente.username %}">{{ invito.utente }}</a>
+                <a href="{% url 'utenti:view_profile' oid=invito.utente.id %}">{{ invito.utente }}</a>
             </div>
             <div class="invito-item__date">
                 <span>{{ invito.data|date:"j/n/y" }}</span>
@@ -17,7 +17,7 @@
             </div>
             <a href="{% url 'invito-detail' invito.id %}"><h1 class="invito-item__title">{{ invito.film }}</h1></a>
             {% for g in invito.genere %}
-                <a href="#" class="invito-item__cta">{{ g }}</a>
+                <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
             {% endfor %}
             <p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>
             <p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>

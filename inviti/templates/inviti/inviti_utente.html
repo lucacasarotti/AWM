@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block content %}
-    <h1 class="mb-3">Inviti di {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
+    <h1 class="mb-3">Inviti di {{ view.kwargs.username }}</h1>
+    <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+    <br>
     {% for i in inviti %}
         <div class="invito-item">
             <div class="invito-item__img">
@@ -10,7 +12,7 @@
             </div>
             <div class="invito-item__info">
                 <div class="invito-item__user">
-                    <a href="{% url 'inviti-utente' i.utente.username %}">{{ i.utente }}</a>
+                    <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente }}</a>
                 </div>
                 <div class="invito-item__date">
                     <span>{{ i.data|date:"j/n/y" }}</span>
@@ -19,7 +21,7 @@
                 <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>
                 <p class="invito-item__text">Posti Rimasti: {{ i.posti_rimasti }}</p>
                 {% for g in i.genere %}
-                    <a href="#" class="invito-item__cta">{{ g }}</a>
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
                 {% endfor %}
             </div>
         </div>
