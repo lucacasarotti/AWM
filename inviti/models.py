@@ -4,13 +4,14 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from static import GeoList, GenreList, CinemaList
 from multiselectfield import MultiSelectField
+from . import validators
 
 
 class Invito(models.Model):
 
     cinema = models.CharField(max_length=100, choices=CinemaList.CinemaList.ListaCinema)
     film = models.CharField(max_length=100)
-    data = models.DateField()
+    data = models.DateField(validators=[validators.validate_date])
     orario = models.TimeField()
     limite_persone = models.PositiveSmallIntegerField()
     genere = MultiSelectField(max_length=100, choices=GenreList.GenreList.ListaGeneri)

@@ -120,7 +120,7 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         invito = self.get_object()
-        if self.request.user != invito.utente and invito.posti_rimasti > 0:
+        if self.request.user != invito.utente and invito.posti_rimasti > 0 and self.request.user not in invito.partecipanti.all():
             return True
         return False
 
