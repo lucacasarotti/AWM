@@ -25,7 +25,7 @@ class Profile(models.Model):
     foto_profilo = models.FileField(null=True, default='', blank=True)
 
     guidatore = models.BooleanField(default=False)
-    posti_macchina=models.IntegerField(default=0)
+    posti_macchina=models.PositiveSmallIntegerField(default=0)
 
     generi_preferiti =MultiSelectField(max_length=300, choices=GenreList.GenreList.ListaGeneri)
 
