@@ -93,7 +93,7 @@ class InvitoForm(forms.ModelForm):
 class InvitoCreateView(LoginRequiredMixin, CreateView):
     # form_class = InvitoForm
     model = Invito
-    fields = ['cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
+    fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
 
     # template --> looks for <app>/<model>_<viewtype>.html
 

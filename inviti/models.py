@@ -3,15 +3,15 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
-from static import GeoList, GenreList, CinemaList
+from static import GeoList, GenreList, CinemaList, TipologiaList
 from multiselectfield import MultiSelectField
 import datetime
 from . import validators
 
 
 class Invito(models.Model):
-
-    cinema = models.CharField(max_length=100, choices=CinemaList.CinemaList.ListaCinema)
+    tipologia = models.CharField(max_length=100, choices=TipologiaList.TipologiaList.ListaTipologia, default="Cinema")
+    cinema = models.CharField(max_length=100, choices=CinemaList.CinemaList.ListaCinema, blank=True)
     film = models.CharField(max_length=100)
     data = models.DateField(validators=[validators.validate_date])
     orario = models.TimeField()
