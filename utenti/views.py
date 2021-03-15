@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites import requests
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
+from django.contrib import messages
 
 # Create your views here.
 from django.urls import reverse
@@ -95,6 +96,7 @@ def registrazione(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
+                messages.success(request, f'Account per {username} creato con successo!')
                 return HttpResponseRedirect(reverse('main:index'))
 
     context={
@@ -292,6 +294,7 @@ def oauth_utente(request):
             profile.save()
             if utente_loggato is not None:
                 if utente_loggato.is_active:
+                    messages.success(request, f'Account per {utente_loggato.username} creato con successo!')
                     return HttpResponseRedirect(reverse('main:index'))
     else:
         cineform = UtenteCineDateForm()

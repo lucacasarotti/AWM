@@ -21,7 +21,7 @@
     {% csrf_token %}
 
      <fieldset class="form-group">
-        {{ profileForm|crispy }}
+         {% crispy profileForm %}
      </fieldset>
     <div class="form-group">
         <button type="submit" class="btn btn-primary btn-block"> Complete Account  </button>
