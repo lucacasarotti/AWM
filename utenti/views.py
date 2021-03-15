@@ -127,7 +127,7 @@ def view_profile(request,oid):
     user_profile = Profile.objects.filter(user=user.pk).first()
     if user_profile is None:
         raise Http404
-    user_profile.generi_preferiti=user_profile.generi_preferiti.replace('[','').replace(']','').replace("\'",'')
+    #user_profile.generi_preferiti=user_profile.generi_preferiti.replace('[','').replace(']','').replace("\'",'')
     context = {
         'view_user': user,
         'user_profile': user_profile,
