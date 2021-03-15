@@ -125,10 +125,9 @@ def view_profile(request,oid):
         raise Http404
 
     user_profile = Profile.objects.filter(user=user.pk).first()
-
     if user_profile is None:
         raise Http404
-
+    #user_profile.generi_preferiti=user_profile.generi_preferiti.replace('[','').replace(']','').replace("\'",'')
     context = {
         'view_user': user,
         'user_profile': user_profile,
@@ -182,7 +181,7 @@ def edit_profile(request, oid):
                 if user.is_active:
                     if not oauth_user:
                         login(request, user)
-                    return HttpResponseRedirect(reverse('main:index'))
+                    return HttpResponseRedirect(reverse('utenti:view_profile',args=(user.pk,)))
         else:
             try:
                 if User.objects.exclude(pk=request.user.id).get(username=form['username'].value()):

@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
 from django.templatetags.static import static
+from multiselectfield import MultiSelectField
+
+from static import GenreList
 
 
 class Profile(models.Model):
@@ -24,7 +27,7 @@ class Profile(models.Model):
     guidatore = models.BooleanField(default=False)
     posti_macchina=models.IntegerField(default=0)
 
-    generi_preferiti =models.CharField(max_length=500,default="")
+    generi_preferiti =MultiSelectField(max_length=300, choices=GenreList.GenreList.ListaGeneri)
 
     feedback_user=models.FloatField(default=0)
     feedback_guidatore=models.FloatField(default=0)

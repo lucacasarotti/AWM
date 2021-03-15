@@ -1,27 +1,38 @@
 {% extends base_template %}
 
 {% block title %}<title>CineDate - Profilo</title>{% endblock %}
-
+{% load static %}
 {% block body %}
-{% load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'utenti/profilo.css' %}">
+
+<div class="container-fluid">
+    <div class="main-body">
 
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-8 toppad" style="float: none; margin: 0 auto;">
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="{{ user_profile.foto_profilo_or_default }}" class="rounded-circle" width="300" height="300">
+                    <div class="mt-3">
 
-            <div class="panel panel-info">
-                <div class="row">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ view_user.username }}</h3>
+                      <h4><p class="text-secondary mb-1">{{ view_user.username}}</p></h4>
+                       {% if request.user.pk == view_user.pk %}
+                        <span class="pull-right">
+                            <a href="{% url 'utenti:edit_profile' oid=user.pk %}" class="btn btn-primary">
+                                Modifica profilo</a>
+                            <a href="{% url 'utenti:elimina_profilo' oid=user.pk %}" class="btn btn-danger">
+                                Elimina profilo</a>
+                        </span>
+                        {% endif %}
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-3 col-lg-3 " align="center">
-                 <img alt="Foto profilo" src="{{ user_profile.foto_profilo_or_default }}" class="img-thumbnail"></div>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
+              </div>
 
-                        <div class=" col-md-9 col-lg-9 ">
+            </div>
+            <div class=" col-md-8 col-lg-8 ">
                             <table class="table table-user-information">
                                 <tbody>
                                     <tr>
@@ -68,27 +79,23 @@
 
                                     </tr>
 
+                                    <tr>
+                                        <td>Guidatore</td>
+                                        <td>{{ user_profile.guidatore|yesno:"Sì,No" }}</td>
+                                    </tr>
+                                    {% if user_profile.guidatore %}
+                                     <tr>
+                                        <td>Posti macchina</td>
+                                        <td>{{ user_profile.posti_macchina}}</td>
+                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
 
 
-                    </div>
-                </div>
 
-            </div>
+          </div>
         </div>
-         <div class="panel-footer">
-                <span class="pull-right">
-                    <a href="{% url 'utenti:edit_profile' oid=user.pk %}" class="btn btn-primary">
-                        Modifica profilo</a>
-                    <a href="{% url 'utenti:elimina_profilo' oid=user.pk %}" class="btn btn-danger">
-                                Elimina profilo</a>
-                        </span>
-
-                </div>
-    </div>
 </div>
-
-
 {% endblock %}
