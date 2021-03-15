@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- My CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
-
+    {% block head %}
+    {% endblock head %}
 
     {% if title %}
         <title>Django Blog - {{ title }}</title>
@@ -36,10 +37,12 @@
                     <!-- Navbar Right Side (# is a dead link) -->
                     <div class="navbar-nav">
                         {% if not user.is_authenticated %}
-                        <a class="nav-item nav-link" href="{% url 'utenti:utenti_login' %}">Login</a>
+                            <a class="nav-item nav-link" href="{% url 'utenti:utenti_login' %}">Login</a>
+                            <a class="nav-item nav-link" href="{%  url 'utenti:registrazione' %}">Registrati</a>
                         {% else %}
-                        <a class="nav-item nav-link" href="{% url 'utenti:view_profile' oid=user.pk%}">Profilo</a>
-                        <a class="nav-item nav-link" href="{%  url 'utenti:logout_user' %}">Logout</a>
+                            <a class="nav-item nav-link" href="{% url 'invito-create' %}">Nuovo Invito</a>
+                            <a class="nav-item nav-link" href="{% url 'utenti:view_profile' oid=user.pk%}">Profilo</a>
+                            <a class="nav-item nav-link" href="{%  url 'utenti:logout_user' %}">Logout</a>
                         {% endif %}
 
                     </div>
@@ -48,16 +51,14 @@
         </nav>
     </header>
 
+    {% block body %}
+    {% endblock %}
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src=" https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-
-{% block body %}
-{% endblock %}
-
 
 </body>
 </html>
