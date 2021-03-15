@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block content %}
+    <h1 class="mb-3">Inviti per genere {{ view.kwargs.genere }}</h1>
+    <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+    <br>
     {% for i in inviti %}
         <div class="invito-item">
             <div class="invito-item__img">
@@ -9,7 +12,6 @@
             </div>
             <div class="invito-item__info">
                 <div class="invito-item__user">
-                    <!--a href="% url 'inviti-utente' i.utente.username %}">{ i.utente }}</a-->
                     <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente }}</a>
                 </div>
                 <div class="invito-item__date">
@@ -24,7 +26,6 @@
             </div>
         </div>
     {% endfor %}
-
     {% if is_paginated %}
 
         {% if page_obj.has_previous %}

@@ -1,27 +1,44 @@
-{% extends "inviti/base.html" %}
+{% extends "main/base.html" %}
+{% load static %}
 {% block content %}
-    <article class="media content-section">
-        <!-- img class="rounded-circle article-img" srg={ post.author.profile }} ...-->
-        <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="{% url 'inviti-utente' invito.utente.username %}">{{ invito.utente }}</a>
-                <small class="text-muted">{{ invito.data_invito }}</small>
-            </div>
-            <h2><a class="article-title">{{ invito.film }}</a></h2>
-            <h3><a class="article-title">{{ invito.cinema }} - {{ invito.data|date:"F d, Y" }} - {{ invito.orario }}</a></h3>
-            {% if invito.utente == user %}
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'invito-update' invito.id %}">Aggiorna</a>
-                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'invito-delete' invito.id %}">Elimina</a>
-            {% endif %}
 
-            <p class="article-content">Genere: {{ invito.genere }}</p>
-            <p class="article-content">Massimo numero persone: {{ invito.limite_persone }}</p>
-            <p class="article-content">{{ invito.commento }}</p>
+    <div class="invito-item">
+        <div class="invito-item__img">
+            <img src="{% static 'images/ticket.jpg' %}" alt="">
         </div>
-    <div>
-        {% if user.is_authenticated and invito.utente != user %}
-            <a class="btn btn-outline-info" href="#">Partecipa!</a>
+        <div class="invito-item__info">
+            <div class="invito-item__user">
+
+                <a href="{% url 'utenti:view_profile' oid=invito.utente.id %}">{{ invito.utente }}</a>
+            </div>
+            <div class="invito-item__date">
+                <span>{{ invito.data|date:"j/n/y" }}</span>
+                <span>{{ invito.orario|time:"G:i" }} - {{ invito.cinema }}</span>
+            </div>
+            <a href="{% url 'invito-detail' invito.id %}"><h1 class="invito-item__title">{{ invito.film }}</h1></a>
+            {% for g in invito.genere %}
+                <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
+            {% endfor %}
+            <p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>
+            <p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>
+            {% if invito.posti_rimasti != invito.limite_persone %}
+                <p class="invito-item__text">Altri partecipanti:</p>
+                {% for p in partecipanti_attuali %}
+                    <a href="#" class="invito-item__users">{{ p }}</a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="invito-item__buttons">
+        {% if invito.utente == user %}
+            <a class="invito-item__update_button" href="{% url 'invito-update' invito.id %}">Aggiorna</a>
+            <a class="invito-item__delete_button" href="{% url 'invito-delete' invito.id %}">Elimina</a>
+        {% endif %}
+        {% if user.is_authenticated and invito.utente != user and invito.posti_rimasti > 0 and not user in partecipanti_attuali %}
+            <a class="btn btn-outline-info" href="{% url 'invito-partecipa' invito.id %}">Partecipa!</a>
         {% endif %}
     </div>
-    </article>
+
+
 {% endblock content %}

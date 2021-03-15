@@ -1,8 +1,18 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Invito
+from django import forms
+from django.db.models import Q
+
+
+def about(request):
+    return render(request, 'inviti/about.html', {'title': 'About'})
+
+# ---------------    LIST VIEWS    ---------------
+# add list by genre
 
 
 def home(request):
@@ -38,23 +48,61 @@ class UtenteInvitoListView(ListView):
         return Invito.objects.filter(utente=user).order_by('-data_invito')
 
 
+class GenereInvitoListView(ListView):
+    '''
+    Questa classe serve a visualizzare tutti i post di un genere
+    '''
+    model = Invito
+    template_name = 'inviti/inviti_genere.html'
+    context_object_name = 'inviti'
+    paginate_by = 5
+
+    def get_queryset(self):
+        # print(self.kwargs.get('genere'))
+        return Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere'))).order_by('-data_invito')
+
+
+# ---------------    DETAIL VIEWS    ---------------
+
 class InvitoDetailView(DetailView):
     model = Invito
     context_object_name = 'invito'
+
     # template --> looks for <app>/<model>_<viewtype>.html
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invito = self.get_object()
+        if invito.posti_rimasti != invito.limite_persone:
+            context['partecipanti_attuali'] = invito.partecipanti.all()
+        return context
+
+
+# ---------------    CREATE VIEWS    ---------------
+'''
+class InvitoForm(forms.ModelForm):
+    class Meta:
+        model = Invito
+        fields = ['data', 'orario', 'limite_persone', 'genere', 'commento']
+        widgets = {
+
+        }
+'''
 
 
 class InvitoCreateView(LoginRequiredMixin, CreateView):
-    login_url = '/utenti/login/'
-    #redirect_field_name = 'index'
+    # form_class = InvitoForm
     model = Invito
     fields = ['cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
+
     # template --> looks for <app>/<model>_<viewtype>.html
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
         return super().form_valid(form)
 
+
+# ---------------    UPDATE VIEWS    ---------------
 
 class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
@@ -72,22 +120,27 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
-class InvitoJoinView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
     template_name = 'inviti/partecipa.html'
-    fields = ['posti_rimanenti']
+    fields = ['partecipanti']
 
     def form_valid(self, form):
-        form.instance.partecipanti.add(self.request.user)
-        form.instance.posti_rimanenti -= 1
-        return super().form_valid(form)
+        redirect_url = super().form_valid(form)
+        utente = self.request.user
+        invito = self.get_object()
+        invito.partecipanti.add(utente.id)
+        invito.save()
+        return redirect_url
 
     def test_func(self):
         invito = self.get_object()
-        if self.request.user != invito.utente and invito.posti_rimanenti > 0:
+        if self.request.user != invito.utente and invito.posti_rimasti > 0 and self.request.user not in invito.partecipanti.all():
             return True
         return False
 
+
+# ---------------    DELETE VIEWS    ---------------
 
 class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Invito
@@ -99,7 +152,3 @@ class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == invito.utente:
             return True
         return False
-
-
-def about(request):
-    return render(request, 'inviti/about.html', {'title': 'About'})

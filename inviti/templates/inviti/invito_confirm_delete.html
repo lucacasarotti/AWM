@@ -1,11 +1,20 @@
-{% extends "inviti/base.html" %}
+{% extends "main/base.html" %}
+{% load static %}
+
 {% block content %}
-    <div class="content-section">
+    <div class="invito-section">
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Elimina Invito</legend>
-                <h2>Sei sicuro di voler cancellare questo invito per il film {{ invito.film }}? </h2>
+                <div class="invito-section__content">
+                    <span>Sei sicuro di voler cancellare la seguente prenotazione? </span>
+                </div>
+                <div class="invito-section__text">
+                    <span style="margin-top: 1rem;">{{ invito.film }}</span>
+                    <span>{{ invito.cinema }}</span>
+                    <span>{{ invito.data|date:"j/n/y" }} - {{ invito.orario|time:"G:i" }}</span>
+                </div>
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-danger" type="submit">Sì, elimina</button>
@@ -13,4 +22,5 @@
             </div>
         </form>
     </div>
+
 {% endblock content %}
