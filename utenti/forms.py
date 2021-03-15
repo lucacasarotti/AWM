@@ -2,10 +2,11 @@ import re
 
 from crispy_forms.bootstrap import InlineRadios, InlineCheckboxes
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, MultiField, Fieldset
+from crispy_forms.layout import Layout, MultiField, Fieldset, HTML
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms import ClearableFileInput
 from django.utils.translation import ugettext_lazy as _
 import magic
 from static import GeoList, GenreList
@@ -94,7 +95,7 @@ class UtenteCineDateForm(forms.ModelForm):
     sesso=forms.ChoiceField(choices=[('Uomo','Uomo'),('Donna','Donna')])
     generi_preferiti=forms.MultipleChoiceField(choices=GenreList.GenreList.ListaGeneri,
                                                widget=forms.CheckboxSelectMultiple())
-    foto_profilo = forms.ImageField(required=False)
+    foto_profilo = forms.ImageField(required=False,widget=ClearableFileInput)
     provincia = forms.ChoiceField(choices=GeoList.Anagrafica.ListaProvince)
     regione = forms.ChoiceField(choices=GeoList.Anagrafica.ListaRegioni)
 
@@ -115,14 +116,15 @@ class UtenteCineDateForm(forms.ModelForm):
                   ]
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('','indirizzo','citta','provincia','regione','telefono','sesso','data_nascita'),
             InlineCheckboxes('generi_preferiti'),
-            Fieldset('','foto_profilo', 'guidatore', 'posti_macchina'),
+            Fieldset('', 'foto_profilo','guidatore', 'posti_macchina'),
         )
+        super(UtenteCineDateForm,self).__init__(*args, **kwargs)
+
     def clean_indirizzo(self):
         # controllo indirizzo
         if not re.match("^[A-Za-z0-9/ 'èòàùì]+$", self.cleaned_data['indirizzo']):

@@ -103,3 +103,6 @@ a.article-title:hover {
     left: 0;
     z-index: 1;
 }
+field.label_tag{
+    font-size: 1.5rem;
+}
