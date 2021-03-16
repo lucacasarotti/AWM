@@ -28,6 +28,7 @@ urlpatterns = [
     path('utenti/',include('utenti.urls')),
     path('inviti/', include('inviti.urls')),
     url('', include('social_django.urls', namespace='social')),
+    path('chat/', include('chatroom.urls')),
 
 ]
 
