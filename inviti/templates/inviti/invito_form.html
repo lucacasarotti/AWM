@@ -1,16 +1,25 @@
-{% extends "main/base.html" %}
+{% extends "main/base_site.html" %}
 {% load crispy_forms_tags %}
-{% block content %}
-    <div class="generic-container">
-        <form method="POST">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Invito</legend>
-                {{ form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Invito</button>
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'inviti/style.css' %}">
+{% endblock head %}
+
+{% block body %}
+    <main role="main" class="container">
+        <div class="row">
+            <div class="generic-container">
+                <form method="POST">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Invito</legend>
+                        {{ form|crispy }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-outline-info" type="submit">Invito</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-{% endblock content %}
+        </div>
+    </main>
+{% endblock body %}
