@@ -18,16 +18,7 @@
 img{
     width: 100%;
 }
-/*
-.col-md-8{
-    margin: 0.5rem;
-    max-width: 65%;
-}
-.col-md-4{
-    margin: 0.5rem;
-    max-width: 30%;
-}
-*/
+
 
 .generic-container{
     width: 100%;
@@ -84,6 +75,23 @@ img{
     border-radius: .8rem;
 }
 
+#prime-logo::before{
+    background: linear-gradient(to top right, rgba(4, 43, 99, .1), rgba(1, 110, 171, .1), rgba(48, 192, 234, .1));
+}
+#disney-logo::before{
+    background: linear-gradient(217deg, rgba(194,149,228,.8), rgba(96,117,202,0) 70.71%),
+                linear-gradient(127deg, rgba(40,56,132,.8), rgba(138,93,188,0) 70.71%),
+                linear-gradient(336deg, rgba(0,0,255,.8), rgba(0,0,255,0) 70.71%);
+}
+#netflix-logo::before{
+    background: linear-gradient(to right, rgba(255, 255, 255, .1),
+                                          rgba(255, 87, 51, .1));
+}
+
+.invito-item__info{
+    transform: translateX(-2rem);
+}
+
 .invito-item__user a{
     display: block;
     color: rgba(0,0,0,.5);
@@ -91,7 +99,6 @@ img{
     font-style: italic;
     font-weight: 600;
     margin: .2rem 0;
-    transform: translateX(-2rem);
 }
 
 .invito-item__user a:hover{
@@ -104,7 +111,6 @@ img{
     font-size: 1.1rem;
     font-weight: 400;
     margin: .2rem 0;
-    transform: translateX(-2rem);
 }
 
 .invito-item__title{
@@ -112,8 +118,9 @@ img{
     margin: 1rem 0 1.2rem;
     text-transform: uppercase;
     color: #571847;
-    transform: translateX(-2rem);
     text-decoration: none;
+    word-break: break-word;
+
 }
 .invito-item__title:hover{
     color: rgba(199, 0, 57, 0.9);
@@ -122,7 +129,6 @@ img{
 .invito-item__text{
     font-size: 1rem;
     color: rgba(0,0,0,.4);
-    transform: translateX(-2rem);
 }
 
 .invito-item__cta{
@@ -136,12 +142,32 @@ img{
     border-radius: .4rem;
     text-decoration: none;
     margin-bottom: 1rem;
-    transform: translateX(-2rem);
 }
 
 .invito-item__cta:hover{
     color: #fafafa;
     background-image: linear-gradient(to right, #FF5733 0%, #910B3E 100%);
+}
+
+#prime-cta{
+    background-image: linear-gradient(to right, rgb(4, 43, 99) 0%, rgb(48, 192, 234) 100%);
+}
+#prime-cta:hover{
+    background-image: linear-gradient(to right, rgb(48, 192, 234) 0%, rgb(4, 43, 99) 100%);
+}
+
+#disney-cta{
+    background-image: linear-gradient(to right, rgb(96,117,202) 0%, rgb(194,149,228) 100%);
+}
+#disney-cta:hover{
+    background-image: linear-gradient(to right, rgb(194,149,228) 0%, rgb(96,117,202) 100%);
+}
+
+#netflix-cta{
+    background-image: linear-gradient(to right, rgb(128,0,0) 0%, rgb(229,9,20) 100%);
+}
+#netflix-cta:hover{
+    background-image: linear-gradient(to right, rgb(229,9,20) 0%, rgb(128,0,0) 100%);
 }
 
 .invito-item__users{
@@ -155,7 +181,6 @@ img{
     border-radius: .4rem;
     text-decoration: none;
     margin-bottom: 1rem;
-    transform: translateX(-2rem);
 }
 
 .invito-item__users:hover{
@@ -259,13 +284,17 @@ img{
         max-width: 100%;
     }
     .invito-item{
-        padding: 2rem;
         flex-direction: column;
         margin-top: 3rem;
     }
     .invito-item__img{
         transform: translate(0, -4rem);
     }
+    .invito-item__info{
+        transform: translate(0, -2rem);
+        text-align: center;
+    }
+
 }
 
 @media all and (max-width:30em){

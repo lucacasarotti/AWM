@@ -3,8 +3,26 @@
 {% load static %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{% static 'inviti/style.css' %}">
-{% endblock head %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#tipo').on('change', function (e) {
+                var optionSelected = $("option:selected", this);
+                var valueSelected = this.value;
+                if (valueSelected === "Cinema"){
+                    $('label[for="selection_cinema"]').show();
+                    $('#selection_cinema').show();
+                    $("#selection_cinema").prop('required',true);
+                } else {
+                    $('label[for="selection_cinema"]').hide();
+                    $('#selection_cinema').hide();
+                    $("#selection_cinema").prop('required',false);
+                }
+            });
+        });
+    </script>
 
+{% endblock head %}
 {% block body %}
     <main role="main" class="container">
         <div class="row">
@@ -12,14 +30,13 @@
                 <form method="POST">
                     {% csrf_token %}
                     <fieldset class="form-group">
-                        <legend class="border-bottom mb-4">Invito</legend>
-                        {{ form|crispy }}
+                        <legend class="border-bottom mb-4">Nuovo Invito</legend>
+                        {% crispy form %}
                     </fieldset>
-                    <div class="form-group">
-                        <button class="btn btn-outline-info" type="submit">Invito</button>
-                    </div>
+
                 </form>
             </div>
         </div>
+
     </main>
 {% endblock body %}
