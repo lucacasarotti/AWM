@@ -1,14 +1,18 @@
 
 # chat/consumers.py
-
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocketConsumer
 import json
 
+from django.conf import settings
 
-class ChatConsumer(AsyncWebsocketConsumer):
+from chatroom.exceptions import ClientError
+from chatroom.utils import get_room_or_error
+
+
+class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        user_id = self.scope["session"]["_auth_user_id"]
-        self.group_name = "{}".format(user_id)
+        self.group_name = self.scope['url_route']['kwargs']['room_name']
         # Join room group
 
         await self.channel_layer.group_add(

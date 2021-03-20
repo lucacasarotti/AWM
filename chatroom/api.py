@@ -8,7 +8,7 @@ from rest_framework.authentication import SessionAuthentication
 
 #from chat import settings
 from chatroom.serializers import MessageModelSerializer, UserModelSerializer
-from chatroom.models import MessageModel
+from chatroom.models import MessageModel, Room
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -38,18 +38,22 @@ class MessageModelViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
-        self.queryset = self.queryset.filter(Q(recipient=request.user) |
+
+
+        self.queryset = self.queryset.filter(Q(recipient=request.GET['target']) |
                                              Q(user=request.user))
-        target = self.request.query_params.get('target', None)
-        if target is not None:
-            self.queryset = self.queryset.filter(
-                Q(recipient=request.user, user__username=target) |
-                Q(recipient__username=target, user=request.user))
+
+
+        #target = self.request.query_params.get('target', None)
+        #if target is not None:
+        #    self.queryset = self.queryset.filter(
+        #        Q(recipient=request.GET['target'], user__username=target) |
+        #        Q(recipient__username=request.user, user=request.user))
         return super(MessageModelViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         msg = get_object_or_404(
-            self.queryset.filter(Q(recipient=request.user) |
+            self.queryset.filter(Q(recipient=kwargs['room_name']) |
                                  Q(user=request.user),
                                  Q(pk=kwargs['pk'])))
         serializer = self.get_serializer(msg)
@@ -57,12 +61,13 @@ class MessageModelViewSet(ModelViewSet):
 
 
 class UserModelViewSet(ModelViewSet):
-    queryset = User.objects.all()
+    queryset = Room.objects.all()
     serializer_class = UserModelSerializer
     allowed_methods = ('GET', 'HEAD', 'OPTIONS')
     pagination_class = None  # Get all user
 
     def list(self, request, *args, **kwargs):
+
         # Get all users except yourself
-        self.queryset = self.queryset.exclude(id=request.user.id)
+        #self.queryset = self.queryset.exclude(id=request.user.id)
         return super(UserModelViewSet, self).list(request, *args, **kwargs)

@@ -1,24 +1,44 @@
 from django.contrib.auth.models import User
-from django.db.models import (Model, TextField, DateTimeField, ForeignKey,
-                              CASCADE)
+from django.db import models
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+class Room(models.Model):
+    """
+    A room for people to chat in.
+    """
 
-class MessageModel(Model):
+    # Room title
+    title = models.CharField(max_length=255)
+
+    # If only "staff" users are allowed (is_staff on django's User)
+    staff_only = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def group_name(self):
+        """
+        Returns the Channels Group name that sockets should subscribe to to get sent
+        messages as they are generated.
+        """
+        return "room-%s" % self.id
+    class Meta:
+        verbose_name='Room'
+        verbose_name_plural='Rooms'
+
+class MessageModel(models.Model):
     """
     This class represents a chat message. It has a owner (user), timestamp and
     the message body.
 
     """
-    user = ForeignKey(User, on_delete=CASCADE, verbose_name='user',
-                      related_name='from_user', db_index=True)
-    recipient = ForeignKey(User, on_delete=CASCADE, verbose_name='recipient',
-                           related_name='to_user', db_index=True)
-    timestamp = DateTimeField('timestamp', auto_now_add=True, editable=False,
-                              db_index=True)
-    body = TextField('body')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipient = models.ForeignKey(Room, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    body = models.TextField('body')
 
     def __str__(self):
         return str(self.id)
@@ -40,8 +60,6 @@ class MessageModel(Model):
         }
 
         channel_layer = get_channel_layer()
-        print("user.id {}".format(self.user.id))
-        print("user.id {}".format(self.recipient.id))
 
         async_to_sync(channel_layer.group_send)("{}".format(self.user.id), notification)
         async_to_sync(channel_layer.group_send)("{}".format(self.recipient.id), notification)
@@ -59,7 +77,7 @@ class MessageModel(Model):
 
     # Meta
     class Meta:
-        app_label = 'chatroom'
-        verbose_name = 'message'
-        verbose_name_plural = 'messages'
+
+        verbose_name = 'Message'
+        verbose_name_plural = 'Messages'
         ordering = ('-timestamp',)
