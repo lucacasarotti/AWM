@@ -4,6 +4,9 @@ from django.db import models
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+from inviti.models import Invito
+
+
 class Room(models.Model):
     """
     A room for people to chat in.
@@ -13,7 +16,10 @@ class Room(models.Model):
     title = models.CharField(max_length=255)
 
     # If only "staff" users are allowed (is_staff on django's User)
-    staff_only = models.BooleanField(default=False)
+
+
+    users=models.ManyToManyField(User,related_name='iscritti', blank=True)
+    invito=models.ForeignKey(Invito,related_name='invito',on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -25,6 +31,7 @@ class Room(models.Model):
         messages as they are generated.
         """
         return "room-%s" % self.id
+
     class Meta:
         verbose_name='Room'
         verbose_name_plural='Rooms'

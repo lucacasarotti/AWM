@@ -5,8 +5,8 @@
 
     <div class="container">
         <div class="page-header">
-            <h1>Welcome to ChatApp
-                <small>Pick a user and start chatting!</small>
+            <h1>{{ room.title }}
+
             </h1>
         </div>
         <div class="row">
@@ -14,7 +14,9 @@
                 <div id="user-list" class="list-group">
                     <a href="" class="list-group-item disabled">
                         <h4 class="list-group-item-heading">Users</h4>
-                        {# Users go here #}
+                        {% for user in room.users.all%}
+                            <a class="list-group-item user" href="{% url 'utenti:view_profile' oid=user.pk%}">{{ user.username }}</a>
+                        {% endfor %}
                     </a>
                 </div>
             </div>
@@ -49,8 +51,8 @@
     </div>
 
     <script>
-        let sessionKey = '{{ request.session.session_key }}';
         let currentUser = '{{ request.user.username }}';
+        let currentRecipient='{{ room.id }}';
     </script>
     <script src="{% static 'chatroom/app.js' %}"></script>
 

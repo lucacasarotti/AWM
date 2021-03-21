@@ -12,7 +12,7 @@ from chatroom.utils import get_room_or_error
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.group_name = self.scope['url_route']['kwargs']['room_name']
+        self.group_name =self.scope['url_route']['kwargs']['room_name']
         # Join room group
 
         await self.channel_layer.group_add(

@@ -1,27 +1,6 @@
-let currentRecipient = '';
 let chatInput = $('#chat-input');
 let chatButton = $('#btn-send');
-let userList = $('#user-list');
 let messageList = $('#messages');
-
-function updateUserList() {
-    $.getJSON(window.location+'api/v1/user/', function (data) {
-        console.log(data);
-        userList.children('.user').remove();
-        for (let i = 0; i < data.length; i++) {
-            console.log(data[i].id);
-            const userItem = `<a class="list-group-item user" id="${data[i].id}">${data[i].title}</a>`;
-            $(userItem).appendTo('#user-list');
-        }
-        $('.user').click(function () {
-
-            userList.children('.active').removeClass('active');
-            let selected = event.target;
-            $(selected).addClass('active');
-            setCurrentRecipient(selected.id);
-        });
-    });
-}
 
 function drawMessage(message) {
     let position = 'left';
@@ -52,13 +31,8 @@ function getConversation(recipient) {
 
 function getMessageById(message) {
     id = JSON.parse(message).message;
-
     $.getJSON(window.location+`api/v1/message/${id}/`, function (data) {
-
-
         drawMessage(data);
-
-
         messageList.animate({scrollTop: messageList.prop('scrollHeight')});
     });
 }
@@ -76,25 +50,13 @@ function sendMessage(recipient, body) {
 function setCurrentRecipient(username) {
     currentRecipient = username;
     getConversation(currentRecipient);
-    enableInput();
+
 }
 
-
-function enableInput() {
-    chatInput.prop('disabled', false);
-    chatButton.prop('disabled', false);
-    chatInput.focus();
-}
-
-function disableInput() {
-    chatInput.prop('disabled', true);
-    chatButton.prop('disabled', true);
-}
 
 $(document).ready(function () {
 
-    updateUserList();
-    disableInput();
+    setCurrentRecipient(currentRecipient);
 
 //    let socket = new WebSocket(`ws://127.0.0.1:8000/?session_key=${sessionKey}`);
     var socket = new WebSocket(
@@ -115,7 +77,7 @@ $(document).ready(function () {
     });
 
     socket.onmessage = function (e) {
-        console.log(e);
+
         getMessageById(e.data);
     };
 });
