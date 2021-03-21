@@ -2,8 +2,11 @@
 {% load static %}
 
 {% block content %}
-    <h1 class="mb-3">Inviti per genere {{ view.kwargs.genere }}</h1>
-    <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+    <div class="results-title" style="margin-left: 1rem;">
+        <h1 class="mb-3">Inviti per genere </h1>
+        <a href="#" class="results-filter-item">{{ view.kwargs.genere }}</a>
+        <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+    </div>
     <br>
     {% for i in inviti %}
         <div class="invito-item">
