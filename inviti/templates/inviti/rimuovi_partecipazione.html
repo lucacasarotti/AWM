@@ -4,9 +4,9 @@
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Accetta Invito</legend>
+                <legend class="border-bottom mb-4">Rimuovi partecipazione Invito</legend>
                 <div class="invito-section__content">
-                    <span>Sei sicuro di voler partecipare al seguente evento? </span>
+                    <span>Sei sicuro di voler rimuovere la tua partecipazione al seguente evento? </span>
                 </div>
             </fieldset>
             <div class="invito-section__text">
@@ -16,7 +16,7 @@
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
-                <button class="btn btn-info" type="submit">Sì, voglio partecipare</button>
+                <button class="btn btn-danger" type="submit">Sì, voglio rimuovere la partecipazione</button>
                 <a class="btn btn-outline-secondary" href="{% url 'invito-detail' invito.id %}">Annulla</a>
             </div>
         </form>

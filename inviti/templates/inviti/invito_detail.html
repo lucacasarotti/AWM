@@ -3,17 +3,31 @@
 {% block content %}
 
     <div class="invito-item">
-        <div class="invito-item__img">
-            <img src="{% static 'images/ticket.jpg' %}" alt="">
-        </div>
+        {% if invito.tipologia == "Netflix" %}
+            <div class="invito-item__img" id="netflix-logo">
+                <img src="{% static 'images/netflix_logo.jpg' %}" alt="">
+            </div>
+        {% elif invito.tipologia == "Prime Video" %}
+            <div class="invito-item__img" id="prime-logo">
+                <img src="{% static 'images/prime_logo.png' %}" alt="">
+            </div>
+        {% elif invito.tipologia == "Disney+" %}
+            <div class="invito-item__img" id="disney-logo">
+                <img src="{% static 'images/disney_logo.png' %}" alt="">
+            </div>
+        {% else %}
+            <div class="invito-item__img">
+                <img src="{% static 'images/ticket.jpg' %}" alt="">
+            </div>
+        {% endif %}
+
         <div class="invito-item__info">
             <div class="invito-item__user">
-
                 <a href="{% url 'utenti:view_profile' oid=invito.utente.id %}">{{ invito.utente }}</a>
             </div>
             <div class="invito-item__date">
                 <span>{{ invito.data|date:"j/n/y" }}</span>
-                <span>{{ invito.orario|time:"G:i" }} - {{ invito.cinema }}</span>
+                <span>{{ invito.orario|time:"G:i" }}{% if invito.cinema %} - {{ invito.cinema }}{% else %} - {{ invito.tipologia }}{% endif %}</span>
             </div>
             <a href="{% url 'invito-detail' invito.id %}"><h1 class="invito-item__title">{{ invito.film }}</h1></a>
             {% for g in invito.genere %}
@@ -22,23 +36,28 @@
             <p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>
             <p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>
             {% if invito.posti_rimasti != invito.limite_persone %}
-                <p class="invito-item__text">Altri partecipanti:</p>
+                <p class="invito-item__text">Partecipanti:</p>
                 {% for p in partecipanti_attuali %}
-                    <a href="#" class="invito-item__users">{{ p }}</a>
+                    <a href="{% url 'utenti:view_profile' oid=p.id %}" class="invito-item__users">{{ p }}</a>
                 {% endfor %}
             {% endif %}
         </div>
     </div>
 
-    <div class="invito-item__buttons">
-        {% if invito.utente == user %}
-            <a class="invito-item__update_button" href="{% url 'invito-update' invito.id %}">Aggiorna</a>
-            <a class="invito-item__delete_button" href="{% url 'invito-delete' invito.id %}">Elimina</a>
-        {% endif %}
-        {% if user.is_authenticated and invito.utente != user and invito.posti_rimasti > 0 and not user in partecipanti_attuali %}
-            <a class="btn btn-outline-info" href="{% url 'invito-partecipa' invito.id %}">Partecipa!</a>
-        {% endif %}
-    </div>
+    {% if user.is_authenticated %}
+        <div class="invito-item__buttons">
+            {% if invito.utente == user %}
+                <a class="invito-item__update_button" href="{% url 'invito-update' invito.id %}">Aggiorna</a>
+                <a class="invito-item__delete_button" href="{% url 'invito-delete' invito.id %}">Elimina</a>
+            {% else %}
+                {% if user in partecipanti_attuali %}
+                    <a class="btn btn-outline-info" href="{% url 'invito-rimuouvi-partecipa' invito.id %}">Rimuovi partecipazione!</a>
+                {% elif invito.posti_rimasti > 0 and not user in partecipanti_attuali %}
+                    <a class="btn btn-outline-info" href="{% url 'invito-partecipa' invito.id %}">Partecipa!</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
 
 
 {% endblock content %}

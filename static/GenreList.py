@@ -1,8 +1,9 @@
 
 class GenreList:
-    ListaGeneri=[("Commedia","Commedia"),("Fantascienza","Fantascienza"),
-                 ("Horror","Horror"),("Romantico","Romantico"),("Azione","Azione"),
-                 ("Thriller","Thriller"),("Drammatico","Drammatico"),("Mistero","Mistero"),
-                 ("Giallo","Giallo"),("Animazione","Animazione"),("Avventura","Avventura"),
-                 ("Fantasy","Fantasy"),("Supereroi","Supereroi"),("Storico","Storico"),("Biografico","Biografico"),
-                 ("Documentario","Documentario"), ("Musical","Musical"),("Guerra","Guerra"),("Western","Western")]
+    ListaGeneri=[("Animazione", "Animazione"), ("Avventura", "Avventura"), ("Azione", "Azione"),
+                 ("Biografico", "Biografico"), ("Commedia", "Commedia"), ("Commedia romantica", "Commedia romantica"),
+                 ("Documentario", "Documentario"), ("Drammatico", "Drammatico"), ("Fantascienza", "Fantascienza"),
+                 ("Fantasy", "Fantasy"), ("Giallo", "Giallo"), ("Guerra", "Guerra"), ("Horror", "Horror"),
+                 ("Mistero", "Mistero"), ("Musical", "Musical"), ("Politico", "Politico"), ("Romantico", "Romantico"),
+                 ("Spionaggio", "Spionaggio"), ("Sportivo", "Sportivo"), ("Storico", "Storico"),
+                 ("Supereroi", "Supereroi"), ("Thriller", "Thriller"), ("Western", "Western")]

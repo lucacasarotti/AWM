@@ -11,7 +11,7 @@ from . import validators
 
 class Invito(models.Model):
     tipologia = models.CharField(max_length=100, choices=TipologiaList.TipologiaList.ListaTipologia, default="Cinema")
-    cinema = models.CharField(max_length=100, choices=CinemaList.CinemaList.ListaCinema, blank=True)
+    cinema = models.CharField(max_length=100, blank=True)
     film = models.CharField(max_length=100)
     data = models.DateField(validators=[validators.validate_date])
     orario = models.TimeField()

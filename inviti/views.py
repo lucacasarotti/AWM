@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Invito
+from .forms import InvitoForm
 from django import forms
 from django.db.models import Q
 
@@ -79,23 +80,11 @@ class InvitoDetailView(DetailView):
 
 
 # ---------------    CREATE VIEWS    ---------------
-'''
-class InvitoForm(forms.ModelForm):
-    class Meta:
-        model = Invito
-        fields = ['data', 'orario', 'limite_persone', 'genere', 'commento']
-        widgets = {
-
-        }
-'''
-
 
 class InvitoCreateView(LoginRequiredMixin, CreateView):
-    # form_class = InvitoForm
     model = Invito
-    fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
-
-    # template --> looks for <app>/<model>_<viewtype>.html
+    form_class = InvitoForm
+    # fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -106,8 +95,8 @@ class InvitoCreateView(LoginRequiredMixin, CreateView):
 
 class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
-    fields = ['cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
-    # template --> looks for <app>/<model>_<viewtype>.html
+    form_class = InvitoForm
+    # fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -136,6 +125,26 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         invito = self.get_object()
         if self.request.user != invito.utente and invito.posti_rimasti > 0 and self.request.user not in invito.partecipanti.all():
+            return True
+        return False
+
+
+class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Invito
+    template_name = 'inviti/rimuovi_partecipazione.html'
+    fields = ['partecipanti']
+
+    def form_valid(self, form):
+        redirect_url = super().form_valid(form)
+        utente = self.request.user
+        invito = self.get_object()
+        invito.partecipanti.remove(utente.id)
+        invito.save()
+        return redirect_url
+
+    def test_func(self):
+        invito = self.get_object()
+        if self.request.user != invito.utente and self.request.user in invito.partecipanti.all():
             return True
         return False
 
