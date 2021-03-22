@@ -1,5 +1,6 @@
 {% extends 'main/base_site.html' %}
 {% load static %}
+{% load my_tags %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{% static 'inviti/style.css' %}">
     {% block head2 %}{% endblock head2 %}
@@ -18,6 +19,28 @@
                 {% endif %}
 
                 {% block content %}{% endblock %}
+
+                    {% if is_paginated %}
+
+                        {% if page_obj.has_previous %}
+                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=1 %}">1</a>
+                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.previous_page_number %}">&lt;</a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <a class="btn btn-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
+                            {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                                <a class="btn btn-outline-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.next_page_number %}">&gt;</a>
+                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=paginator.num_pages %}">{{paginator.num_pages}}</a>
+                        {% endif %}
+
+                    {% endif %}
             </div>
             <!-- right column with sidebar -->
             <div class="col-md-4">

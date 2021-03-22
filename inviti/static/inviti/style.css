@@ -30,6 +30,16 @@ img{
     margin-bottom: 1.5rem;
 }
 
+.generic-container-title{
+    width: 100%;
+    padding: 2rem;
+    background-color: #efeeee;
+    border: dashed #d4d6d5;
+    align-items: center;
+    border-radius: .8rem;
+    margin-bottom: 1.5rem;
+}
+
 .invito-item{
     width: 100%;
     max-width: 98rem;

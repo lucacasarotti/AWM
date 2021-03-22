@@ -1,13 +1,17 @@
 {% extends "main/base.html" %}
+{% load crispy_forms_tags %}
 {% load static %}
 
+
 {% block content %}
-    <div class="results-title" style="margin-left: 1rem;">
-        <h1 class="mb-3">Inviti per genere </h1>
-        <a href="#" class="results-filter-item">{{ view.kwargs.genere }}</a>
-        <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+    <div class="generic-container-title">
+        <h1 class="mb-3">Filtra</h1>
+        <form action="" method="get">
+            {% crispy filter.form filter.form.helper %}
+        </form>
     </div>
     <br>
+
     {% for i in inviti %}
         <div class="invito-item">
             {% if i.tipologia == "Netflix" %}
@@ -27,8 +31,10 @@
                     <img src="{% static 'images/ticket.jpg' %}" alt="">
                 </div>
             {% endif %}
+
             <div class="invito-item__info">
                 <div class="invito-item__user">
+                    <!--a href="% url 'inviti-utente' i.utente.username %}">{ i.utente }}</a-->
                     <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente }}</a>
                 </div>
                 <div class="invito-item__date">
