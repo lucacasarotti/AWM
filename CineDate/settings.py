@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'multiselectfield',
+    'django_filters',
     'django_cleanup.apps.CleanupConfig',
 ]
 

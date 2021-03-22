@@ -61,3 +61,21 @@ class InvitoForm(forms.ModelForm):
             Submit('submit', 'Salva!', css_class="btn btn-outline-info"),
 
         )
+
+
+class InvitoFilterFormHelper(FormHelper):
+    form_method = 'GET'
+    layout = Layout(
+            Row(
+                Column('tipologia', css_class='form-group col-md-6 mb-0'),
+                Column('film', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('data', css_class='form-group col-md-6 mb-0'),
+                Column('orario', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            InlineCheckboxes('genere'),
+            Submit('submit', 'Cerca', css_class="btn btn-outline-info"),
+        )

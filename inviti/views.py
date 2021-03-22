@@ -7,6 +7,9 @@ from .models import Invito
 from .forms import InvitoForm
 from django import forms
 from django.db.models import Q
+from django_filters.views import FilterView
+from .filters import InvitoFilter, InvitoFilterFormHelper
+
 
 
 def about(request):
@@ -61,6 +64,26 @@ class GenereInvitoListView(ListView):
     def get_queryset(self):
         # print(self.kwargs.get('genere'))
         return Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere'))).order_by('-data_invito')
+
+
+class InvitiFilterView(FilterView):
+    template_name = 'inviti/inviti_filter.html'
+    filterset_class = InvitoFilter
+    formhelper_class = InvitoFilterFormHelper
+    paginate_by = 5
+    context_object_name = 'inviti'
+    ordering = ['data']
+
+    def get_queryset(self):
+        queryset = Invito.objects.all().order_by('data')
+        self.filterset = self.filterset_class(self.request.GET, queryset=queryset)
+        return self.filterset.qs.distinct()
+
+    def get_filterset(self, filterset_class):
+        kwargs = self.get_filterset_kwargs(filterset_class)
+        filterset = filterset_class(**kwargs)
+        filterset.form.helper = self.formhelper_class()
+        return filterset
 
 
 # ---------------    DETAIL VIEWS    ---------------
