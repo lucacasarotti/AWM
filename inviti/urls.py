@@ -6,7 +6,8 @@ from .views import (
     InvitoCreateView,
     InvitoUpdateView,
     InvitoDeleteView,
-    UtenteInvitoListView,
+    UtenteInvitiListView,
+    UtentePrenotazioniListView,
     InvitoPartecipa,
     GenereInvitoListView,
     InvitoRimuoviPartecipa,
@@ -19,7 +20,9 @@ urlpatterns = [
     # /inviti/
     path('', InvitoListView.as_view(), name='inviti-home'),
     # /inviti/utente/<username>
-    path('utente/<str:username>', UtenteInvitoListView.as_view(), name='inviti-utente'),
+    path('utente/<str:username>', UtenteInvitiListView.as_view(), name='inviti-utente'),
+    # /inviti/utente/<username>
+    path('utente/<str:username>/partecipazioni', UtentePrenotazioniListView.as_view(), name='prenotazioni-utente'),
     # /inviti/utente/<username>
     path('genere/<str:genere>', GenereInvitoListView.as_view(), name='inviti-genere'),
     # /inviti/invito/<id_invito>

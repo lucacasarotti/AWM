@@ -38,7 +38,7 @@ class InvitoListView(ListView):
     # we use a 'ordering' attribute
 
 
-class UtenteInvitoListView(ListView):
+class UtenteInvitiListView(ListView):
     '''
     Questa classe serve a visualizzare tutti i post di un utente
     '''
@@ -49,7 +49,30 @@ class UtenteInvitoListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Invito.objects.filter(utente=user).order_by('-data_invito')
+        return Invito.objects.filter(utente=user).order_by('data')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['inviti_utente'] = True
+        return context
+
+
+class UtentePrenotazioniListView(ListView):
+    '''
+    Questa classe serve a visualizzare tutte la prenotazioni di un utente
+    '''
+    model = Invito
+    template_name = 'inviti/inviti_utente.html'
+    context_object_name = 'inviti'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['inviti_utente'] = False
+        return context
 
 
 class GenereInvitoListView(ListView):
