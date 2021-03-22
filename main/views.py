@@ -31,15 +31,3 @@ def nega_accesso_senza_profilo(request):
     return False
 
 
-def index(request):
-    """
-    Mostra la pagina principale del sito, lista annunci.
-
-    :param request: request utente.
-    :return: redirect alla view lista_annunci.
-    """
-    return render(request,'main/index.html',None)
-    #da cambiare
-    #return HttpResponseRedirect(reverse('utenti:registrazione'))
-
-

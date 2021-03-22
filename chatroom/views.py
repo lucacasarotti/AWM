@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
+from CineDate import settings
 from chatroom.models import Room
 from django.core.exceptions import PermissionDenied
 
@@ -13,5 +14,6 @@ def chat(request,room_id):
 
     context = {
         "room": room,
+        "messagesToLoad":settings.MESSAGES_TO_LOAD
     }
     return render(request, 'chatroom/chat.html',context=context)
