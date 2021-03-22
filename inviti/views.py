@@ -57,7 +57,7 @@ class UtenteInvitiListView(ListView):
         return context
 
 
-class UtentePrenotazioniListView(ListView):
+class UtentePrenotazioniListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     '''
     Questa classe serve a visualizzare tutte la prenotazioni di un utente
     '''
@@ -73,6 +73,12 @@ class UtentePrenotazioniListView(ListView):
         context = super().get_context_data(**kwargs)
         context['inviti_utente'] = False
         return context
+
+    def test_func(self):
+        user_prenotazioni = get_object_or_404(User, username=self.kwargs.get('username'))
+        if self.request.user == user_prenotazioni:
+            return True
+        return False
 
 
 class GenereInvitoListView(ListView):
