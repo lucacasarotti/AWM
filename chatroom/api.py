@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.authentication import SessionAuthentication
 
 #from chat import settings
+from CineDate import settings
 from chatroom.serializers import MessageModelSerializer, UserModelSerializer
 from chatroom.models import MessageModel, Room
 
@@ -27,7 +29,7 @@ class MessagePagination(PageNumberPagination):
     Limit message prefetch to one page.
     """
 
-    page_size = 15
+    page_size = settings.MESSAGES_TO_LOAD
 
 
 class MessageModelViewSet(ModelViewSet):
@@ -42,14 +44,20 @@ class MessageModelViewSet(ModelViewSet):
 
         self.queryset = self.queryset.filter(Q(recipient=request.GET['target']) |
                                              Q(user=request.user))
+        page=self.paginate_queryset(self.queryset)
 
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
+        serializer = self.get_serializer(self.queryset, many=True)
+        return Response(serializer.data)
         #target = self.request.query_params.get('target', None)
         #if target is not None:
         #    self.queryset = self.queryset.filter(
         #        Q(recipient=request.GET['target'], user__username=target) |
         #        Q(recipient__username=request.user, user=request.user))
-        return super(MessageModelViewSet, self).list(request, *args, **kwargs)
+        #return super(MessageModelViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         msg = get_object_or_404(

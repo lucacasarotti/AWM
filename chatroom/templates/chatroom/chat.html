@@ -53,6 +53,7 @@
     <script>
         let currentUser = '{{ request.user.username }}';
         let currentRecipient='{{ room.id }}';
+        let messageToLoad='{{ messagesToLoad }}'
     </script>
     <script src="{% static 'chatroom/app.js' %}"></script>
 

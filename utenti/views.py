@@ -133,7 +133,7 @@ def view_profile(request,oid):
     context = {
         'view_user': user,
         'user_profile': user_profile,
-        'base_template': 'main/base_site.html'
+        'base_template': 'main/base.html'
     }
     return render(request, 'utenti/profilo.html', context)
 
@@ -144,7 +144,7 @@ def edit_profile(request, oid):
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
 
-    context = {'base_template': 'main/base_site.html'}
+    context = {'base_template': 'main/base.html'}
     oauth_user=False
     if int(oid) == int(request.user.pk):
         user_profile = User.objects.filter(id=oid).first()
@@ -183,6 +183,7 @@ def edit_profile(request, oid):
                 if user.is_active:
                     if not oauth_user:
                         login(request, user)
+                    messages.success(request, f'Modifiche per l\'account eseguite con successo!')
                     return HttpResponseRedirect(reverse('utenti:view_profile',args=(user.pk,)))
         else:
             try:
@@ -190,7 +191,6 @@ def edit_profile(request, oid):
                     context.update({'form': form})
                     context.update({'profileForm': profile_form})
                     context['user_profile'] = profile
-
                     return render(request, 'utenti/modifica_profilo.html', context)
             except User.DoesNotExist:
                 # Nessun utente trovato con questo username --> username valido
@@ -268,7 +268,6 @@ def oauth_utente(request):
     if request.method == "POST":
         # Creiamo l'istanza del form e la popoliamo con i dati della POST request (processo di "binding")
         cineform = UtenteCineDateForm(request.POST, request.FILES)
-
         if cineform.is_valid():
             # a questo punto possiamo usare i dati validi
             utente_loggato = User.objects.get(id=request.user.id)
