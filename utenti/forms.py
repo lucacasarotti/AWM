@@ -98,7 +98,7 @@ class UtenteCineDateForm(forms.ModelForm):
     foto_profilo = forms.ImageField(required=False,widget=ClearableFileInput)
     provincia = forms.ChoiceField(choices=GeoList.Anagrafica.ListaProvince)
     regione = forms.ChoiceField(choices=GeoList.Anagrafica.ListaRegioni)
-
+    telefono=forms.CharField(required=False)
     class Meta:
 
         model = Profile

@@ -14,6 +14,5 @@ def chat(request,room_id):
 
     context = {
         "room": room,
-        "messagesToLoad":settings.MESSAGES_TO_LOAD
     }
     return render(request, 'chatroom/chat.html',context=context)

@@ -28,7 +28,6 @@ class MessagePagination(PageNumberPagination):
     """
     Limit message prefetch to one page.
     """
-
     page_size = settings.MESSAGES_TO_LOAD
 
 
@@ -40,7 +39,6 @@ class MessageModelViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
-
 
         self.queryset = self.queryset.filter(Q(recipient=request.GET['target']) |
                                              Q(user=request.user))

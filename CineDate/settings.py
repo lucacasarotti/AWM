@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'inviti.apps.InvitiConfig',
     'chatroom.apps.ChatroomConfig',
-
+    'feedback.apps.FeedbackConfig',
     'crispy_forms',
     'multiselectfield',
     'django_filters',

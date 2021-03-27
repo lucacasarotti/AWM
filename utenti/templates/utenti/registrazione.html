@@ -43,7 +43,61 @@
 </div>
 <!--container end.//-->
 
+<script>
+$(document).ready(function () {
+$('label[for="id_posti_macchina"]').hide();
+        $('#id_posti_macchina').hide();
+    $('#id_guidatore').on('click',(function(){
+
+    if($(this).is(':checked')){
+        $('label[for="id_posti_macchina"]').show();
+        $('#id_posti_macchina').show();
+    } else {
+        $('label[for="id_posti_macchina"]').hide();
+        $('#id_posti_macchina').hide();
+        $('#id_posti_macchina').val(0);
+    }
+}));
+});
+
+
+</script>
 {% endblock %}
 
 
 
+
+
+<!--
+$.getElementById('id_guidatore').on('change', function (e) {
+        console.log("ciao")
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected === "Cinema"){
+            $('label[for="selection_cinema"]').show();
+            $('#selection_cinema').show();
+            $("#selection_cinema").prop('required',true);
+        } else {
+            $('label[for="selection_cinema"]').hide();
+            $('#selection_cinema').hide();
+            $("#selection_cinema").prop('required',false);
+        }
+    });
+
+
+$(document).ready(function(){
+            $('#tipo').on('change', function (e) {
+                var optionSelected = $("option:selected", this);
+                var valueSelected = this.value;
+                if (valueSelected === "Cinema"){
+                    $('label[for="selection_cinema"]').show();
+                    $('#selection_cinema').show();
+                    $("#selection_cinema").prop('required',true);
+                } else {
+                    $('label[for="selection_cinema"]').hide();
+                    $('#selection_cinema').hide();
+                    $("#selection_cinema").prop('required',false);
+                }
+            });
+        });
+-->

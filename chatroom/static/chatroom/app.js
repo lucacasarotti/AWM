@@ -2,7 +2,6 @@ let chatInput = $('#chat-input');
 let chatButton = $('#btn-send');
 let messageList = $('#messages');
 let nextPage='';
-let retrieveData=messageToLoad;
 function drawMessage(message) {
     let position = 'left';
     const date = new Date(message.timestamp);
@@ -84,7 +83,7 @@ $(document).ready(function () {
 $(messageList).on('scroll', function() {
 
    if (messageList.scrollTop()==0) {
-       if (!(retrieveData==messageToLoad)){
+       if (nextPage==null){
            return
        }
        var lastMsg = $('#messages:last-child');
@@ -92,8 +91,8 @@ $(messageList).on('scroll', function() {
         console.log(data);
 
         nextPage=data.next;
-        retrieveData=data['results'].length;
-        for (let i = 0; i <retrieveData; i++) {
+
+        for (let i = 0; i <data['results'].length; i++) {
            let position = 'left';
             const date = new Date(data['results'][i].timestamp);
             if (data['results'][i].user === currentUser) position = 'right';
