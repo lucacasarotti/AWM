@@ -12,6 +12,7 @@ from .filters import InvitoFilter, InvitoFilterFormHelper
 
 
 
+
 def about(request):
     return render(request, 'inviti/about.html', {'title': 'About'})
 
