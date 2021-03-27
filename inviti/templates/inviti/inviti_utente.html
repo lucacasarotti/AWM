@@ -2,7 +2,12 @@
 {% load static %}
 
 {% block content %}
-    <h1 class="mb-3">Inviti di {{ view.kwargs.username }}</h1>
+    {% if inviti_utente %}
+        <h1 class="mb-3">Inviti di {{ view.kwargs.username }}</h1>
+    {% else %}
+        <h1 class="mb-3">Prenotazioni di {{ view.kwargs.username }}</h1>
+    {% endif %}
+
     <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
     <br>
     {% for i in inviti %}

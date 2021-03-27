@@ -33,6 +33,17 @@
                                 Modifica profilo</a>
                             <a href="{% url 'utenti:elimina_profilo' oid=user.pk %}" class="btn btn-danger">
                                 Elimina profilo</a>
+                            <br><br>
+                            <a href="{% url 'prenotazioni-utente' username=user.username %}" class="btn btn-outline-info">
+                                Prenotazioni</a>
+                            <a href="{% url 'inviti-utente' username=user.username %}" class="btn btn-outline-info">
+                                Inviti</a>
+                        </span>
+
+                        {% else %}
+                        <span class="pull-right">
+                            <a href="{% url 'inviti-utente' username=view_user.username %}" class="btn btn-info">
+                                Inviti di {{ view_user.username }}</a>
                         </span>
                         {% endif %}
                     </div>
