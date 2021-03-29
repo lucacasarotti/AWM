@@ -1,15 +1,18 @@
 from django.conf.urls import url
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from . import views
+from .views import FeedbackModelViewSet
 
-app_name = 'recensioni'
-
+app_name = 'feedback'
+router = DefaultRouter()
+router.register(r'feedback',FeedbackModelViewSet , basename='feedback-api')
 urlpatterns = [
 
-    # /recensioni/nuova/#user_recensito/
-   # path('nuova/<int:oid>/', views.nuova_recensione, name='nuova_recensione'),
+    path(r'api/v1/', include(router.urls)),
 
-    # /recensioni/ricevute/@username/
-    #path('ricevute/<int:oid>/', views.recensioni_ricevute, name='recensioni_ricevute'),
+    path('nuovo/<int:oid>/',views.nuovo_feedback,name='nuovo_feedback')
 ]
+
+

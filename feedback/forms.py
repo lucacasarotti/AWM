@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from feedback.models import Recensione
 
 
-class RecensioneForm(forms.ModelForm):
+class FeedbackForm(forms.ModelForm):
     required_css_class = 'required'
     descrizione = forms.CharField(widget=forms.Textarea)
     voto_select = (('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'))

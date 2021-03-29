@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+{% load static%}
+
+{% load crispy_forms_tags %}
+{% block title %}CineDate - Inserisci Feedback {% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{% static "feedback/star.css" %}">
+<div class="container-fluid">
+<div class="col-sm-offset-2 col-sm-10">
+
+
+    {% if not error_message %}
+    <form role="form" action="" method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Feedback: {{ user_feedback.username }}</legend>
+            {{form|crispy}}
+        </fieldset>
+        <button type="submit" class="btn btn-primary btn-block">Invia Feedback  </button>
+        <a href="{% url 'main:index' %}" class="btn btn-secondary btn-block" role="button" aria-pressed="true">Annulla</a>
+    </form>
+    {% else %}
+     <p><strong>{{ error_message }}.</strong></p>
+        Sarai rediretto al calendario entro <span id="countdown">5</span> secondi.
+        <script>
+            var seconds = document.getElementById("countdown").textContent;
+            var countdown = setInterval(function() {
+                seconds--;
+            document.getElementById("countdown").textContent = seconds;
+                if (seconds <= 0) clearInterval(countdown);
+            }, 1000);
+            window.setTimeout(function(){
+                window.location.href = "{% url 'main:index' %}";
+            }, 5000);
+        </script>
+    {% endif %}
+
+ </form>
+</div>
+
+
+</div>
+
+
+
+{% endblock %}
+
