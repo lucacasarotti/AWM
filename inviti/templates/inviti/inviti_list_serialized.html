@@ -1,0 +1,55 @@
+{% load static %}
+<div id="my-placeholder">
+
+{% for i in inviti %}
+    <div class="invito-item">
+        {% if i.tipologia == "Netflix" %}
+            <div class="invito-item__img" id="netflix-logo">
+                <img src="{% static 'images/netflix_logo.png' %}" alt="">
+            </div>
+        {% elif i.tipologia == "Prime Video" %}
+            <div class="invito-item__img" id="prime-logo">
+                <img src="{% static 'images/prime_logo.png' %}" alt="">
+            </div>
+        {% elif i.tipologia == "Disney+" %}
+            <div class="invito-item__img" id="disney-logo">
+                <img src="{% static 'images/disney_logo.png' %}" alt="">
+            </div>
+        {% else %}
+            <div class="invito-item__img">
+                <img src="{% static 'images/cinema_logo.png' %}" alt="">
+            </div>
+        {% endif %}
+
+        <div class="invito-item__info">
+            <div class="invito-item__user">
+                <!--a href="% url 'inviti-utente' i.utente.username %}">{ i.utente }}</a-->
+                <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente.username }}</a>
+            </div>
+            <div class="invito-item__date">
+                <span>{{ i.data }}</span>
+                <span>{{ i.orario }} - {{ i.tipologia }}</span>
+            </div>
+            <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>
+            <p class="invito-item__text">Posti Rimasti: {{ i.posti_rimasti }}</p>
+            {% if i.tipologia == "Netflix" %}
+                {% for g in i.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="netflix-cta">{{ g }}</a>
+                {% endfor %}
+            {% elif i.tipologia == "Prime Video" %}
+                {% for g in i.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="prime-cta">{{ g }}</a>
+                {% endfor %}
+            {% elif i.tipologia == "Disney+" %}
+                {% for g in i.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="disney-cta">{{ g }}</a>
+                {% endfor %}
+            {% else %}
+                {% for g in i.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+</div>

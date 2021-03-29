@@ -1,10 +1,9 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-
 {% block head2 %}
     <script>
-        let passed_url = '/inviti/generi/{{ genere }}';
+        let passed_url = '/inviti/utente/{{ username }}/prenotazioni';
         let num_pages = {{ num_pages }};
     </script>
     <script src="{% static 'inviti/inviti.js' %}"></script>
@@ -12,11 +11,10 @@
 {% endblock head2 %}
 
 {% block content %}
-    <div class="results-title" style="margin-left: 1rem;">
-        <h1 class="mb-3">Inviti per genere </h1>
-        <a href="#" class="results-filter-item">{{ genere }}</a>
-        <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
-    </div>
+
+    <h1 class="mb-3">Prenotazioni di {{ username }}</h1>
+
+    <small style="color: #5f788a; display: block;">{{ results_count }} risultati trovati</small>
     <br>
 
     {% include 'inviti/inviti_list_serialized.html' %}

@@ -1,11 +1,11 @@
 from django.urls import path
 from . import views
-from inviti.views import InvitoListView
+from inviti.views import InvitiHome
 
 app_name='main'
 urlpatterns = [
     # /
-    path('', InvitoListView.as_view(), name='index'),
+    path('', InvitiHome.as_view(), name='index'),
     # path('', views.index, name='index'),
 
 ]

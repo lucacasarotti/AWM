@@ -3,6 +3,7 @@
 {% load my_tags %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{% static 'inviti/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.2/jquery.min.js"></script>
     {% block head2 %}{% endblock head2 %}
 {% endblock head %}
 
@@ -45,14 +46,13 @@
             <!-- right column with sidebar -->
             <div class="col-md-4">
                 <div class="content-section">
-                    <h3>Filtra...</h3>
-                    <p class='text-muted'>... tramite le seguenti categorie!
-                    <ul class="list-group">
-                    <li class="list-group-item list-group-item-light">Recenti</li>
-                    <li class="list-group-item list-group-item-light">Per Genere</li>
-                    <li class="list-group-item list-group-item-light">Per Data</li>
+
+                    <ul class="list-group" style="border-top: 1rem;">
+                        <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-home' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Inviti Recenti</a></li>
+                        <li class="list-group-item list-group-item-light"><a href="{% url 'generi-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Inviti per Genere</a></li>
+                        <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ricerca per Film, Data...</a></li>
                     </ul>
-                    </p>
+
                 </div>
             </div>
         </div>

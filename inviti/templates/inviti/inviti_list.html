@@ -1,17 +1,6 @@
-{% extends "main/base.html" %}
-{% load crispy_forms_tags %}
 {% load static %}
-
-{% block content %}
-    <div class="generic-container-title">
-        <h1 class="mb-3">Filtra</h1>
-        <form action="" method="get">
-            {% crispy filter.form filter.form.helper %}
-        </form>
-    </div>
-    <br>
-
-    {% for i in inviti %}
+<div id="my-placeholder">
+{% for i in inviti %}
         <div class="invito-item">
             {% if i.tipologia == "Netflix" %}
                 <div class="invito-item__img" id="netflix-logo">
@@ -62,5 +51,4 @@
             </div>
         </div>
     {% endfor %}
-
-{% endblock content %}
+</div>

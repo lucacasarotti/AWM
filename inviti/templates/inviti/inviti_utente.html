@@ -1,63 +1,33 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block content %}
-    {% if inviti_utente %}
-        <h1 class="mb-3">Inviti di {{ view.kwargs.username }}</h1>
-    {% else %}
-        <h1 class="mb-3">Prenotazioni di {{ view.kwargs.username }}</h1>
-    {% endif %}
+{% block head2 %}
+    <script>
 
-    <small style="color: #5f788a; display: block;">{{ page_obj.paginator.count }} risultati trovati</small>
+        let passed_url = '/inviti/utente/{{ username }}';
+        let num_pages = {{ num_pages }};
+
+    </script>
+    <script src="{% static 'inviti/inviti.js' %}"></script>
+
+{% endblock head2 %}
+
+{% block content %}
+
+    <h1 class="mb-3">Inviti di {{ username }}</h1>
+
+
+    <small style="color: #5f788a; display: block;">{{ results_count }} risultati trovati</small>
     <br>
-    {% for i in inviti %}
-        <div class="invito-item">
-            {% if i.tipologia == "Netflix" %}
-                <div class="invito-item__img" id="netflix-logo">
-                    <img src="{% static 'images/netflix_logo.jpg' %}" alt="">
-                </div>
-            {% elif i.tipologia == "Prime Video" %}
-                <div class="invito-item__img" id="prime-logo">
-                    <img src="{% static 'images/prime_logo.png' %}" alt="">
-                </div>
-            {% elif i.tipologia == "Disney+" %}
-                <div class="invito-item__img" id="disney-logo">
-                    <img src="{% static 'images/disney_logo.png' %}" alt="">
-                </div>
-            {% else %}
-                <div class="invito-item__img">
-                    <img src="{% static 'images/ticket.jpg' %}" alt="">
-                </div>
-            {% endif %}
-            <div class="invito-item__info">
-                <div class="invito-item__user">
-                    <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente }}</a>
-                </div>
-                <div class="invito-item__date">
-                    <span>{{ i.data|date:"j/n/y" }}</span>
-                    <span>{{ i.orario|time:"G:i" }}{% if i.cinema %} - {{ i.cinema }}{% else %} - {{ i.tipologia }}{% endif %}</span>
-                </div>
-                <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>
-                <p class="invito-item__text">Posti Rimasti: {{ i.posti_rimasti }}</p>
-                {% if i.tipologia == "Netflix" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="netflix-cta">{{ g }}</a>
-                    {% endfor %}
-                {% elif i.tipologia == "Prime Video" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="prime-cta">{{ g }}</a>
-                    {% endfor %}
-                {% elif i.tipologia == "Disney+" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="disney-cta">{{ g }}</a>
-                    {% endfor %}
-                {% else %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+
+    {% include 'inviti/inviti_list_serialized.html' %}
+
+    <div class="pagination">
+        <div class="page-item" id="fp"><a class="page-cursor" id="first" data-value="1">1</a></div>
+        <div class="page-item" id="pp"><a class="page-cursor" id="prev" data-value="0">&#8249;</a></div>
+        <div class="page-item" id="np"><a class="page-cursor" id="next" data-value="2">&#8250;</a></div>
+        <div class="page-item" id="lp"><a class="page-cursor" id="last" data-value="{{num_pages}}">{{num_pages}}</a></div>
+    </div>
+    <br>
 
 {% endblock content %}
