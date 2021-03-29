@@ -1,0 +1,41 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block head2 %}
+    <script src="{% static 'inviti/inviti.js' %}"></script>
+    <style>
+    button {
+        outline: 0;
+        color: #fff;
+        background: rgba(116,120,132, 0.4);
+    }
+    </style>
+    <script>
+        let num_pages = {{ num_pages }};
+    </script>
+
+{% endblock head2 %}
+
+{% block content %}
+    <div class="results-title">
+        <h1 class="mb-3">Seleziona i generi</h1>
+        <div class="genere-filter-container">
+            <div class="row-fluid">
+                {% for gen in generi_list %}
+                    <button class="span2 btn genere" id="{{ gen }}">{{ gen }}</button>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include 'inviti/inviti_list_serialized.html' %}
+
+        <div class="pagination">
+            <div class="page-item" id="fp"><a class="page-cursor" id="first" data-value="1">1</a></div>
+            <div class="page-item" id="pp"><a class="page-cursor" id="prev" data-value="0">&#8249;</a></div>
+            <div class="page-item" id="np"><a class="page-cursor" id="next" data-value="2">&#8250;</a></div>
+		</div>
+    </div>
+    <br>
+
+
+{% endblock content %}

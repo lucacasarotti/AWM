@@ -6,3 +6,4 @@ class TipologiaList:
         ('Prime Video', 'Prime Video'),
         ('Disney+', 'Disney+'),
     ]
+    tipologia_value_list = ["Cinema", "Netflix", "Prime Video", "Disney+"]

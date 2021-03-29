@@ -5,7 +5,7 @@
     <div class="invito-item">
         {% if invito.tipologia == "Netflix" %}
             <div class="invito-item__img" id="netflix-logo">
-                <img src="{% static 'images/netflix_logo.jpg' %}" alt="">
+                <img src="{% static 'images/netflix_logo.png' %}" alt="">
             </div>
         {% elif invito.tipologia == "Prime Video" %}
             <div class="invito-item__img" id="prime-logo">
@@ -17,7 +17,7 @@
             </div>
         {% else %}
             <div class="invito-item__img">
-                <img src="{% static 'images/ticket.jpg' %}" alt="">
+                <img src="{% static 'images/cinema_logo.png' %}" alt="">
             </div>
         {% endif %}
 

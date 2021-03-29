@@ -30,6 +30,8 @@ urlpatterns = [
     url('', include('social_django.urls', namespace='social')),
     path('chat/', include('chatroom.urls')),
 
+    path('api/inviti/', include('inviti.api.urls', 'inviti_api')),
+
 ]
 
 urlpatterns += staticfiles_urlpatterns()

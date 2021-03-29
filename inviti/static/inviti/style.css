@@ -6,19 +6,9 @@
     box-sizing: border-box;
 }
 
-/*
-#571847 rgb(87, 24, 71) - viola
-#910B3E rgb(145, 11, 62) - rosso-viola
-#C70039 rgb(199, 0, 57) - rosso
-#FF5733 rgb(255, 87, 51) - arancio
-#FFC301 rgb(255, 195, 1) - giallo
-*/
-
-
 img{
     width: 100%;
 }
-
 
 .generic-container{
     width: 100%;
@@ -294,6 +284,81 @@ img{
     font-size: 1.1rem;
     color: rgba(0,0,0,.7);
 }
+
+.genere-filter-container {
+    margin: 0 auto;
+}
+
+.genere-filter-container button{
+    display: inline-block;
+    padding: 0.4rem 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+    border-radius: .4rem;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.genere-filter-active {
+    background-image: linear-gradient(to right, #910B3E 0%, #FF5733 100%);
+    /*background: #42B549;*/
+    color: white;
+}
+
+.genere-filter-active:hover {
+    background-image: linear-gradient(to right, #910B3E 0%, #FF5733 100%);
+    color: white;
+    /*background: #42B549;*/
+}
+.genere-filter-active:hover button{
+    background-image: linear-gradient(to right, #910B3E 0%, #FF5733 100%);
+    color: white;
+    /*background: #42B549;*/
+}
+
+.pagination {
+    display: table;
+    color: #6699CC;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.pagination a {
+    display: table-cell;
+    padding: 0.4rem 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 0.9rem;
+    font-family:'Roboto',sans-serif;
+
+    background-color: transparent;
+    border: 0.1rem solid #6699CC;
+    border-radius: .4rem;
+    text-decoration: none;
+
+    margin-left: 1rem;
+    vertical-align: middle;
+}
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination a:hover:not(.active) {
+    color: white;
+    cursor: default;
+    background-color: #6699CC;
+    text-decoration: none;
+}
+
+.page-item {
+    display: inline-block;
+    padding: 0.1rem;
+}
+
 
 
 @media screen and (max-width: 1068px) {
