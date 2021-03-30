@@ -16,7 +16,7 @@ from django.core.exceptions import PermissionDenied
 from chatroom.serializers import MessageModelSerializer, UserModelSerializer
 
 
-@login_required()
+@login_required(login_url='/utenti/login/')
 def chat(request,room_id):
     room=Room.objects.get(id=room_id)
     if request.user not in room.users.all():

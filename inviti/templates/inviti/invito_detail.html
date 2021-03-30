@@ -30,9 +30,25 @@
                 <span>{{ invito.orario|time:"G:i" }}{% if invito.cinema %} - {{ invito.cinema }}{% else %} - {{ invito.tipologia }}{% endif %}</span>
             </div>
             <a href="{% url 'invito-detail' invito.id %}"><h1 class="invito-item__title">{{ invito.film }}</h1></a>
-            {% for g in invito.genere %}
-                <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
-            {% endfor %}
+
+            {% if invito.tipologia == "Netflix" %}
+                {% for g in invito.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="netflix-cta">{{ g }}</a>
+                {% endfor %}
+            {% elif invito.tipologia == "Prime Video" %}
+                {% for g in invito.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="prime-cta">{{ g }}</a>
+                {% endfor %}
+            {% elif invito.tipologia == "Disney+" %}
+                {% for g in invito.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="disney-cta">{{ g }}</a>
+                {% endfor %}
+            {% else %}
+                {% for g in invito.genere %}
+                    <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
+                {% endfor %}
+            {% endif %}
+
             <p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>
             <p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>
             {% if invito.posti_rimasti != invito.limite_persone %}

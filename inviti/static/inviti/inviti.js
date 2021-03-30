@@ -73,6 +73,7 @@ $(document).ready(function() {
                  //append to post
                 $('#my-placeholder').append(getItem(val))
                });
+                $(window).scrollTop(0);
             },
             error: function () {
                 alert('Error Occured');
@@ -109,6 +110,7 @@ $(document).ready(function() {
                 $.each(response.resources.data, function(i, val) {
                 $('#my-placeholder').append(getItem(val));
                });
+                $(window).scrollTop(0);
 
             },
             error: function () {
