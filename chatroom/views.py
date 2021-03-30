@@ -56,8 +56,7 @@ class MessageModelViewSet(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
 
-        self.queryset = self.queryset.filter(Q(recipient=request.GET['target']) |
-                                             Q(user=request.user))
+        self.queryset = self.queryset.filter(Q(recipient=request.GET['target']))
         page=self.paginate_queryset(self.queryset)
 
         if page is not None:
@@ -89,8 +88,7 @@ class RetrieveMessageViewSet(ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         msg = get_object_or_404(
-            self.queryset.filter(Q(recipient=kwargs['room_name']) |
-                                 Q(user=request.user),
+            self.queryset.filter(Q(recipient=kwargs['room_name']),
                                  Q(pk=kwargs['id'])))
         serializer = self.get_serializer(msg)
         return Response(serializer.data)

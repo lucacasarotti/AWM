@@ -18,20 +18,6 @@ function drawMessage(message) {
     $(messageItem).appendTo('#messages');
 }
 
-function getConversation(recipient) {
-    $.getJSON(window.location+`api/v1/message/?target=${recipient}`, function (data) {
-        nextPage=data.next;
-        console.log(data);
-
-        messageList.children('.message').remove();
-        for (let i = data['results'].length - 1; i >= 0; i--) {
-            drawMessage(data['results'][i]);
-        }
-        messageList.animate({scrollTop: messageList.prop('scrollHeight')});
-    });
-
-}
-
 function getMessageById(message) {
     id = JSON.parse(message).message;
     console.log(myurl);
@@ -56,7 +42,6 @@ function sendMessage(recipient, body) {
 
 $(document).ready(function () {
 
-//    let socket = new WebSocket(`ws://127.0.0.1:8000/?session_key=${sessionKey}`);
     var socket = new WebSocket(
         'ws://' + window.location.host + '/ws'+window.location.pathname);
     console.log(socket);
