@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from chatroom.models import Room
 from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Invito
 from .forms import InvitoForm
@@ -297,7 +298,12 @@ class InvitoCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        room = Room(title=form.instance.film, invito=self.object)
+        room.save()
+        room.users.add(self.request.user)
+        room.save()
+        return response
 
 
 # ---------------    UPDATE VIEWS    ---------------
@@ -329,6 +335,10 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         invito = self.get_object()
         invito.partecipanti.add(utente.id)
         invito.save()
+        room = Room.objects.filter(invito=invito)[0]
+        if room:
+            room.users.add(utente)
+            room.save()
         return redirect_url
 
     def test_func(self):
@@ -349,6 +359,10 @@ class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         invito = self.get_object()
         invito.partecipanti.remove(utente.id)
         invito.save()
+        room = Room.objects.filter(invito=invito)[0]
+        if room:
+            room.users.remove(utente)
+            room.save()
         return redirect_url
 
     def test_func(self):

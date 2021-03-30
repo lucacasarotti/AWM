@@ -27,7 +27,6 @@ urlpatterns = [
     # /inviti/about/
     path('about/', views.about, name='inviti-about'),
 
-
     # /inviti/invito/<id_invito>
     path('invito/<int:pk>/', InvitoDetailView.as_view(), name='invito-detail'),
     # /inviti/invito/<id_invito>/partecipa
