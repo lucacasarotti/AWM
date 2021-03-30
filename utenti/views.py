@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites import requests
+from django.db.models import Avg
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib import messages
@@ -13,6 +14,7 @@ from django.contrib import messages
 from django.urls import reverse
 
 from CineDate import settings
+from feedback.models import Recensione
 from main.views import nega_accesso_senza_profilo
 from static import GenreList
 from utenti.forms import UserForm
@@ -130,9 +132,19 @@ def view_profile(request,oid):
     if user_profile is None:
         raise Http404
     #user_profile.generi_preferiti=user_profile.generi_preferiti.replace('[','').replace(']','').replace("\'",'')
+
+    recensioni_num = Recensione.objects.filter(user_recensito=user).count()
+    voti = Recensione.objects.all().filter(user_recensito=user).aggregate(Avg('voto'))
+    if voti.get('voto__avg') is None:
+        voti['voto__avg'] = 0
+
+    voto_avg = round(voti.get('voto__avg'),2)
+
     context = {
         'view_user': user,
         'user_profile': user_profile,
+        'recensioni_num':recensioni_num,
+        'voto_avg':voto_avg,
         'base_template': 'main/base.html'
     }
     return render(request, 'utenti/profilo.html', context)

@@ -38,7 +38,7 @@ class MessagePagination(PageNumberPagination):
     """
     Limit message prefetch to one page.
     """
-    page_size = 5
+    page_size = 2
 
 
 
@@ -58,9 +58,13 @@ def nuovo_feedback(request, oid):
     context = {
         "form": form,
     }
+
     if Invito.objects.filter(partecipanti__username=user_recensito,utente=user_profile_corrente.user,\
-        data__lt=datetime.now() + timedelta(days=1)) | Invito.objects.filter(utente=user_recensito,\
-        partecipanti__username=user_profile_corrente.user,data__lt=datetime.now() + timedelta(days=1)):
+        data__lt=datetime.now() + timedelta(days=1)) |\
+        Invito.objects.filter(utente=user_recensito,partecipanti__username=user_profile_corrente.user,
+        data__lt=datetime.now() + timedelta(days=1))| \
+        Invito.objects.filter(partecipanti__username=user_recensito).filter(partecipanti__username=user_profile_corrente.user) \
+          .filter(data__lt=datetime.now() + timedelta(days=1)):
         is_rece_valida = True
     else:
         is_rece_valida = False

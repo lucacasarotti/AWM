@@ -29,7 +29,7 @@ urlpatterns = [
     path('inviti/', include('inviti.urls')),
     url('', include('social_django.urls', namespace='social')),
     path('chat/', include('chatroom.urls')),
-
+    path('feedback/',include('feedback.urls',namespace='feedback')),
     path('api/inviti/', include('inviti.api.urls', 'inviti_api')),
 
 ]

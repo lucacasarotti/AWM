@@ -6,11 +6,10 @@ from . import views
 from .views import FeedbackModelViewSet
 
 app_name = 'feedback'
-router = DefaultRouter()
-router.register(r'feedback',FeedbackModelViewSet , basename='feedback-api')
+
 urlpatterns = [
 
-    path(r'api/v1/', include(router.urls)),
+    path(r'feedback-list/', FeedbackModelViewSet.as_view(({'get': 'list',})),name='get_feedback'),
 
     path('nuovo/<int:oid>/',views.nuovo_feedback,name='nuovo_feedback')
 ]

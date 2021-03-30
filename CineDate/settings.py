@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'feedback.apps.FeedbackConfig',
     'crispy_forms',
     'multiselectfield',
+    'django_static_fontawesome',
     'django_filters',
     'django_cleanup.apps.CleanupConfig',
 ]

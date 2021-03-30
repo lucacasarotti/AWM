@@ -4,15 +4,15 @@ from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from . import views
-from .api import MessageModelViewSet, UserModelViewSet
+from .views import MessageModelViewSet, RetrieveMessageViewSet
 
-router = DefaultRouter()
-router.register(r'message', MessageModelViewSet, basename='message-api')
-router.register(r'user', UserModelViewSet, basename='user-api')
-
+app_name = 'chatroom'
 
 urlpatterns = [
-    path(r'<str:room_name>/api/v1/', include(router.urls)),
+    path('<int:room_name>/messages/', MessageModelViewSet.as_view(({'get': 'list','post':'create'})),name='get-messages'),
+    path('<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(({'get': 'retrieve',})),
+         name='get-new_message'),
+
     #path('<str:room_name>/', login_required(
     #    TemplateView.as_view(template_name='chatroom/chat.html')), name='home'),
     path('<int:room_id>/',views.chat, name='chat')

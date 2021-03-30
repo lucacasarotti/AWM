@@ -53,6 +53,7 @@
     <script>
         let currentUser = '{{ request.user.username }}';
         let currentRecipient='{{ room.id }}';
+        let myurl="{% url 'chatroom:get-messages' room_name=room.id%}"
     </script>
     <script src="{% static 'chatroom/app.js' %}"></script>
 
