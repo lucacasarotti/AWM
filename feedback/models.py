@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
 
 class Recensione(models.Model):
     user_recensore = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_recensore')
@@ -15,5 +14,6 @@ class Recensione(models.Model):
         verbose_name = 'Recensione'
         verbose_name_plural = "Recensioni"
         ordering = ['-timestamp']
+
     def __str__(self):
         return self.titolo

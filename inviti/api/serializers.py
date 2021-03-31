@@ -19,6 +19,7 @@ class InvitoSerializer(serializers.ModelSerializer):
     orario = serializers.TimeField(format="%H:%M", input_formats=['%H:%M', 'iso-8601'])
     posti_rimasti = serializers.ReadOnlyField()
     genere = StringListField()
+    scaduto = serializers.ReadOnlyField()
 
     class Meta:
         model = Invito

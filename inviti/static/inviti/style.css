@@ -89,7 +89,8 @@ img{
 }
 
 .invito-item__info{
-    transform: translateX(-2rem);
+    width: 100%;
+    transform: translateX(-1rem);
 }
 
 .invito-item__user a{

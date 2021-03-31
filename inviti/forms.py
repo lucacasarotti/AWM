@@ -20,6 +20,7 @@ class DateInput(forms.DateInput):
 class TimeInput(forms.TimeInput):
     input_type = 'time'
 
+# lookup_expr
 
 class InvitoForm(forms.ModelForm):
 
@@ -36,10 +37,10 @@ class InvitoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InvitoForm, self).__init__(*args, **kwargs)
-        self.fields['tipologia'].widget.attrs.update({'id':'tipo'})
+        self.fields['tipologia'].widget.attrs.update({'id': 'tipo'})
         self.fields['tipologia'].label = 'Dove?'
-        self.fields['cinema'].widget.attrs.update({'id':'selection_cinema'})
-        self.fields['data'].widget.attrs.update({'id':'datepicker'})
+        self.fields['cinema'].widget.attrs.update({'id': 'selection_cinema'})
+        self.fields['data'].widget.attrs.update({'id': 'datepicker'})
         self.helper = FormHelper()
         self.helper.form_tag = False
 

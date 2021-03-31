@@ -2,7 +2,12 @@
 {% load static %}
 {% block content %}
 
-    <div class="invito-item">
+    {% if invito.scaduto %}
+        <div class="invito-item" style="margin-top: 1.5rem;box-shadow: 0 0 6rem rgba(255,0,0,0.5);">
+    {% else %}
+        <div class="invito-item" style="margin-top: 1.5rem;">
+    {% endif %}
+
         {% if invito.tipologia == "Netflix" %}
             <div class="invito-item__img" id="netflix-logo">
                 <img src="{% static 'images/netflix_logo.png' %}" alt="">
@@ -26,7 +31,11 @@
                 <a href="{% url 'utenti:view_profile' oid=invito.utente.id %}">{{ invito.utente }}</a>
             </div>
             <div class="invito-item__date">
-                <span>{{ invito.data|date:"j/n/y" }}</span>
+                {% if invito.scaduto %}
+                    <span style="color: red; font-weight: bold">{{ invito.data|date:"j/n/y" }} - SCADUTO</span>
+                {% else %}
+                    <span>{{ invito.data|date:"j/n/y" }}</span>
+                {% endif %}
                 <span>{{ invito.orario|time:"G:i" }}{% if invito.cinema %} - {{ invito.cinema }}{% else %} - {{ invito.tipologia }}{% endif %}</span>
             </div>
             <a href="{% url 'invito-detail' invito.id %}"><h1 class="invito-item__title">{{ invito.film }}</h1></a>
@@ -49,18 +58,21 @@
                 {% endfor %}
             {% endif %}
 
-            <p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>
-            <p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>
+            {% if invito.commento %}<p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>{% endif %}
+            {% if not invito.scaduto %}<p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>{% endif %}
             {% if invito.posti_rimasti != invito.limite_persone %}
                 <p class="invito-item__text">Partecipanti:</p>
                 {% for p in partecipanti_attuali %}
                     <a href="{% url 'utenti:view_profile' oid=p.id %}" class="invito-item__users">{{ p }}</a>
                 {% endfor %}
             {% endif %}
+            {% if room and user in users_room %}
+                <div><a style="float: right;" class="btn btn-outline-info" href="{% url 'chatroom:chat' room.id %}">Vai alla Chat</a></div>
+            {% endif %}
         </div>
     </div>
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not invito.scaduto %}
         <div class="invito-item__buttons">
             {% if invito.utente == user %}
                 <a class="invito-item__update_button" href="{% url 'invito-update' invito.id %}">Aggiorna</a>

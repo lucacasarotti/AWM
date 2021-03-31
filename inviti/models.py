@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from static import GeoList, GenreList, CinemaList, TipologiaList
 from multiselectfield import MultiSelectField
-import datetime
+from datetime import datetime
 from . import validators
 
 
@@ -27,6 +27,10 @@ class Invito(models.Model):
     @property
     def posti_rimasti(self):
         return self.limite_persone - self.partecipanti.count()
+
+    @property
+    def scaduto(self):
+        return self.data < datetime.today().date()
 
     class Meta:
         verbose_name = 'Invito'

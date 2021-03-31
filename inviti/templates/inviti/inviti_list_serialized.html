@@ -2,7 +2,11 @@
 <div id="my-placeholder">
 
 {% for i in inviti %}
-    <div class="invito-item">
+    {% if i.scaduto %}
+        <div class="invito-item" style="background: rgba(255,0,0,0.18)">
+    {% else %}
+        <div class="invito-item">
+    {% endif %}
         {% if i.tipologia == "Netflix" %}
             <div class="invito-item__img" id="netflix-logo">
                 <img src="{% static 'images/netflix_logo.png' %}" alt="">
@@ -27,7 +31,11 @@
                 <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente.username }}</a>
             </div>
             <div class="invito-item__date">
-                <span>{{ i.data }}</span>
+                {% if i.scaduto %}
+                    <span style="color: red; font-weight: bold">{{ i.data }} - SCADUTO</span>
+                {% else %}
+                    <span>{{ i.data }}</span>
+                {% endif %}
                 <span>{{ i.orario }} - {{ i.tipologia }}</span>
             </div>
             <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>

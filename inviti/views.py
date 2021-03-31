@@ -10,20 +10,21 @@ from static import GeoList, GenreList, CinemaList, TipologiaList
 from django import forms
 import functools
 import operator
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 from django_filters.views import FilterView
 from .filters import InvitoFilter, InvitoFilterFormHelper
 from django.http import JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from inviti.api.serializers import InvitoSerializer
 from datetime import datetime
+from itertools import chain
 
 
 def create_queryset(dict):
     query_string = ''
     for key in dict:
         if dict[key] == 'true' and key not in ['last_mod', 'page_no', 'type', 'csrfmiddlewaretoken']:
-            query_string = key+' '+query_string
+            query_string = key + ' ' + query_string
     query_string = query_string[:-1]
 
     argument_list = []
@@ -87,7 +88,6 @@ def home(request):
     return render(request, 'inviti/home.html', context)
 
 
-
 '''class InvitoListView(ListView):
     model = Invito
     template_name = 'inviti/home.html'
@@ -118,18 +118,22 @@ class InvitiHome(ViewPaginatorMixin, View):
 
 class InvitiUtente(ViewPaginatorMixin, View):
     '''
-    Classe per visualizzare tutti gli inviti di un utente
+    Classe per visualizzare tutti gli inviti di un utente, ordinati per data.
+    Sono compresi anche quelli scaduti, in rosso, in coda
     '''
 
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        inviti = Invito.objects.filter(utente=user).order_by('data')
+        i = Q(utente=user, data__gte=datetime.today())
+        s = Q(utente=user, data__lt=datetime.today())
+        inviti = (Invito.objects.filter(i | s).annotate(
+            search_type_ordering=Case(When(i, then=Value(1)), When(s, then=Value(0)), default=Value(-1),
+                                      output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
         serialized = InvitoSerializer(inviti, many=True)
         resources = self.paginate(serialized.data, limit=5)
         context = {
             'inviti': resources['data'],
             'num_pages': resources['pages'],
-            'inviti_utente': True,
             'results_count': inviti.count(),
             'username': user.username,
         }
@@ -156,17 +160,22 @@ class InvitiUtente(ViewPaginatorMixin, View):
 
 class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorMixin, View):
     '''
-    Classe per visualizzare tutti gli inviti di un utente
+    Classe per visualizzare tutte le prenotazioni di un utente dalle più vicine.
+    Sono visualizzati anche quelle scadute, in coda, in rosso
     '''
 
     def get(self, request, *args, **kwargs):
-        inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
+        #inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
+        i = Q(partecipanti__username=self.kwargs.get('username'), data__gte=datetime.today())
+        s = Q(partecipanti__username=self.kwargs.get('username'), data__lt=datetime.today())
+        inviti = (Invito.objects.filter(i | s).annotate(
+            search_type_ordering=Case(When(i, then=Value(1)), When(s, then=Value(0)), default=Value(-1),
+                                      output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
         serialized = InvitoSerializer(inviti, many=True)
         resources = self.paginate(serialized.data, limit=5)
         context = {
             'inviti': resources['data'],
             'num_pages': resources['pages'],
-            'inviti_utente': False,
             'results_count': inviti.count(),
             'username': self.kwargs.get('username'),
         }
@@ -209,11 +218,12 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
 
 class InvitiGenere(ViewPaginatorMixin, View):
     '''
-    Questa classe serve a visualizzare tutti i post di un genere
+    Visualizza tutti gli inviti (futuri) del genere specificato nell'url
     '''
 
     def get(self, request, *args, **kwargs):
-        inviti = Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere'))).order_by('-data_invito')
+        inviti = Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere')),
+                                       data__gte=datetime.today()).order_by('data')
         serialized = InvitoSerializer(inviti, many=True)
         resources = self.paginate(serialized.data, limit=5)
         context = {
@@ -261,15 +271,17 @@ class GeneriFilterView(ViewPaginatorMixin, View):
             serialized = InvitoSerializer(inviti, many=True)
             page_no = request.GET.get('page_no')
             resources = self.paginate(serialized.data, page=page_no, limit=10)
-            #print(resources)
+            # print(resources)
             return JsonResponse({"resources": resources})
 
         inviti = Invito.objects.all().order_by('data')
         serialized = InvitoSerializer(inviti, many=True)
         resources = self.paginate(serialized.data, limit=10)
-        #print(resources)
-        context = {'inviti': resources['data'], 'num_pages': resources['pages'], 'generi_list': GenreList.GenreList.generi_value_list, 'tipologie_list': TipologiaList.TipologiaList.tipologia_value_list,}
-
+        context = {'inviti': resources['data'],
+                   'num_pages': resources['pages'],
+                   'generi_list': GenreList.GenreList.generi_value_list,
+                   'tipologie_list': TipologiaList.TipologiaList.tipologia_value_list
+                   }
         return render(request, 'inviti/generi_filter.html', context=context)
 
 
@@ -279,13 +291,17 @@ class InvitoDetailView(DetailView):
     model = Invito
     context_object_name = 'invito'
 
-    # template --> looks for <app>/<model>_<viewtype>.html
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         invito = self.get_object()
         if invito.posti_rimasti != invito.limite_persone:
             context['partecipanti_attuali'] = invito.partecipanti.all()
+
+        room = Room.objects.filter(invito=invito)
+        if room:
+            context['room'] = room[0]
+            context['users_room'] = room[0].users.all()
+
         return context
 
 
@@ -294,7 +310,6 @@ class InvitoDetailView(DetailView):
 class InvitoCreateView(LoginRequiredMixin, CreateView):
     model = Invito
     form_class = InvitoForm
-    # fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -311,7 +326,6 @@ class InvitoCreateView(LoginRequiredMixin, CreateView):
 class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
     form_class = InvitoForm
-    # fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -335,8 +349,9 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         invito = self.get_object()
         invito.partecipanti.add(utente.id)
         invito.save()
-        room = Room.objects.filter(invito=invito)[0]
+        room = Room.objects.filter(invito=invito)
         if room:
+            room = room[0]
             room.users.add(utente)
             room.save()
         return redirect_url
@@ -359,8 +374,9 @@ class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         invito = self.get_object()
         invito.partecipanti.remove(utente.id)
         invito.save()
-        room = Room.objects.filter(invito=invito)[0]
+        room = Room.objects.filter(invito=invito)
         if room:
+            room = room[0]
             room.users.remove(utente)
             room.save()
         return redirect_url

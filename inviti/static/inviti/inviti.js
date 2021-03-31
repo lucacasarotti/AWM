@@ -12,9 +12,18 @@ function getItem(val){
         generi_html = generi_html+`
             <a href="/inviti/genere/${val.genere[i]}" style="" class="invito-item__cta" id="${tipo}-cta">${val.genere[i]}</a>`;
     }
+    var div_html = '';
+    var data_html = '';
+    if (val.scaduto) {
+        div_html = `<div class="invito-item" style="background: rgba(255,0,0,0.18);">`;
+        data_html = `<span style="color: red; font-weight: bold">${val.data} - SCADUTO</span>`;
+    } else {
+        div_html = `<div class="invito-item">`;
+        data_html = `<span>${val.data}</span>`;
+    }
 
     return `
-        <div class="invito-item">
+            ${div_html}
             <div class="invito-item__img" id="${tipo}-logo">
                 <img src="../../static/images/${tipo}_logo.png" alt="">
             </div>
@@ -23,7 +32,7 @@ function getItem(val){
                     <a href="/utenti/profilo/${val.utente.id}">${val.utente.username}</a>
                 </div>
                 <div class="invito-item__date">
-                    <span>${val.data}</span>
+                    ${data_html}
                     <span>${val.orario} - ${val.tipologia}</span>
                 </div>
                 <a href="/inviti/invito/${val.id}"><h1 class="invito-item__title">${val.film}</h1></a>
