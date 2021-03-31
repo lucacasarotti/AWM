@@ -11,7 +11,7 @@
 
 
     {% if not error_message %}
-    <form role="form" action="" method="post" enctype="multipart/form-data">
+    <form id="recensione-form" role="form" action="" method="post" enctype="multipart/form-data">
 
             {% csrf_token %}
         <fieldset class="form-group">
@@ -21,6 +21,11 @@
         <button type="submit" class="btn btn-primary btn-block">Invia Feedback  </button>
         <a href="{% url 'main:index' %}" class="btn btn-secondary btn-block" role="button" aria-pressed="true">Annulla</a>
     </form>
+     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+    <script type="text/javascript" src="{% static 'recensione_form_validator.js' %}"></script>
+
     {% else %}
      <p><strong>{{ error_message }}.</strong></p>
         Sarai rediretto alla pagina principale entro <span id="countdown">5</span> secondi.

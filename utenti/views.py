@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites import requests
 from django.db.models import Avg
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
 from django.contrib import messages
 
@@ -21,6 +21,29 @@ from utenti.forms import UserForm
 from utenti.forms import UtenteCineDateForm
 from utenti.models import Profile
 import requests
+
+
+def check_username(request):
+    """
+    Controlla se uno username passato come parametro GET non sia già registrato nel model.
+
+    :param request: request utente.
+    :return: False (username già registrato), True (username non registrato).
+    """
+
+    if nega_accesso_senza_profilo(request):
+        return HttpResponseRedirect(reverse('utenti:scelta_profilo_oauth'))
+
+    if request.method == "GET":
+        p = request.GET.copy()
+        if 'username' in p:
+            name = p['username']
+            if name == request.user.username:
+                return HttpResponse(True)
+            if User.objects.filter(username__iexact=name):
+                return HttpResponse(False)
+            else:
+                return HttpResponse(True)
 
 def calcola_lat_lon(request, profile):
 
