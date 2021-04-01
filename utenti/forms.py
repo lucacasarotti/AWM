@@ -45,22 +45,22 @@ class UserForm(forms.ModelForm):
             del self.fields['email']
 
     def clean_username(self):
-        if not re.match("^[A-Za-z0-9]+$", self.cleaned_data['username']):
-            return 'Errore: lo username può contenere solo lettere e numeri.'
+        if not re.match("^[A-Za-z0-9_\-]+$", self.cleaned_data['username']):
+            return 'Errore: lo username può contenere solo lettere, numeri, - e _.'
         if not (3 <= len(self.cleaned_data['username']) <= 30):
             return 'Errore: lo username deve avere lunghezza fra 3 e 30 caratteri.'
         return self.cleaned_data['username']
 
     def clean_password(self):
         # controllo password
-        if not re.match("^[A-Za-z0-9èòàùì]+$", self.cleaned_data['password']):
+        if not re.match("^[A-Za-z0-9èòàùì_\-!?&]+$", self.cleaned_data['password']):
             raise ValidationError(_('Errore: la password può contenere solo lettere minuscole, maiuscole e numeri.'))
         if not (3 <= len(self.cleaned_data['password']) <= 20):
             raise ValidationError(_('Errore: la password deve avere lunghezza fra 3 e 20 caratteri.'))
         return self.cleaned_data['password']
 
     def clean_conferma_password(self):
-        if not re.match("^[A-Za-z0-9èòàùì]+$", self.cleaned_data['conferma_password']):
+        if not re.match("^[A-Za-z0-9èòàùì_\-!?&]+$", self.cleaned_data['conferma_password']):
             raise ValidationError(
                 _('Errore: la conferma password può contenere solo lettere minuscole, maiuscole e numeri.'))
         if not (3 <= len(self.cleaned_data['conferma_password']) <= 20):
@@ -127,8 +127,8 @@ class UtenteCineDateForm(forms.ModelForm):
 
     def clean_indirizzo(self):
         # controllo indirizzo
-        if not re.match("^[A-Za-z0-9/ 'èòàùì]+$", self.cleaned_data['indirizzo']):
-            raise ValidationError(_('Errore: l\'indirizzo può contenere solo lettere, numeri e /.'))
+        if not re.match("^[A-Za-z/, 0-9]+$", self.cleaned_data['indirizzo']):
+            raise ValidationError(_('Errore: l\'indirizzo può contenere solo lettere, numeri,/ o ,.'))
         if not (3 <= len(self.cleaned_data['indirizzo']) <= 50):
             raise ValidationError(_('Errore: l\'indirizzo deve avere lunghezza fra 3 e 50 caratteri.'))
         return self.cleaned_data['indirizzo']

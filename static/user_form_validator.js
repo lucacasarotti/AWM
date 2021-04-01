@@ -30,6 +30,22 @@ jQuery.validator.addMethod("date",function(value,element){
   return this.optional(element) || reg.test(value);
 },"Formato data non corretto");
 
+jQuery.validator.addMethod("username",function(value,element){
+   var reg=/^[a-zA-Z0-9_\-]+$/;
+   return this.optional(element) || reg.test(value);
+},"Formato username non corretto");
+
+jQuery.validator.addMethod("password_char",function(value,element){
+   var reg=/^[A-Za-z0-9èòàùì_\-!?&]+$/;
+   return this.optional(element) || reg.test(value);
+},"Formato password non corretto");
+
+jQuery.validator.addMethod("indirizzo",function(value,element){
+   var reg=/^^[A-Za-z/, 0-9]+$/;
+   return this.optional(element) || reg.test(value);
+},"Formato indirizzo non corretto");
+
+
 
 $( '#user-form' ).validate({
     rules: {
@@ -37,7 +53,8 @@ $( '#user-form' ).validate({
             required: true,
             minlength: 3,
             maxlength: 30,
-            username_unique: true
+            username_unique: true,
+            username:true
         },
         'email':{
             required: true,
@@ -48,12 +65,14 @@ $( '#user-form' ).validate({
         'password':{
             required: true,
             minlength: 4,
-            maxlength: 20
+            maxlength: 20,
+            password_char:true
         },
         'conferma_password':{
             equalTo: '#password',
             minlength: 4,
-            maxlength: 20
+            maxlength: 20,
+            password_char:true
         },
         'first_name': {
             required: true,
@@ -68,7 +87,8 @@ $( '#user-form' ).validate({
         'indirizzo': {
             required: true,
             minlength: 3,
-            maxlength: 50
+            maxlength: 50,
+            indirizzo:true
         },
         'citta':{
             required: true,
@@ -97,7 +117,8 @@ $( '#user-form' ).validate({
         'username':{
             required: "Il campo username è obbligatorio",
             minlength: "Scegli un username di almeno 3 lettere",
-            maxlength: "Limite di 30 caratteri superato"
+            maxlength: "Limite di 30 caratteri superato",
+            username:"L'username può contenere solo lettere, numeri, - e _"
             },
         'email':{
             required: "Il campo email è obbligatorio",
@@ -108,12 +129,14 @@ $( '#user-form' ).validate({
         'password':{
             required: "Il campo password è obbligatorio",
             minlength: "Inserisci una password di almeno 4 caratteri",
-            maxlength: "Limite di 20 caratteri superato"
+            maxlength: "Limite di 20 caratteri superato",
+            password_char:"La password può contenere lettere, numeri e i seguenti caratteri speciali: '-' '!' '_' '&' '?'"
             },
         'conferma_password':{
             equalTo: "Le due password non coincidono",
             minlength: "Inserisci una password di almeno 4 caratteri",
-            maxlength: "Limite di 20 caratteri superato"
+            maxlength: "Limite di 20 caratteri superato",
+            password_char:"La password può contenere lettere, numeri e i seguenti caratteri speciali: '-' '!' '_' '&' '?'"
             },
         'first_name': {
             required: "Il campo nome è obbligatorio",
@@ -127,7 +150,8 @@ $( '#user-form' ).validate({
         'indirizzo': {
             required: "Il campo indirizzo è obbligatorio",
             minlength: "Limite minimo di 3 caratteri",
-            maxlength: "Limite di 50 caratteri superato"
+            maxlength: "Limite di 50 caratteri superato",
+            indirizzo:"Inserire la via e il numero civico, separati da '/' o ','."
           },
         'citta':{
             required: "Il campo citta è obbligatorio",
