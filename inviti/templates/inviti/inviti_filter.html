@@ -2,9 +2,25 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
+{% block head2 %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style> #div_id_vicini_a_me{display:none;}</style>
+    <script>
+        let user = '{{ user }}';
+    </script>
+    <script>
+        $(document).ready(function(){
+            console.log(user);
+            if(typeof user !== 'undefined' && user !== 'AnonymousUser'){
+                $('#div_id_vicini_a_me').show();
+            }
+        });
+    </script>
+{% endblock head2 %}
+
 {% block content %}
     <div class="generic-container-title">
-        <h1 class="mb-3">Filtra</h1>
+            <h1 class="mb-3">Filtro Avanzato</h1>
         <form action="" method="get">
             {% crispy filter.form filter.form.helper %}
         </form>

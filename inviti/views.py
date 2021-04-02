@@ -18,7 +18,70 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from inviti.api.serializers import InvitoSerializer
 from datetime import datetime
 from itertools import chain
+from math import sin, cos, sqrt, atan2, radians
+from utenti.views import calcola_lat_lon
+from utenti.models import Profile
 
+
+def ordina_inviti(user_profile, inviti):
+    """
+    Ordina gli annunci per distanza geografica secondo la selezione fatta dall'utente.
+    :param user_profile: profilo utente.
+    :param annunci_validi: lista degli annunci che verranno mostrati.
+    :param ordina: indica se l'ordinamento deve essere crescente, decrescente o non ordinare.
+    :return: indici degli annunci ordinati.
+    """
+    lat_user = 0
+    lng_user = 0
+    if user_profile.latitudine is not None and user_profile.longitudine is not None:
+        lat_user = user_profile.latitudine
+        lng_user = user_profile.longitudine
+    distanze = []
+    indici = []
+
+    res = []
+
+    # raggio della terra approssimato, in km
+    r = 6373.0
+
+    lat1 = radians(lat_user)
+    lon1 = radians(lng_user)
+
+    # Calcola le distanze di tutti gli annunci
+    for i, annuncio in enumerate(inviti):
+        indici.append(i)
+        annuncio_profilo = Profile.objects.get(pk=annuncio.utente.id)
+
+        if annuncio_profilo.latitudine is not None and annuncio_profilo.longitudine is not None:
+            lat2 = radians(annuncio_profilo.latitudine)
+            lon2 = radians(annuncio_profilo.longitudine)
+        else:
+            lat2 = 0
+            lon2 = 0
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        d = r * c
+        distanze.append(d)
+
+    distanze, indici = (list(t) for t in zip(*sorted(zip(distanze, indici))))
+
+    inviti_ordinati = []
+    for i in indici:
+        inviti_ordinati.append(inviti[i].id)
+
+    print(inviti_ordinati)
+    '''
+    indici = get_vicini(p, queryset)
+    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(indici)])
+    qs = Invito.objects.filter(pk__in=indici).order_by(preserved)
+    '''
+
+    return inviti_ordinati
 
 def create_queryset(dict):
     query_string = ''
@@ -76,6 +139,14 @@ class ViewPaginatorMixin(object):
 
 
 def about(request):
+    profile = Profile.objects.get(pk=5)
+    lat=0
+    long=0
+    lat, long = calcola_lat_lon(request, profile)
+    print(profile)
+    print(lat)
+    print(long)
+
     return render(request, 'inviti/about.html', {'title': 'About'})
 
 
@@ -165,7 +236,7 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
     '''
 
     def get(self, request, *args, **kwargs):
-        #inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
+        # inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
         i = Q(partecipanti__username=self.kwargs.get('username'), data__gte=datetime.today())
         s = Q(partecipanti__username=self.kwargs.get('username'), data__lt=datetime.today())
         inviti = (Invito.objects.filter(i | s).annotate(
@@ -195,7 +266,7 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
 
 
 '''class UtentePrenotazioniListView2(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    
+
     model = Invito
     template_name = 'inviti/inviti_utente.html'
     context_object_name = 'inviti'
@@ -245,6 +316,7 @@ class InvitiGenere(ViewPaginatorMixin, View):
 
 class InvitiFilterView(FilterView):
     template_name = 'inviti/inviti_filter.html'
+
     filterset_class = InvitoFilter
     formhelper_class = InvitoFilterFormHelper
     paginate_by = 5
@@ -252,7 +324,7 @@ class InvitiFilterView(FilterView):
     ordering = ['data']
 
     def get_queryset(self):
-        queryset = Invito.objects.all().order_by('data')
+        queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
         self.filterset = self.filterset_class(self.request.GET, queryset=queryset)
         return self.filterset.qs.distinct()
 
@@ -271,7 +343,6 @@ class GeneriFilterView(ViewPaginatorMixin, View):
             serialized = InvitoSerializer(inviti, many=True)
             page_no = request.GET.get('page_no')
             resources = self.paginate(serialized.data, page=page_no, limit=10)
-            # print(resources)
             return JsonResponse({"resources": resources})
 
         inviti = Invito.objects.all().order_by('data')

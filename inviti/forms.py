@@ -20,7 +20,6 @@ class DateInput(forms.DateInput):
 class TimeInput(forms.TimeInput):
     input_type = 'time'
 
-# lookup_expr
 
 class InvitoForm(forms.ModelForm):
 
@@ -34,11 +33,13 @@ class InvitoForm(forms.ModelForm):
             'data': DateInput(),
             'orario': TimeInput(),
         }
+        labels = {
+            'tipologia': _('Dove?'),
+        }
 
     def __init__(self, *args, **kwargs):
         super(InvitoForm, self).__init__(*args, **kwargs)
         self.fields['tipologia'].widget.attrs.update({'id': 'tipo'})
-        self.fields['tipologia'].label = 'Dove?'
         self.fields['cinema'].widget.attrs.update({'id': 'selection_cinema'})
         self.fields['data'].widget.attrs.update({'id': 'datepicker'})
         self.helper = FormHelper()
@@ -61,22 +62,4 @@ class InvitoForm(forms.ModelForm):
             'commento',
             Submit('submit', 'Salva!', css_class="btn btn-outline-info"),
 
-        )
-
-
-class InvitoFilterFormHelper(FormHelper):
-    form_method = 'GET'
-    layout = Layout(
-            Row(
-                Column('tipologia', css_class='form-group col-md-6 mb-0'),
-                Column('film', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('data', css_class='form-group col-md-6 mb-0'),
-                Column('orario', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            InlineCheckboxes('genere'),
-            Submit('submit', 'Cerca', css_class="btn btn-outline-info"),
         )
