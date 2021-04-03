@@ -14,7 +14,6 @@ from utenti.models import Profile
 from django.db.models import Case, When, Value, IntegerField
 
 
-
 def get_vicini(user_profile, inviti, distanza_massima = 40):
     '''
     Seleziona solo gli inviti vicini all'utente per distanza geografica < distanza_massima (in km).

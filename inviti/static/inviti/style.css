@@ -360,6 +360,14 @@ img{
     padding: 0.1rem;
 }
 
+label.error {
+    color: red;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+input.form-control.error {
+    border: 1px solid red;
+}
 
 
 @media screen and (max-width: 1068px) {

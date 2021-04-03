@@ -139,14 +139,6 @@ class ViewPaginatorMixin(object):
 
 
 def about(request):
-    profile = Profile.objects.get(pk=5)
-    lat=0
-    long=0
-    lat, long = calcola_lat_lon(request, profile)
-    print(profile)
-    print(lat)
-    print(long)
-
     return render(request, 'inviti/about.html', {'title': 'About'})
 
 
@@ -234,6 +226,7 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
     Classe per visualizzare tutte le prenotazioni di un utente dalle più vicine.
     Sono visualizzati anche quelle scadute, in coda, in rosso
     '''
+    login_url = '/utenti/login/'
 
     def get(self, request, *args, **kwargs):
         # inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
@@ -381,6 +374,7 @@ class InvitoDetailView(DetailView):
 class InvitoCreateView(LoginRequiredMixin, CreateView):
     model = Invito
     form_class = InvitoForm
+    login_url = '/utenti/login/'
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -397,6 +391,7 @@ class InvitoCreateView(LoginRequiredMixin, CreateView):
 class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
     form_class = InvitoForm
+    login_url = '/utenti/login/'
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
@@ -413,6 +408,7 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Invito
     template_name = 'inviti/partecipa.html'
     fields = []
+    login_url = '/utenti/login/'
 
     def form_valid(self, form):
         redirect_url = super().form_valid(form)
@@ -438,6 +434,7 @@ class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView
     model = Invito
     template_name = 'inviti/rimuovi_partecipazione.html'
     fields = []
+    login_url = '/utenti/login/'
 
     def form_valid(self, form):
         redirect_url = super().form_valid(form)
@@ -465,6 +462,7 @@ class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Invito
     context_object_name = 'invito'
     success_url = '/inviti/'
+    login_url = '/utenti/login/'
 
     def test_func(self):
         invito = self.get_object()
