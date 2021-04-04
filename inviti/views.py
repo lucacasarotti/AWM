@@ -27,9 +27,8 @@ def ordina_inviti(user_profile, inviti):
     """
     Ordina gli annunci per distanza geografica secondo la selezione fatta dall'utente.
     :param user_profile: profilo utente.
-    :param annunci_validi: lista degli annunci che verranno mostrati.
-    :param ordina: indica se l'ordinamento deve essere crescente, decrescente o non ordinare.
-    :return: indici degli annunci ordinati.
+    :param inviti: lista degli inviti da ordinare.
+    :return: queryset con gli annunci ordinati.
     """
     lat_user = 0
     lng_user = 0
@@ -38,8 +37,6 @@ def ordina_inviti(user_profile, inviti):
         lng_user = user_profile.longitudine
     distanze = []
     indici = []
-
-    res = []
 
     # raggio della terra approssimato, in km
     r = 6373.0
@@ -70,20 +67,22 @@ def ordina_inviti(user_profile, inviti):
 
     distanze, indici = (list(t) for t in zip(*sorted(zip(distanze, indici))))
 
-    inviti_ordinati = []
+    id_ordinati = []
     for i in indici:
-        inviti_ordinati.append(inviti[i].id)
+        id_ordinati.append(inviti[i].id)
 
-    print(inviti_ordinati)
-    '''
-    indici = get_vicini(p, queryset)
-    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(indici)])
-    qs = Invito.objects.filter(pk__in=indici).order_by(preserved)
-    '''
+    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(id_ordinati)])
+    qs = Invito.objects.filter(pk__in=id_ordinati).order_by(preserved)
 
-    return inviti_ordinati
+    return qs
+
 
 def create_queryset(dict):
+    """
+    Crea un queryset di inviti basato sui parametri true del dizionario passato
+    :param dict: dizionario di parametri secondo cui filtrare gli inviti.
+    :return: queryset con gli annunci filtrati.
+    """
     query_string = ''
     for key in dict:
         if dict[key] == 'true' and key not in ['last_mod', 'page_no', 'type', 'csrfmiddlewaretoken']:
@@ -97,11 +96,16 @@ def create_queryset(dict):
         for field in fields:
             argument_list.append(Q(**{field + '__icontains': query}))
 
-    query_set = Invito.objects.filter(functools.reduce(operator.or_, argument_list)).order_by('data')
+    query_set = Invito.objects.filter(functools.reduce(operator.or_, argument_list), data__gte=datetime.today()).order_by('data')
+
     return query_set
 
 
 class ViewPaginatorMixin(object):
+    """
+    Classe di paginazione, crea un oggetto paginator e ritorna un dizionario contenente i risultati relativi
+    alla pagina richiesta
+    """
     min_limit = 1
     max_limit = 10
 
@@ -139,17 +143,13 @@ class ViewPaginatorMixin(object):
 
 
 def about(request):
-    return render(request, 'inviti/about.html', {'title': 'About'})
+    context = {
+        'title': 'About'
+    }
+    return render(request, 'inviti/about.html', context)
 
 
 # ---------------    LIST VIEWS    ---------------
-
-def home(request):
-    context = {
-        'inviti': Invito.objects.all()
-    }
-    return render(request, 'inviti/home.html', context)
-
 
 '''class InvitoListView(ListView):
     model = Invito
@@ -223,8 +223,8 @@ class InvitiUtente(ViewPaginatorMixin, View):
 
 class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorMixin, View):
     '''
-    Classe per visualizzare tutte le prenotazioni di un utente dalle più vicine.
-    Sono visualizzati anche quelle scadute, in coda, in rosso
+    Classe per visualizzare tutte le prenotazioni di un utente a partire dalle più prossime.
+    Sono visualizzate anche quelle scadute, in coda, in rosso
     '''
     login_url = '/utenti/login/'
 
@@ -308,6 +308,11 @@ class InvitiGenere(ViewPaginatorMixin, View):
 # ---------------    FILTER VIEWS    ---------------
 
 class InvitiFilterView(FilterView):
+    '''
+    Filtro avanzato sui campi 'tipologia', 'film', 'data', 'orario', 'genere'
+    Se l'utente è autenticato è presente un ulteriore campo 'vicini_a_me' che ritorna gli inviti creati da utenti
+    nel raggio di 40 km
+    '''
     template_name = 'inviti/inviti_filter.html'
 
     filterset_class = InvitoFilter
@@ -329,7 +334,10 @@ class InvitiFilterView(FilterView):
 
 
 class GeneriFilterView(ViewPaginatorMixin, View):
-
+    '''
+    Filtro solo sui generi: all'attivazione di un filtro vengono mostrati tutti gli inviti relativi ad almeno un
+    filtro selezionato (ordine per data)
+    '''
     def get(self, request):
         if request.is_ajax():
             inviti = create_queryset(request.GET)
@@ -338,7 +346,7 @@ class GeneriFilterView(ViewPaginatorMixin, View):
             resources = self.paginate(serialized.data, page=page_no, limit=10)
             return JsonResponse({"resources": resources})
 
-        inviti = Invito.objects.all().order_by('data')
+        inviti = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
         serialized = InvitoSerializer(inviti, many=True)
         resources = self.paginate(serialized.data, limit=10)
         context = {'inviti': resources['data'],
@@ -352,6 +360,12 @@ class GeneriFilterView(ViewPaginatorMixin, View):
 # ---------------    DETAIL VIEWS    ---------------
 
 class InvitoDetailView(DetailView):
+    '''
+    View di dettaglio dell'invito, visualizza tutte le informazioni di base sull'invito
+    Se l'utente è autenticato ed è l'autore l'invito può  essere modificato o eliminato, se invece è autenticato ma
+    non è l'autore allora vi è la possibilità di partecipare all'invito.
+    Tutti i partecipanti, autore compreso, hanno quindi accesso da questa pagina alla chat.
+    '''
     model = Invito
     context_object_name = 'invito'
 
@@ -372,6 +386,9 @@ class InvitoDetailView(DetailView):
 # ---------------    CREATE VIEWS    ---------------
 
 class InvitoCreateView(LoginRequiredMixin, CreateView):
+    '''
+    View di creazione dell'invito
+    '''
     model = Invito
     form_class = InvitoForm
     login_url = '/utenti/login/'
@@ -389,6 +406,9 @@ class InvitoCreateView(LoginRequiredMixin, CreateView):
 # ---------------    UPDATE VIEWS    ---------------
 
 class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    '''
+    View di update dell'invito
+    '''
     model = Invito
     form_class = InvitoForm
     login_url = '/utenti/login/'
@@ -405,6 +425,11 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    '''
+    View di partecipazione: l'utente autenticato può richiedere di partecipare se non autore dell'invito e se
+    il numero di posti rimasti è > 0.
+    Vengono quindi aggiornati il campo partecipanti dell'invito e l'elenco degli utenti partecipanti alla chat.
+    '''
     model = Invito
     template_name = 'inviti/partecipa.html'
     fields = []
@@ -431,6 +456,10 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    '''
+    View di rimozione partecipazione: l'utente autenticato che è già tra i partecipanti può annullare la prenotazione.
+    Vengono quindi aggiornati il campo partecipanti dell'invito e l'elenco degli utenti partecipanti alla chat.
+    '''
     model = Invito
     template_name = 'inviti/rimuovi_partecipazione.html'
     fields = []
@@ -459,6 +488,9 @@ class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView
 # ---------------    DELETE VIEWS    ---------------
 
 class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    '''
+    View di cancellazione dell'invito
+    '''
     model = Invito
     context_object_name = 'invito'
     success_url = '/inviti/'
