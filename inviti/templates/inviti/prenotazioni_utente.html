@@ -12,19 +12,11 @@
 
 {% block content %}
 
-    <h1 class="mb-3">Prenotazioni di {{ username }}</h1>
-
+    <legend class="border-bottom mb-4" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 2rem">Prenotazioni di {{ username }}</legend>
     <small style="color: #5f788a; display: block;">{{ results_count }} risultati trovati</small>
     <br>
 
     {% include 'inviti/inviti_list_serialized.html' %}
-
-    <div class="pagination">
-        <div class="page-item" id="fp"><a class="page-cursor" id="first" data-value="1">1</a></div>
-        <div class="page-item" id="pp"><a class="page-cursor" id="prev" data-value="0">&#8249;</a></div>
-        <div class="page-item" id="np"><a class="page-cursor" id="next" data-value="2">&#8250;</a></div>
-        <div class="page-item" id="lp"><a class="page-cursor" id="last" data-value="{{num_pages}}">{{num_pages}}</a></div>
-    </div>
-    <br>
+    {% include 'inviti/pagination.html' %}
 
 {% endblock content %}

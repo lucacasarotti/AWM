@@ -13,6 +13,7 @@ from .views import (
     InvitoRimuoviPartecipa,
     InvitiFilterView,
     GeneriFilterView,
+About
 )
 
 #app_name = 'inviti'
@@ -25,7 +26,7 @@ urlpatterns = [
     # /inviti/filtra
     path('filtra/', InvitiFilterView.as_view(), name='inviti-filter'),
     # /inviti/about/
-    path('about/', views.about, name='inviti-about'),
+    path('about/', About.as_view(), name='inviti-about'),
 
     # /inviti/invito/<id_invito>
     path('invito/<int:pk>/', InvitoDetailView.as_view(), name='invito-detail'),

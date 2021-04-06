@@ -60,7 +60,7 @@
 
             {% if invito.commento %}<p class="invito-item__text" style="margin-top: 1rem; font-style: italic; font-weight: lighter; font-size: 0.9rem;">Commento dell'utente: {{ invito.commento }}</p>{% endif %}
             {% if not invito.scaduto %}<p class="invito-item__text">Posti Rimasti: {{ invito.posti_rimasti }}/{{ invito.limite_persone }}</p>{% endif %}
-            {% if invito.posti_rimasti != invito.limite_persone %}
+            {% if user.is_authenticated and invito.posti_rimasti != invito.limite_persone %}
                 <p class="invito-item__text">Partecipanti:</p>
                 {% for p in partecipanti_attuali %}
                     <a href="{% url 'utenti:view_profile' oid=p.id %}" class="invito-item__users">{{ p }}</a>

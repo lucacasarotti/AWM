@@ -142,22 +142,41 @@ class ViewPaginatorMixin(object):
         return data
 
 
-def about(request):
+'''def about(request):
     context = {
-        'title': 'About'
+        'title': 'About',
+        'inviti': Invito.objects.filter(data__gte=datetime.today()).order_by('data')
     }
-    return render(request, 'inviti/about.html', context)
+    if request.user and request.user.is_authenticated:
+        context['user_profile'] = Profile.objects.get(pk=request.user.id)
+    return render(request, 'inviti/about.html', context)'''
+
+
+class About(ViewPaginatorMixin, View):
+    '''
+    Classe di Homepage, visualizza tutti gli inviti futuri
+    '''
+
+    def get(self, request):
+        if request.is_ajax():
+            inviti = create_queryset(request.GET)
+            serialized = InvitoSerializer(inviti, many=True)
+            page_no = request.GET.get('page_no')
+            resources = self.paginate(serialized.data, page=page_no, limit=10)
+            return JsonResponse({"resources": resources})
+
+        inviti = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+        serialized = InvitoSerializer(inviti, many=True)
+        resources = self.paginate(serialized.data, limit=10)
+
+        context = {'inviti': resources['data'], 'num_pages': resources['pages'], 'filtro_generi': True}
+        if request.user and request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=request.user.id)
+
+        return render(request, 'inviti/about.html', context=context)
 
 
 # ---------------    LIST VIEWS    ---------------
-
-'''class InvitoListView(ListView):
-    model = Invito
-    template_name = 'inviti/home.html'
-    context_object_name = 'inviti'
-    ordering = ['-data_invito']
-    paginate_by = 5'''
-
 
 class InvitiHome(ViewPaginatorMixin, View):
     '''
@@ -165,16 +184,20 @@ class InvitiHome(ViewPaginatorMixin, View):
     '''
 
     def get(self, request):
-        inviti = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
-        serialized = InvitoSerializer(inviti, many=True)
-        resources = self.paginate(serialized.data, limit=10)
-        # print(resources)
-        context = {'inviti': resources['data'], 'num_pages': resources['pages']}
-
         if request.is_ajax():
+            inviti = create_queryset(request.GET)
+            serialized = InvitoSerializer(inviti, many=True)
             page_no = request.GET.get('page_no')
             resources = self.paginate(serialized.data, page=page_no, limit=10)
             return JsonResponse({"resources": resources})
+
+        inviti = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+        serialized = InvitoSerializer(inviti, many=True)
+        resources = self.paginate(serialized.data, limit=10)
+
+        context = {'inviti': resources['data'], 'num_pages': resources['pages'], 'filtro_generi': True}
+        if request.user and request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=request.user.id)
 
         return render(request, 'inviti/home.html', context=context)
 
@@ -200,6 +223,8 @@ class InvitiUtente(ViewPaginatorMixin, View):
             'results_count': inviti.count(),
             'username': user.username,
         }
+        if request.user and request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=request.user.id)
 
         if request.is_ajax():
             page_no = request.GET.get('page_no')
@@ -242,6 +267,7 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
             'num_pages': resources['pages'],
             'results_count': inviti.count(),
             'username': self.kwargs.get('username'),
+            'user_profile': Profile.objects.get(pk=request.user.id)
         }
 
         if request.is_ajax():
@@ -297,6 +323,9 @@ class InvitiGenere(ViewPaginatorMixin, View):
             'genere': self.kwargs.get('genere'),
         }
 
+        if request.user and request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=request.user.id)
+
         if request.is_ajax():
             page_no = request.GET.get('page_no')
             resources = self.paginate(serialized.data, page=page_no, limit=5)
@@ -332,6 +361,12 @@ class InvitiFilterView(FilterView):
         filterset.form.helper = self.formhelper_class()
         return filterset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user and self.request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
+        return context
+
 
 class GeneriFilterView(ViewPaginatorMixin, View):
     '''
@@ -354,6 +389,8 @@ class GeneriFilterView(ViewPaginatorMixin, View):
                    'generi_list': GenreList.GenreList.generi_value_list,
                    'tipologie_list': TipologiaList.TipologiaList.tipologia_value_list
                    }
+        if request.user and request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=request.user.id)
         return render(request, 'inviti/generi_filter.html', context=context)
 
 
@@ -380,8 +417,10 @@ class InvitoDetailView(DetailView):
             context['room'] = room[0]
             context['users_room'] = room[0].users.all()
 
-        return context
+        if self.request.user and self.request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
 
+        return context
 
 # ---------------    CREATE VIEWS    ---------------
 
@@ -454,6 +493,12 @@ class InvitoPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user and self.request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
+        return context
+
 
 class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     '''
@@ -484,6 +529,12 @@ class InvitoRimuoviPartecipa(LoginRequiredMixin, UserPassesTestMixin, UpdateView
             return True
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user and self.request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
+        return context
+
 
 # ---------------    DELETE VIEWS    ---------------
 
@@ -501,3 +552,9 @@ class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == invito.utente:
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user and self.request.user.is_authenticated:
+            context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
+        return context

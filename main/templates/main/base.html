@@ -23,38 +23,36 @@
 
                 {% block content %}{% endblock %}
 
-                    {% if is_paginated %}
-
-                        {% if page_obj.has_previous %}
-                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=1 %}">1</a>
-                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.previous_page_number %}">&lt;</a>
-                        {% endif %}
-
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <a class="btn btn-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
-                            {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
-                                <a class="btn btn-outline-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.next_page_number %}">&gt;</a>
-                            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=paginator.num_pages %}">{{paginator.num_pages}}</a>
-                        {% endif %}
-
-                    {% endif %}
             </div>
             <!-- right column with sidebar -->
             <div class="col-md-4">
-                <div class="content-section">
+                <div class="right-col">
+                    {% if user.is_authenticated %}
+                        <div class="content-section">
+                            <img src="{{ user_profile.foto_profilo_or_default }}" class="rounded-circle" style="width: 5rem; height: 5rem; border: 0.4rem solid #9c113d; margin-right: 0.7rem;">
+                            <a style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ciao, <a style=" font-weight: bold; color: #9c113d; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">{{ user.username }}</a></a>
 
-                    <ul class="list-group" style="border-top: 1rem;">
-                        <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-home' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Prossimi Inviti</a></li>
-                        <li class="list-group-item list-group-item-light"><a href="{% url 'generi-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Inviti per Genere</a></li>
-                        <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ricerca per Film, Data...</a></li>
-                    </ul>
+                            {% if filtro_generi %}
+                                <div class="genere-filter-container" style="margin-top: 1rem;">
+                                    <div class="row-fluid">
+                                        {% for g in user_profile.generi_preferiti %}
+                                            <button class="span2 btn genere" id="{{ g }}">{{ g }}</button>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
 
+                        </div>
+                    {% endif %}
+                    <div class="content-section">
+
+                        <ul class="list-group" style="border-top: 1rem;">
+                            <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-home' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Prossimi Inviti</a></li>
+                            <li class="list-group-item list-group-item-light"><a href="{% url 'generi-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Inviti per Genere</a></li>
+                            <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ricerca per Film, Data...</a></li>
+                        </ul>
+
+                    </div>
                 </div>
             </div>
         </div>

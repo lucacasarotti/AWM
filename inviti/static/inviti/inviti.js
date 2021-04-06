@@ -54,6 +54,44 @@ $(document).ready(function() {
         $('#lp').hide();
     }
 
+    if(typeof generi !== 'undefined'){
+        if(generi.length >= 1 && generi[0] !== ""){
+            for(var i=0; i<generi.length; i++){
+                var g = generi[i];
+                $('#'+g).toggleClass('genere-filter-active');
+                params[g] = true;
+            }
+        }
+        params['page_no'] = 1;
+        //INITIAL GET
+    $.ajax({
+        'method': 'GET',
+        'url': url,
+        'data': params,
+        success: function(response) {
+            prev = response.resources.previous_page; //get prev and next page
+            next = response.resources.next_page;
+            num_pages = response.resources.pages;
+            $('#prev').attr("data-value", prev);
+            $('#next').attr("data-value", next);
+            if(num_pages===1) $('#fp').hide(); else $('#fp').show();
+            if(prev == null) $('#pp').hide(); else $('#pp').show();
+            if(next == null) $('#np').hide(); else $('#np').show();
+
+            $('#my-placeholder').html('');
+            //$('#my-placeholder').load('inviti/invito_list_serialized.html', {inviti: response.resources.data});
+            $.each(response.resources.data, function(i, val) {
+            $('#my-placeholder').append(getItem(val));
+           });
+            $(window).scrollTop(0);
+
+        },
+        error: function () {
+            alert('Error Occured');
+        }
+    });
+    }
+
     //CHANGE PAGE
     $('.page-cursor').click(function(event){
         event.preventDefault();
@@ -97,7 +135,6 @@ $(document).ready(function() {
         if($(this).hasClass('genere-filter-active')) {
             params[this.id] = true;
         } else {
-            $(this).attr("data-customVariable", "active");
             params[this.id] = false;
         }
         $.ajax({

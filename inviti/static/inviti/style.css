@@ -10,6 +10,8 @@ img{
     width: 100%;
 }
 
+
+
 .generic-container{
     width: 100%;
     padding: 2rem;
@@ -23,11 +25,11 @@ img{
 .generic-container-title{
     width: 100%;
     padding: 2rem;
-    background-color: #efeeee;
     border: dashed #d4d6d5;
     align-items: center;
     border-radius: .8rem;
     margin-bottom: 1.5rem;
+    backdrop-filter: blur(40px);
 }
 
 .invito-item{

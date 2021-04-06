@@ -1,5 +1,6 @@
 {% extends "main/base.html" %}
 {% load crispy_forms_tags %}
+{% load my_tags %}
 {% load static %}
 
 {% block head2 %}
@@ -20,63 +21,35 @@
 
 {% block content %}
     <div class="generic-container-title">
-            <h1 class="mb-3">Filtro Avanzato</h1>
+        <legend class="border-bottom mb-4" style="color: #444444; text-transform: uppercase; letter-spacing: 1px">Filtro Avanzato</legend>
         <form action="" method="get">
             {% crispy filter.form filter.form.helper %}
         </form>
     </div>
     <br>
 
-    {% for i in inviti %}
-        <div class="invito-item">
-            {% if i.tipologia == "Netflix" %}
-                <div class="invito-item__img" id="netflix-logo">
-                    <img src="{% static 'images/netflix_logo.png' %}" alt="">
-                </div>
-            {% elif i.tipologia == "Prime Video" %}
-                <div class="invito-item__img" id="prime-logo">
-                    <img src="{% static 'images/prime_logo.png' %}" alt="">
-                </div>
-            {% elif i.tipologia == "Disney+" %}
-                <div class="invito-item__img" id="disney-logo">
-                    <img src="{% static 'images/disney_logo.png' %}" alt="">
-                </div>
-            {% else %}
-                <div class="invito-item__img">
-                    <img src="{% static 'images/cinema_logo.png' %}" alt="">
-                </div>
-            {% endif %}
+    {% include 'inviti/inviti_list.html' %}
 
-            <div class="invito-item__info">
-                <div class="invito-item__user">
-                    <!--a href="% url 'inviti-utente' i.utente.username %}">{ i.utente }}</a-->
-                    <a href="{% url 'utenti:view_profile' oid=i.utente.id %}">{{ i.utente }}</a>
-                </div>
-                <div class="invito-item__date">
-                    <span>{{ i.data|date:"j/n/y" }}</span>
-                    <span>{{ i.orario|time:"G:i" }}{% if i.cinema %} - {{ i.cinema }}{% else %} - {{ i.tipologia }}{% endif %}</span>
-                </div>
-                <a href="{% url 'invito-detail' i.id %}"><h1 class="invito-item__title">{{ i.film }}</h1></a>
-                <p class="invito-item__text">Posti Rimasti: {{ i.posti_rimasti }}</p>
-                {% if i.tipologia == "Netflix" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="netflix-cta">{{ g }}</a>
-                    {% endfor %}
-                {% elif i.tipologia == "Prime Video" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="prime-cta">{{ g }}</a>
-                    {% endfor %}
-                {% elif i.tipologia == "Disney+" %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta" id="disney-cta">{{ g }}</a>
-                    {% endfor %}
-                {% else %}
-                    {% for g in i.genere %}
-                        <a href="{% url 'inviti-genere' g %}" class="invito-item__cta">{{ g }}</a>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+    {% if is_paginated %}
+
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=1 %}">1</a>
+            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.previous_page_number %}">&lt;</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                <a class="btn btn-outline-info mb-4" href="?{% param_replace page=num %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=page_obj.next_page_number %}">&gt;</a>
+            <a class="btn btn-outline-info mb-4" href="?{% param_replace page=paginator.num_pages %}">{{paginator.num_pages}}</a>
+        {% endif %}
+
+    {% endif %}
 
 {% endblock content %}
