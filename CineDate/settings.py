@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
 
     'utenti.apps.UtentiConfig',
     'main.apps.MainConfig',

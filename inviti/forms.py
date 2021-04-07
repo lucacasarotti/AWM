@@ -63,3 +63,27 @@ class InvitoForm(forms.ModelForm):
             Submit('submit', 'Salva!', css_class="btn btn-outline-info"),
 
         )
+
+    def clean_film(self):
+        # controllo campo film
+        if not re.match("^[A-Za-z0-9 .!,'èòàùì]+$", self.cleaned_data['film']):
+            raise ValidationError(_('Errore: il campo film può contenere solo lettere, '
+                                    'numeri, spazi e caratteri \"\'.!,\".'))
+        if not (1 <= len(self.cleaned_data['film']) <= 95):
+            raise ValidationError(_('Errore: il campo film deve avere lunghezza fra 1 e 95 caratteri.'))
+        return self.cleaned_data['film']
+
+    def clean_commento(self):
+        # controllo campo commento
+        if not re.match("^[A-Za-z0-9 .!,'èòàùì]+$", self.cleaned_data['commento']):
+            raise ValidationError(_('Errore: il campo commento può contenere solo lettere, '
+                                    'numeri, spazi e caratteri \"\'.!,\".'))
+        if not (1 <= len(self.cleaned_data['commento']) <= 245):
+            raise ValidationError(_('Errore: il campo commento deve avere lunghezza fra 1 e 245 caratteri.'))
+        return self.cleaned_data['commento']
+
+    def clean_data(self):
+        data = self.cleaned_data['data']
+        if data < datetime.now().date():
+            raise ValidationError(_('Errore: la data non può essere nel passato.'))
+        return self.cleaned_data['data']

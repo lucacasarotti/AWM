@@ -223,6 +223,7 @@ class InvitiUtente(ViewPaginatorMixin, View):
             'results_count': inviti.count(),
             'username': user.username,
         }
+
         if request.user and request.user.is_authenticated:
             context['user_profile'] = Profile.objects.get(pk=request.user.id)
 
@@ -232,18 +233,6 @@ class InvitiUtente(ViewPaginatorMixin, View):
             return JsonResponse({"resources": resources})
 
         return render(request, 'inviti/inviti_utente.html', context=context)
-
-
-'''class UtenteInvitiListView(ListView):
-
-    def get_queryset(self):
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Invito.objects.filter(utente=user).order_by('data')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['inviti_utente'] = True
-        return context'''
 
 
 class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorMixin, View):
@@ -282,28 +271,6 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
         if self.request.user == user_prenotazioni:
             return True
         return False
-
-
-'''class UtentePrenotazioniListView2(LoginRequiredMixin, UserPassesTestMixin, ListView):
-
-    model = Invito
-    template_name = 'inviti/inviti_utente.html'
-    context_object_name = 'inviti'
-    paginate_by = 5
-
-    def get_queryset(self):
-        return Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['inviti_utente'] = False
-        return context
-
-    def test_func(self):
-        user_prenotazioni = get_object_or_404(User, username=self.kwargs.get('username'))
-        if self.request.user == user_prenotazioni:
-            return True
-        return False'''
 
 
 class InvitiGenere(ViewPaginatorMixin, View):
