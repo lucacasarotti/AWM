@@ -85,5 +85,5 @@ class InvitoForm(forms.ModelForm):
     def clean_data(self):
         data = self.cleaned_data['data']
         if data < datetime.now().date():
-            raise ValidationError(_('Errore: la data non può essere nel passato.'))
+            raise ValidationError(_('Viaggi nel tempo per caso?'))
         return self.cleaned_data['data']

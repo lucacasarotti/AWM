@@ -55,7 +55,7 @@ def get_vicini(user_profile, inviti, distanza_massima = 40):
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
         d = r * c
-        print(d, invito.utente, invito_profilo.indirizzo)
+        # print(d, invito.utente, invito_profilo.indirizzo)
         if d < distanza_massima:
             indici.append(invito.id)
 
