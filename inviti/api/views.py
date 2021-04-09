@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from datetime import datetime
 from inviti.models import Invito
 from utenti.models import Profile, User
+from chatroom.models import Room
 from inviti.api.serializers import InvitoSerializer, InvitoSimpleSerializer, PartecipantiSerializer
 from django.core.exceptions import PermissionDenied
 from .permissions import IsCreatorOrReadOnly, IsUserLogged, IsCompatibleUser
@@ -35,7 +36,12 @@ class InvitoCreateView(generics.CreateAPIView):
     # we can add perform_create
 
     def perform_create(self, serializer):
-        serializer.save(utente=self.request.user)
+        invito = serializer.save(utente=self.request.user)
+        room = Room(title=invito.film, invito=invito)
+        room.save()
+        room.users.add(self.request.user)
+        room.save()
+
 
 
 # PATH /api/inviti/detail_read/<pk>/
@@ -93,9 +99,19 @@ class PartecipaInvito(generics.RetrieveUpdateAPIView):
             if invito.posti_rimasti > 0 and self.request.user not in invito.partecipanti.all():
                 invito.partecipanti.add(self.request.user.id)
                 invito.save()
+                room = Room.objects.filter(invito=invito)
+                if room:
+                    room = room[0]
+                    room.users.add(self.request.user)
+                    room.save()
             elif self.request.user in invito.partecipanti.all():
                 invito.partecipanti.remove(self.request.user.id)
                 invito.save()
+                room = Room.objects.filter(invito=invito)
+                if room:
+                    room = room[0]
+                    room.users.remove(self.request.user)
+                    room.save()
         else:
             raise PermissionDenied()
 

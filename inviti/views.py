@@ -389,6 +389,7 @@ class InvitoDetailView(DetailView):
 
         return context
 
+
 # ---------------    CREATE VIEWS    ---------------
 
 class InvitoCreateView(LoginRequiredMixin, CreateView):
