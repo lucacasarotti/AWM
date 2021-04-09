@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from utenti.models import Profile
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
@@ -22,10 +23,13 @@ def chat(request,room_id):
     if request.user not in room.users.all():
         raise PermissionDenied
 
+    users = Profile.objects.filter(id__in=room.users.all())
+
     context = {
         "room": room,
+        "utenti": users,
     }
-    return render(request, 'chatroom/chat.html',context=context)
+    return render(request, 'chatroom/chat.html', context=context)
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

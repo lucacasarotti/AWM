@@ -5,26 +5,21 @@
 
     <div class="container">
         <div class="page-header">
-            <h1>{{ room.title }}
-
-            </h1>
+            <legend class="border-bottom mb-4" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 2rem">CHAT: {{ room.title }}</legend>
         </div>
         <div class="row">
             <div class="col-md-4">
                 <div id="user-list" class="list-group">
-                    <a href="" class="list-group-item disabled">
-                        <h4 class="list-group-item-heading">Users</h4>
-                        {% for user in room.users.all%}
-                            <a class="list-group-item user" href="{% url 'utenti:view_profile' oid=user.pk%}">{{ user.username }}</a>
+                        <h4 class="list-group-item-heading" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem">Partecipanti</h4>
+                        {% for user in utenti %}
+                            <a class="list-group-item user" href="{% url 'utenti:view_profile' oid=user.pk%}"><img src="{{ user.foto_profilo_or_default }}" class="rounded-circle" style="width: 5rem; height: 5rem; border: 0.4rem solid #9c113d; margin-right: 0.7rem;">{{ user }}</a>
                         {% endfor %}
-                    </a>
+
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Chat</h4>
-                    </div>
+                <div class="panel panel-info" style="padding: 1rem; background: white; border-radius: 0.5rem;">
+
                     <div>
                         <ul id="messages" class="messages">
                             {# Messages go here #}
@@ -49,6 +44,7 @@
             </div>
         </div>
     </div>
+    <br>
 
     <script>
         let currentUser = '{{ request.user.username }}';

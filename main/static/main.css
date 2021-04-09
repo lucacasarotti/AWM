@@ -1,7 +1,10 @@
 body {
   color: #333333;
+  /*
   background-image: url('/static/images/blurred-bg-pattern.jpg');
   background-size: cover;
+  */
+  background-image: url('/static/images/what-the-hex.png');
   background-attachment: fixed;
 }
 

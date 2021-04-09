@@ -7,7 +7,7 @@
  <link rel="stylesheet" type="text/css" href="{% static "fontawesome/css/all.min.css" %}" />
 
     <div class="container-fluid">
-    <div class="main-body">
+    <div class="main-body" style="background: white; padding: 1rem; margin-bottom: 1rem; margin-inline: 2rem; border-radius: 1rem">
     <div class="col-md-8">
                 {% if messages %}
                     {% for message in messages %}
@@ -124,8 +124,6 @@
         </div>
 </div>
 
-
-
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -148,18 +146,15 @@
                     </div>
                     <div class="col-sm-12 col-lg-8 border-left">
                         <div class="card-body">
-                            <ul class="list-style-none" id="feedback-list" style="height: 200px; overflow-y: scroll">
-
-                            </ul>
+                            <ul class="list-style-none" id="feedback-list" style="height: 200px; overflow-y: scroll"></ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    </div>
 </div>
+    <br>
 
 <script>
     let myurl="{% url 'feedback:get_feedback' %}";

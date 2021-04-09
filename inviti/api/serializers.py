@@ -27,13 +27,16 @@ class InvitoSerializer(serializers.ModelSerializer):
 
 
 class InvitoSimpleSerializer(serializers.ModelSerializer):
-    #utente = UserSerializer()
     data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
     orario = serializers.TimeField(format="%H:%M", input_formats=['%H:%M', 'iso-8601'])
-    #posti_rimasti = serializers.ReadOnlyField()
-    #genere = StringListField()
-    #scaduto = serializers.ReadOnlyField()
+    genere = StringListField()
 
     class Meta:
         model = Invito
         fields = '__all__'
+
+
+class PartecipantiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invito
+        fields = ['partecipanti']
