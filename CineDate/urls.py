@@ -31,6 +31,9 @@ urlpatterns = [
     path('chat/', include('chatroom.urls')),
     path('feedback/',include('feedback.urls',namespace='feedback')),
     path('api/inviti/', include('inviti.api.urls', 'inviti_api')),
+    path('api/',include('API.urls',namespace='API')),
+    path('api/rest-auth/', include("rest_auth.urls")),
+    path('api/rest-auth/registration/', include("rest_auth.registration.urls")),
 
 ]
 

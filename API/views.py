@@ -163,7 +163,7 @@ class MessageModelViewSet(generics.ListCreateAPIView):
         return serializer.data
 
 
-class RetrieveMessageViewSet(generics.RetrieveModelMixin):
+class RetrieveMessageViewSet(generics.ListAPIView):
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
     authentication_classes = (CsrfExemptSessionAuthentication,)

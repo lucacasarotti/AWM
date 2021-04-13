@@ -227,7 +227,6 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
     numero_recensioni = serializers.SerializerMethodField("get_numero_recensioni_utente")
     media_voti = serializers.SerializerMethodField("get_media_voti_utente")
     foto_profilo = serializers.FileField(read_only=True)
-    foto_pet = serializers.FileField(read_only=True)
     class Meta:
         model = Profile
         fields =["user",
@@ -238,6 +237,7 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
                  "telefono",
                  "foto_profilo",
                  "guidatore",
+                 "generi_preferiti",
                  "data_nascita",
                  "posti_macchina",
                  "numero_recensioni",
