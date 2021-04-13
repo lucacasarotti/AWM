@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'rest_auth.registration',
 
     'utenti.apps.UtentiConfig',
     'main.apps.MainConfig',
@@ -209,4 +210,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
 
