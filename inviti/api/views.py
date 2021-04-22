@@ -10,9 +10,14 @@ from datetime import datetime
 from inviti.models import Invito
 from utenti.models import Profile, User
 from chatroom.models import Room
-from inviti.api.serializers import InvitoSerializer, InvitoSimpleSerializer, PartecipantiSerializer
+from inviti.api.serializers import InvitoSerializer, InvitoSimpleSerializer, PartecipantiSerializer, InvitoCreateSerializer
 from django.core.exceptions import PermissionDenied
 from .permissions import IsCreatorOrReadOnly, IsUserLogged, IsCompatibleUser
+
+
+class SmallResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
 
 
 # PATH /api/inviti/list/
@@ -20,12 +25,30 @@ class InvitiListView(generics.ListAPIView):
     '''
     API per la lista di tutti gli inviti futuri
     '''
-    queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
-    serializer_class = InvitoSimpleSerializer
+    pagination_class = SmallResultsSetPagination
+    queryset = Invito.objects.all().order_by('data')
+    # queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+    serializer_class = InvitoSerializer
 
 
 # PATH /api/inviti/create/
 class InvitoCreateView(generics.CreateAPIView):
+    '''
+    API per la creazione di un invito
+    '''
+    permission_classes = [IsUserLogged]
+    serializer_class = InvitoCreateSerializer
+    queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+
+    def perform_create(self, serializer):
+        invito = serializer.save(utente=self.request.user)
+        room = Room(title=invito.film, invito=invito)
+        room.save()
+        room.users.add(self.request.user)
+        room.save()
+
+
+class InvitoCreateViewOld(generics.CreateAPIView):
     '''
     API per la creazione di un invito
     '''
@@ -41,7 +64,6 @@ class InvitoCreateView(generics.CreateAPIView):
         room.save()
         room.users.add(self.request.user)
         room.save()
-
 
 
 # PATH /api/inviti/detail_read/<pk>/
@@ -116,7 +138,6 @@ class PartecipaInvito(generics.RetrieveUpdateAPIView):
             raise PermissionDenied()
 
 
-
 '''
 We inherit from
 - CreateModelMixin: uses method create which checks validity 
@@ -141,20 +162,3 @@ class TestView(
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-'''
-    permission_classes = (IsAuthenticated, )
-    def get(self, request, *args, **kwargs):
-        qs = Invito.objects.all()
-        serializer = InvitoSimpleSerializer(qs, many=True)
-        return Response(serializer.data)
-        
-    def post(self, request, *args, **kwargs):
-        serializer = InvitoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
-
-    def perform_create(self, serializer):
-        # we can do here things before saving instance (e.g change field)
-        serializer.save()'''
