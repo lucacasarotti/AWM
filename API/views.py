@@ -1,6 +1,7 @@
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -25,6 +26,7 @@ class userInfoLogin(generics.RetrieveAPIView):
 
     def get_object(self):
         """
+
         Modifico il query set in modo da ottenere l'utente con l'id
         prelevato dall'url
         """
@@ -150,17 +152,17 @@ class MessageModelViewSet(generics.ListCreateAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     pagination_class = MessagePagination
 
-    def get_queryset(self, request, *args, **kwargs):
+    def get_queryset(self):
+        self.queryset = self.queryset.filter(Q(recipient=self.kwargs['room_name']))
+        return self.queryset
+        #page=self.paginate_queryset(self.queryset)
 
-        self.queryset = self.queryset.filter(Q(recipient=request.GET['target']))
-        page=self.paginate_queryset(self.queryset)
+        #if page is not None:
+        #    serializer = self.get_serializer(page, many=True)
+        #    return self.get_paginated_response(serializer.data)
 
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(self.queryset, many=True)
-        return serializer.data
+        #serializer = self.get_serializer(self.queryset, many=True)
+        #return serializer.data
 
 
 class RetrieveMessageViewSet(generics.ListAPIView):
@@ -169,10 +171,33 @@ class RetrieveMessageViewSet(generics.ListAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     pagination_class = MessagePagination
 
-    def retrieve(self, request, *args, **kwargs):
-        msg = get_object_or_404(
-            self.queryset.filter(Q(recipient=kwargs['room_name']),
-                                 Q(pk=kwargs['id'])))
-        serializer = self.get_serializer(msg)
-        return serializer.data
+    def get_queryset(self):
+
+
+        msg=self.queryset.filter(Q(recipient=self.kwargs['room_name']),
+                                     Q(pk=self.kwargs['id']))
+        #serializer = self.get_serializer(msg)
+        return msg
+
+
+
+
+def check_username(request):
+    """
+    Controlla se uno username passato come parametro GET non sia già registrato nel model.
+
+    :param request: request utente.
+    :return: False (username già registrato), True (username non registrato).
+    """
+
+    if request.method == "GET":
+        p = request.GET.copy()
+        if 'username' in p:
+            name = p['username']
+            if name == request.user.username:
+                return JsonResponse({'result':True})
+            if User.objects.filter(username__iexact=name):
+                return JsonResponse({'result':False})
+            else:
+                return JsonResponse({'result':True})
 
