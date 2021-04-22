@@ -38,6 +38,7 @@ urlpatterns = [
         recensioniRicevute.as_view(),
         name='API-lista-recensioni-utente'),
 
+    path('chat/',RoomModelViewSet.as_view(),name='get-rooms'),
     path('chat/<int:room_name>/messages/', MessageModelViewSet.as_view(),
          name='get-messages'),
     path('chat/<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(),

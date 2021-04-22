@@ -21,13 +21,13 @@ class Profile(models.Model):
     regione = models.CharField(max_length=50)
     latitudine = models.FloatField(null=True, default=0, blank=True)
     longitudine = models.FloatField(null=True, default=0, blank=True)
-    telefono = models.CharField(max_length=20)
+    telefono = models.CharField(blank=True,max_length=20)
     foto_profilo = models.FileField(null=True, default='', blank=True)
 
     guidatore = models.BooleanField(default=False)
     posti_macchina=models.PositiveSmallIntegerField(default=0)
 
-    generi_preferiti =MultiSelectField(max_length=300, choices=GenreList.GenreList.ListaGeneri)
+    generi_preferiti =MultiSelectField(null=True,max_length=300, choices=GenreList.GenreList.ListaGeneri)
 
     feedback_user=models.FloatField(default=0)
     feedback_guidatore=models.FloatField(default=0)

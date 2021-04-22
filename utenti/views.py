@@ -108,6 +108,7 @@ def registrazione(request):
         profile.provincia = cineform.cleaned_data['provincia']
         profile.regione = cineform.cleaned_data['regione']
         profile.telefono = cineform.cleaned_data['telefono']
+
         profile.generi_preferiti=cineform.cleaned_data['generi_preferiti']
         profile.guidatore=cineform.cleaned_data['guidatore']
         profile.posti_macchina=cineform.cleaned_data['posti_macchina']

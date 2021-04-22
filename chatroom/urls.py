@@ -10,7 +10,7 @@ app_name = 'chatroom'
 
 urlpatterns = [
     path('<int:room_name>/messages/', MessageModelViewSet.as_view(({'get': 'list','post':'create'})),name='get-messages'),
-    path('<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(({'get': 'retrieve',})),
+    path('<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(({'get': 'retrieve'})),
          name='get-new_message'),
 
     #path('<str:room_name>/', login_required(

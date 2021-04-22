@@ -6,15 +6,16 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 
 from CineDate import settings
-from chatroom.models import MessageModel
+from chatroom.models import MessageModel,Room
 from feedback.models import Recensione
 from .permissions import *
-from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtenteNormale, MessageModelSerializer
+from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtenteNormale, MessageModelSerializer, \
+    RoomModelSerializer
 from utenti.models import Profile
 
 
@@ -125,8 +126,6 @@ class recensioniRicevute(generics.ListAPIView):
         recensioni = Recensione.objects.filter(user_recensito=recensito)
         return list(recensioni)
 
-
-
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
     SessionAuthentication scheme used by DRF. DRF's SessionAuthentication uses
@@ -137,7 +136,6 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
 
-
 class MessagePagination(PageNumberPagination):
     """
     Limit message prefetch to one page.
@@ -146,29 +144,32 @@ class MessagePagination(PageNumberPagination):
     page_size = settings.MESSAGES_TO_LOAD
 
 
+class RoomModelViewSet(generics.ListAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [IsUserLogged,]
+    def get_queryset(self):
+        rooms_trovate = self.queryset.filter(users=self.request.user)
+        return rooms_trovate
+
+
 class MessageModelViewSet(generics.ListCreateAPIView):
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (TokenAuthentication,CsrfExemptSessionAuthentication)
     pagination_class = MessagePagination
 
     def get_queryset(self):
         self.queryset = self.queryset.filter(Q(recipient=self.kwargs['room_name']))
         return self.queryset
-        #page=self.paginate_queryset(self.queryset)
 
-        #if page is not None:
-        #    serializer = self.get_serializer(page, many=True)
-        #    return self.get_paginated_response(serializer.data)
-
-        #serializer = self.get_serializer(self.queryset, many=True)
-        #return serializer.data
 
 
 class RetrieveMessageViewSet(generics.ListAPIView):
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (TokenAuthentication,CsrfExemptSessionAuthentication)
     pagination_class = MessagePagination
 
     def get_queryset(self):
@@ -176,7 +177,6 @@ class RetrieveMessageViewSet(generics.ListAPIView):
 
         msg=self.queryset.filter(Q(recipient=self.kwargs['room_name']),
                                      Q(pk=self.kwargs['id']))
-        #serializer = self.get_serializer(msg)
         return msg
 
 

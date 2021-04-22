@@ -227,6 +227,7 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
     numero_recensioni = serializers.SerializerMethodField("get_numero_recensioni_utente")
     media_voti = serializers.SerializerMethodField("get_media_voti_utente")
     foto_profilo = serializers.FileField(read_only=True)
+    generi_preferiti=serializers.CharField(max_length=500)
     class Meta:
         model = Profile
         fields =["user",
@@ -239,6 +240,7 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
                  "guidatore",
                  "generi_preferiti",
                  "data_nascita",
+                 "sesso",
                  "posti_macchina",
                  "numero_recensioni",
                  "media_voti",
@@ -322,12 +324,12 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
         instance.citta =  validated_data['citta']
         instance.regione =  validated_data['regione']
         instance.provincia =  validated_data['provincia']
-
+        instance.generi_preferiti=validated_data['generi_preferiti']
         instance.telefono =validated_data['telefono']
         instance.data_nascita=validated_data['data_nascita']
         instance.guidatore = validated_data['guidatore']
         instance.posti_macchina = validated_data['posti_macchina']
-
+        instance.sesso=validated_data['sesso']
         instance.user.save()
         instance.save()
         aggiornaLatLng(instance.user, self.context['request'])
@@ -368,7 +370,7 @@ class CompletaDatiDjangoUser(serializers.ModelSerializer):
 class CompletaRegUtenteNormale(serializers.ModelSerializer):
     user = CompletaDatiDjangoUser(many=False)
     foto_profilo = serializers.FileField(read_only=True)
-    foto_pet = serializers.FileField(read_only=True)
+    generi_preferiti=serializers.CharField(max_length=500)
     class Meta:
         model = Profile
         exclude = ("latitudine",
@@ -431,15 +433,13 @@ class CompletaRegUtenteNormale(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        print(validated_data)
         v = instance.user.username
         dati_utente = validated_data.pop('user')
         utente_richiedente = Profile.objects.get(user=instance.user)
         # username, first_name, last_name, email
-        instance.user.username = dati_utente['username']
-        instance.user.set_password(dati_utente['password'])
         instance.user.first_name = dati_utente['first_name']
         instance.user.last_name = dati_utente['last_name']
-        instance.user.email = dati_utente['email']
 
         instance.indirizzo = validated_data['indirizzo']
         instance.citta = validated_data['citta']
@@ -450,7 +450,7 @@ class CompletaRegUtenteNormale(serializers.ModelSerializer):
         instance.data_nascita = validated_data['data_nascita']
         instance.guidatore = validated_data['guidatore']
         instance.posti_macchina = validated_data['posti_macchina']
-
+        instance.generi_preferiti=validated_data['generi_preferiti']
         instance.user.save()
         instance.save()
         aggiornaLatLng(instance.user, self.context['request'])
@@ -462,6 +462,7 @@ class MessageModelSerializer(serializers.ModelSerializer):
     recipient = serializers.CharField(max_length=255)
 
     def create(self, validated_data):
+        print(self.context['request'].user)
         user = self.context['request'].user
         recipient = get_object_or_404(
             Room, id=validated_data['recipient'])
@@ -474,3 +475,8 @@ class MessageModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageModel
         fields = ('id', 'user', 'recipient', 'timestamp', 'body')
+
+class RoomModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('id','title','users')
