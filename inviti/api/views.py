@@ -26,8 +26,8 @@ class InvitiListView(generics.ListAPIView):
     API per la lista di tutti gli inviti futuri
     '''
     pagination_class = SmallResultsSetPagination
-    queryset = Invito.objects.all().order_by('data')
-    # queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+    # queryset = Invito.objects.all().order_by('data')
+    queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
     serializer_class = InvitoSerializer
 
 
@@ -85,7 +85,7 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     Questa view restituisce l'invito avente ID passato
     La modifica/delete è permessa solo in caso di utente auth e proprietario
     """
-    serializer_class = InvitoSimpleSerializer
+    serializer_class = InvitoSerializer
     permission_classes = [IsCreatorOrReadOnly]
 
     def get_object(self):
