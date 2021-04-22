@@ -45,6 +45,10 @@ def calcolaNumeroVotiUtente(profilo):
     recensioni = Recensione.objects.filter(user_recensito=utente)
     return len(recensioni)
 
+
+class StringListField(serializers.ListField):
+    genere = serializers.CharField()
+
 class UsernameOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -227,7 +231,7 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
     numero_recensioni = serializers.SerializerMethodField("get_numero_recensioni_utente")
     media_voti = serializers.SerializerMethodField("get_media_voti_utente")
     foto_profilo = serializers.FileField(read_only=True)
-    generi_preferiti=serializers.CharField(max_length=500)
+    generi_preferiti=StringListField()
     class Meta:
         model = Profile
         fields =["user",
@@ -370,7 +374,7 @@ class CompletaDatiDjangoUser(serializers.ModelSerializer):
 class CompletaRegUtenteNormale(serializers.ModelSerializer):
     user = CompletaDatiDjangoUser(many=False)
     foto_profilo = serializers.FileField(read_only=True)
-    generi_preferiti=serializers.CharField(max_length=500)
+    generi_preferiti=StringListField()
     class Meta:
         model = Profile
         exclude = ("latitudine",

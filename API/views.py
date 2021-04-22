@@ -19,6 +19,7 @@ from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRe
 from utenti.models import Profile
 
 
+
 class userInfoLogin(generics.RetrieveAPIView):
     """
     Questa view restituisce la lista completa degli utenti registrati
