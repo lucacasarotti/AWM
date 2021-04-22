@@ -59,28 +59,20 @@ class MessageModelViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
+        room = Room.objects.get(id=request.GET['target'])
 
-        self.queryset = self.queryset.filter(Q(recipient=request.GET['target']))
-        page=self.paginate_queryset(self.queryset)
+        if request.user in room.users.all():
+            self.queryset = self.queryset.filter(Q(recipient=request.GET['target']))
+            page=self.paginate_queryset(self.queryset)
 
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(self.queryset, many=True)
-        return Response(serializer.data)
-
-
-    """
-    def retrieve(self, request, *args, **kwargs):
-        msg = get_object_or_404(
-            self.queryset.filter(Q(recipient=kwargs['room_name']) |
-                                 Q(user=request.user),
-                                 Q(pk=kwargs['pk'])))
-        serializer = self.get_serializer(msg)
-        return Response(serializer.data)
-    """
-
+            serializer = self.get_serializer(self.queryset, many=True)
+            return Response(serializer.data)
+        else:
+            raise PermissionDenied
 
 
 class RetrieveMessageViewSet(ModelViewSet):
@@ -91,9 +83,14 @@ class RetrieveMessageViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def retrieve(self, request, *args, **kwargs):
-        msg = get_object_or_404(
-            self.queryset.filter(Q(recipient=kwargs['room_name']),
-                                 Q(pk=kwargs['id'])))
-        serializer = self.get_serializer(msg)
-        return Response(serializer.data)
+        room = Room.objects.get(id=kwargs['room_name'])
+        if request.user in room.users.all():
+            msg = get_object_or_404(
+                self.queryset.filter(Q(recipient=kwargs['room_name']),
+                                     Q(pk=kwargs['id'])))
+            serializer = self.get_serializer(msg)
+            return Response(serializer.data)
+        else:
+            raise PermissionDenied
+
 
