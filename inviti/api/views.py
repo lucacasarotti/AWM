@@ -48,37 +48,6 @@ class InvitoCreateView(generics.CreateAPIView):
         room.save()
 
 
-class InvitoCreateViewOld(generics.CreateAPIView):
-    '''
-    API per la creazione di un invito
-    '''
-    permission_classes = [IsUserLogged]
-    serializer_class = InvitoSimpleSerializer
-    queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
-    # no need to specify other methods (def post already done)
-    # we can add perform_create
-
-    def perform_create(self, serializer):
-        invito = serializer.save(utente=self.request.user)
-        room = Room(title=invito.film, invito=invito)
-        room.save()
-        room.users.add(self.request.user)
-        room.save()
-
-
-# PATH /api/inviti/detail_read/<pk>/
-class InvitoDetail(generics.RetrieveAPIView):
-    """
-    Questa view restituisce l'invito avente ID passato
-    Tutti possono visualizzarlo
-    """
-    serializer_class = InvitoSimpleSerializer
-
-    def get_object(self):
-        oid = self.kwargs['pk']
-        return Invito.objects.get(pk=oid)
-
-
 # PATH /api/inviti/detail/<pk>/
 class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -99,6 +68,27 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             invito.delete()
         else:
             raise PermissionDenied()
+
+
+# PATH /api/inviti/cerca/<str:titolo>/
+class CercaFilm(generics.ListAPIView):
+    serializer_class = InvitoSerializer
+
+    def get_queryset(self):
+        film = self.kwargs['titolo']
+        inviti_validi = Invito.objects.filter(data__gte=datetime.today())
+        titoli = []
+        try:
+            titolo_cercato = inviti_validi.get(film__exact=film)
+            titoli.append(titolo_cercato)
+            return titoli
+        except Exception:
+            titoli_trovati = inviti_validi.filter(film__startswith=film)
+            if len(titoli_trovati) == 0:
+                titoli_trovati = inviti_validi.filter(film__contains=film)
+            for i in titoli_trovati:
+                titoli.append(i)
+            return titoli
 
 
 # PATH /api/inviti/partecipa/<pk>/

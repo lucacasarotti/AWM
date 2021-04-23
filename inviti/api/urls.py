@@ -1,4 +1,4 @@
-from inviti.api.views import InvitiListView, TestView, InvitoCreateView, InvitoDetailUpdateDelete, PartecipaInvito
+from inviti.api.views import InvitiListView, TestView, InvitoCreateView, InvitoDetailUpdateDelete, PartecipaInvito, CercaFilm
 from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path('create/', InvitoCreateView.as_view(), name="api-create-view"),
     path('detail/<pk>/', InvitoDetailUpdateDelete.as_view(), name="api-detail-view"),
     path('partecipa/<pk>/', PartecipaInvito.as_view(), name="api-partecipa-view"),
+    path('cerca/<str:titolo>/', CercaFilm.as_view(), name='api-cerca-film'),
 
     path('test/', TestView.as_view(), name="api-test"),
 
