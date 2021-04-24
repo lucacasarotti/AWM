@@ -1,4 +1,4 @@
-from inviti.api.views import InvitiListView, TestView, InvitoCreateView, InvitoDetailUpdateDelete, PartecipaInvito, CercaFilm
+from inviti.api.views import InvitiListView, InvitoCreateView, InvitoDetailUpdateDelete, PartecipaInvito, CercaFilm, InvitiUtenteListView, PrenotazioniListView
 from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -12,7 +12,8 @@ urlpatterns = [
     path('partecipa/<pk>/', PartecipaInvito.as_view(), name="api-partecipa-view"),
     path('cerca/<str:titolo>/', CercaFilm.as_view(), name='api-cerca-film'),
 
-    path('test/', TestView.as_view(), name="api-test"),
+    path('utente/<str:username>/', InvitiUtenteListView.as_view(), name='api-inviti-utente'),
+    path('prenotazioni/<str:username>/', PrenotazioniListView.as_view(), name='api-prenotazioni-utente'),
 
     path('test/token/', obtain_auth_token, name='obtain-token'),
     path('test/api-auth/', include('rest_framework.urls')),

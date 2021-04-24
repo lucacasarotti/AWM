@@ -13,10 +13,11 @@ from chatroom.models import Room
 from inviti.api.serializers import InvitoSerializer, InvitoSimpleSerializer, PartecipantiSerializer, InvitoCreateSerializer
 from django.core.exceptions import PermissionDenied
 from .permissions import IsCreatorOrReadOnly, IsUserLogged, IsCompatibleUser
+from django.db.models import Q, Case, When, Value, IntegerField
 
 
 class SmallResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 20
     page_size_query_param = 'page_size'
 
 
@@ -78,10 +79,6 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied()
 
 
-
-
-
-
 # PATH /api/inviti/cerca/<str:titolo>/
 class CercaFilm(generics.ListAPIView):
     serializer_class = InvitoSerializer
@@ -140,27 +137,38 @@ class PartecipaInvito(generics.RetrieveUpdateAPIView):
             raise PermissionDenied()
 
 
-'''
-We inherit from
-- CreateModelMixin: uses method create which checks validity 
-- ListModelMixin: uses method list which gets qs, serializer and paginates
-'''
-class TestView(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    generics.GenericAPIView):
-    # there is also the get_serializer_class -> if it depends on the request method ecc
-    serializer_class = InvitoSimpleSerializer
-    # either you specify it ore use get queryset if it depends on the request
+# PATH /api/inviti/utente/<str:username>/
+class InvitiUtenteListView(generics.ListAPIView):
+    '''
+    API per la lista di tutti gli inviti creati da un utente
+    '''
+    pagination_class = SmallResultsSetPagination
+    # queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+    serializer_class = InvitoSerializer
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        i = Q(utente=user, data__gte=datetime.today())
+        s = Q(utente=user, data__lt=datetime.today())
+        inviti = (Invito.objects.filter(i | s).annotate(
+            search_type_ordering=Case(When(i, then=Value(1)), When(s, then=Value(0)), default=Value(-1),
+                                      output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
+        return inviti
+
+
+# PATH /api/inviti/prenotazioni/<str:username>/
+class PrenotazioniListView(generics.ListAPIView):
+    '''
+    API per la lista di tutte le prenotazioni di un utente
+    '''
+    pagination_class = SmallResultsSetPagination
     queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+    serializer_class = InvitoSerializer
 
-    # need to specify GET and POST, otherwise no method allowed
-
-    # adding ListModelMixin --> analog to get previously done with list method
-    def get(self, request, *args, **kwargs):
-        # get request --> returns response to method list
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
+    def get_queryset(self):
+        i = Q(partecipanti__username=self.kwargs.get('username'), data__gte=datetime.today())
+        s = Q(partecipanti__username=self.kwargs.get('username'), data__lt=datetime.today())
+        inviti = (Invito.objects.filter(i | s).annotate(
+            search_type_ordering=Case(When(i, then=Value(1)), When(s, then=Value(0)), default=Value(-1),
+                                      output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
+        return inviti

@@ -13,7 +13,6 @@ class StringListField(serializers.ListField):
     genere = serializers.CharField()
 
 
-
 class InvitoSerializer(serializers.ModelSerializer):
     utente = UserSerializer()
     data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
@@ -36,6 +35,7 @@ class InvitoSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invito
         fields = '__all__'
+
 
 class InvitoCreateSerializer(serializers.ModelSerializer):
     data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
