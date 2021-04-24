@@ -69,6 +69,18 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
         else:
             raise PermissionDenied()
 
+    def perform_update(self, serializer):
+        invito = self.get_object()
+        # update solo se creatore dell'annuncio
+        if invito.utente == self.request.user:
+            serializer.save()
+        else:
+            raise PermissionDenied()
+
+
+
+
+
 
 # PATH /api/inviti/cerca/<str:titolo>/
 class CercaFilm(generics.ListAPIView):
