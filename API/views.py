@@ -1,11 +1,12 @@
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-
+from datetime import datetime, timedelta
 # Create your views here.
-from rest_framework import generics
+from rest_framework import generics, exceptions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
@@ -13,6 +14,7 @@ from rest_framework.pagination import PageNumberPagination
 from CineDate import settings
 from chatroom.models import MessageModel,Room
 from feedback.models import Recensione
+from inviti.models import Invito
 from .permissions import *
 from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtenteNormale, MessageModelSerializer, \
     RoomModelSerializer
@@ -90,7 +92,7 @@ class cercaUtente(generics.ListAPIView):
 class recensisciUtente(generics.CreateAPIView):
     serializer_class = RecensioniSerializer
     permission_classes = [IsUserLogged]
-
+    message=''
     def perform_create(self, serializer):
         nickname_recensore = self.request.user.username
 
@@ -106,17 +108,32 @@ class recensisciUtente(generics.CreateAPIView):
 
         rec = Recensione.objects.filter(user_recensore=recensore, user_recensito=recensito)
         if len(rec) != 0:
-            raise PermissionDenied("hai già recensito l'utente")
+            raise exceptions.PermissionDenied(detail="Hai già recensito l'utente")
+
+        if not Invito.objects.filter(partecipanti__username=recensito, utente=recensore, \
+                                 data__lt=datetime.now() + timedelta(days=1)) | \
+                Invito.objects.filter(utente=recensito, partecipanti__username=recensore,
+                                      data__lt=datetime.now() + timedelta(days=1)) | \
+                Invito.objects.filter(partecipanti__username=recensito).filter(
+                    partecipanti__username=recensore) \
+                        .filter(data__lt=datetime.now() + timedelta(days=1)):
+            raise exceptions.PermissionDenied(detail="Prima di recensire l\'utente devi accettare un suo invito e deve essere trascorso almeno un giorno dalla visione del film")
 
         if recensito != recensore:
             serializer.save(user_recensore=recensore, user_recensito=recensito)
         else:
-            raise PermissionDenied("non puoi recensire te stesso")
+            raise exceptions.PermissionDenied(detail="Non puoi recensire te stesso")
 
+class FeedbackPagination(PageNumberPagination):
+    """
+    Limit message prefetch to one page.
+    """
+
+    page_size = 5
 
 class recensioniRicevute(generics.ListAPIView):
     serializer_class = RecensioniSerializer
-
+    pagination_class = FeedbackPagination
     def get_queryset(self):
         # lista_recensioni = []
         nickname_cercato = self.kwargs['utente']
@@ -150,8 +167,16 @@ class RoomModelViewSet(generics.ListAPIView):
     serializer_class = RoomModelSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = [IsUserLogged,]
+    pagination_class = FeedbackPagination
     def get_queryset(self):
         rooms_trovate = self.queryset.filter(users=self.request.user)
+        i = Q(id__in=rooms_trovate,invito__data__gte=datetime.today())
+        s = Q(id__in=rooms_trovate,invito__data__lt=datetime.today())
+
+        rooms_trovate = (Room.objects.filter(i | s).annotate(
+            search_type_ordering=Case(When(i, then=Value(1)), When(s, then=Value(0)), default=Value(-1),
+                                      output_field=IntegerField(), )).order_by('-search_type_ordering', 'invito__data'))
+
         return rooms_trovate
 
 
@@ -190,7 +215,6 @@ def check_username(request):
     :param request: request utente.
     :return: False (username già registrato), True (username non registrato).
     """
-
     if request.method == "GET":
         p = request.GET.copy()
         if 'username' in p:

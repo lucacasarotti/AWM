@@ -8,6 +8,7 @@ from rest_framework import serializers
 
 from chatroom.models import Room, MessageModel
 from feedback.models import Recensione
+from inviti.api.serializers import InvitoSerializer
 from utenti.models import Profile
 from utenti.views import calcola_lat_lon
 from django.utils.translation import ugettext_lazy as _
@@ -455,6 +456,7 @@ class CompletaRegUtenteNormale(serializers.ModelSerializer):
         instance.guidatore = validated_data['guidatore']
         instance.posti_macchina = validated_data['posti_macchina']
         instance.generi_preferiti=validated_data['generi_preferiti']
+        instance.sesso=validated_data['sesso']
         instance.user.save()
         instance.save()
         aggiornaLatLng(instance.user, self.context['request'])
@@ -480,7 +482,11 @@ class MessageModelSerializer(serializers.ModelSerializer):
         model = MessageModel
         fields = ('id', 'user', 'recipient', 'timestamp', 'body')
 
+
+
 class RoomModelSerializer(serializers.ModelSerializer):
+    invito=InvitoSerializer()
+
     class Meta:
         model = Room
-        fields = ('id','title','users')
+        fields = ('id','title','users','invito')
