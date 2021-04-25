@@ -1,3 +1,4 @@
+from django_filters import rest_framework
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -14,6 +15,7 @@ from inviti.api.serializers import InvitoSerializer, InvitoSimpleSerializer, Par
 from django.core.exceptions import PermissionDenied
 from .permissions import IsCreatorOrReadOnly, IsUserLogged, IsCompatibleUser
 from django.db.models import Q, Case, When, Value, IntegerField
+from static import GenreList, TipologiaList
 
 
 class SmallResultsSetPagination(PageNumberPagination):
@@ -30,6 +32,27 @@ class InvitiListView(generics.ListAPIView):
     # queryset = Invito.objects.all().order_by('data')
     queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
     serializer_class = InvitoSerializer
+
+
+class CustomFilter(rest_framework.FilterSet):
+    genere = rest_framework.MultipleChoiceFilter(choices=GenreList.GenreList.ListaGeneri, lookup_expr='icontains')
+    tipologia = rest_framework.MultipleChoiceFilter(choices=TipologiaList.TipologiaList.ListaTipologia)
+
+    class Meta:
+        model = Invito
+        fields = ('genere', 'tipologia',)
+
+
+class ProvaInvitiListView(generics.ListAPIView):
+    '''
+    API per la lista di tutti gli inviti futuri
+    '''
+    pagination_class = SmallResultsSetPagination
+    # queryset = Invito.objects.all().order_by('data')
+    queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
+    serializer_class = InvitoSerializer
+    filter_backends = (rest_framework.DjangoFilterBackend,)
+    filterset_class = CustomFilter
 
 
 # PATH /api/inviti/create/
