@@ -219,9 +219,8 @@ def check_username(request):
         p = request.GET.copy()
         if 'username' in p:
             name = p['username']
-            if name == request.user.username:
-                return JsonResponse({'result':True})
             if User.objects.filter(username__iexact=name):
+
                 return JsonResponse({'result':False})
             else:
                 return JsonResponse({'result':True})
