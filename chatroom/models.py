@@ -8,16 +8,8 @@ from inviti.models import Invito
 
 
 class Room(models.Model):
-    """
-    A room for people to chat in.
-    """
 
-    # Room title
     title = models.CharField(max_length=255)
-
-    # If only "staff" users are allowed (is_staff on django's User)
-
-
     users=models.ManyToManyField(User,related_name='iscritti', blank=True)
     invito=models.ForeignKey(Invito,related_name='invito',on_delete=models.CASCADE)
 
@@ -37,11 +29,7 @@ class Room(models.Model):
         verbose_name_plural='Rooms'
 
 class MessageModel(models.Model):
-    """
-    This class represents a chat message. It has a owner (user), timestamp and
-    the message body.
 
-    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipient = models.ForeignKey(Room, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -51,10 +39,7 @@ class MessageModel(models.Model):
         return str(self.id)
 
     def characters(self):
-        """
-        Toy function to count body characters.
-        :return: body's char number
-        """
+
         return len(self.body)
 
     def notify_ws_clients(self):
@@ -72,12 +57,9 @@ class MessageModel(models.Model):
         async_to_sync(channel_layer.group_send)("{}".format(self.recipient.id), notification)
 
     def save(self, *args, **kwargs):
-        """
-        Trims white spaces, saves the message and notifies the recipient via WS
-        if the message is new.
-        """
+
         new = self.id
-        self.body = self.body.strip()  # Trimming whitespaces from the body
+        self.body = self.body.strip()
         super(MessageModel, self).save(*args, **kwargs)
         if new is None:
             self.notify_ws_clients()

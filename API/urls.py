@@ -18,8 +18,8 @@ urlpatterns = [
 
     # completa la registrazione per un utente normale
     # /API/utenti/registra/utente-normale metodi ammessi :PUT
-    path('utenti/registra/utente-normale/', completaRegUtentenormale.as_view(),
-        name='API-registra-utente-normale'),
+    path('utenti/registra/utente/', completaRegUtente.as_view(),
+        name='API-registra-utente'),
 
     # cerca l'utente per username
     # /API/utenti/cerca/<char:name>' GET : tutti gli utenti

@@ -98,7 +98,7 @@ class UtenteCineDateForm(forms.ModelForm):
     foto_profilo = forms.ImageField(required=False,widget=ClearableFileInput)
     provincia = forms.ChoiceField(choices=GeoList.Anagrafica.ListaProvince)
     regione = forms.ChoiceField(choices=GeoList.Anagrafica.ListaRegioni)
-    telefono=forms.CharField(required=False)
+    telefono=forms.CharField()
     class Meta:
 
         model = Profile
@@ -172,38 +172,3 @@ class UtenteCineDateForm(forms.ModelForm):
             raise ValidationError(_('Errore: il numero posti macchina deve essere compresa fra 1 e 8.'))
         return self.cleaned_data['posti_macchina']
 
-
-
-"""
-class UserModifyForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name','email')
-    def clean_username(self):
-        if not re.match("^[A-Za-z0-9]+$", self.cleaned_data['username']):
-            return 'Errore: lo username può contenere solo lettere e numeri.'
-        if not (3 <= len(self.cleaned_data['username']) <= 30):
-            return 'Errore: lo username deve avere lunghezza fra 3 e 30 caratteri.'
-        return self.cleaned_data['username']
-
-    def clean_first_name(self):
-        if not re.match("^[A-Za-z 'èòàùì]+$", self.cleaned_data['first_name']):
-            raise ValidationError(_('Errore: il nome può contenere solo lettere.'))
-        if not (1 <= len(self.cleaned_data['first_name']) <= 30):
-            raise ValidationError(_('Errore: il nome deve avere lunghezza fra 1 e 30 caratteri.'))
-        return self.cleaned_data['first_name']
-
-    def clean_last_name(self):
-        # controllo cognome
-        if not re.match("^[A-Za-z 'èòàùì]+$", self.cleaned_data['last_name']):
-            raise ValidationError(_('Errore: il cognome può contenere solo lettere.'))
-        if not (1 <= len(self.cleaned_data['last_name']) <= 30):
-            raise ValidationError(_('Errore: il cognome deve avere lunghezza fra 1 e 30 caratteri.'))
-        return self.cleaned_data['last_name']
-
-    def clean_email(self):
-        # controllo email
-        if not (5 <= len(self.cleaned_data['email']) <= 50):
-            raise ValidationError(_('Errore: la mail deve essere compresa gra 5 e 50 caratteri.'))
-        return self.cleaned_data['email']
-"""

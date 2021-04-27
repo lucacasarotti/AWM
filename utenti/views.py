@@ -24,15 +24,8 @@ import requests
 
 
 def check_username(request):
-    """
-    Controlla se uno username passato come parametro GET non sia già registrato nel model.
-
-    :param request: request utente.
-    :return: False (username già registrato), True (username non registrato).
-    """
-
     if nega_accesso_senza_profilo(request):
-        return HttpResponseRedirect(reverse('utenti:scelta_profilo_oauth'))
+        return HttpResponseRedirect(reverse('utenti:oauth_utente'))
 
     if request.method == "GET":
         p = request.GET.copy()
@@ -46,7 +39,6 @@ def check_username(request):
                 return HttpResponse(True)
 
 def calcola_lat_lon(request, profile):
-
 
     response = requests.get('https://open.mapquestapi.com/geocoding/v1/address?'
                             'key=pnGtLbDVt29CZbfiqMMyjUmZHACj4gNX&location=' + profile.indirizzo.replace("/", "")
@@ -133,11 +125,7 @@ def registrazione(request):
         return HttpResponseRedirect(reverse('main:index'))
 
     return  render(request, 'utenti/registrazione.html', context)
-    #if not request.user.is_authenticated:
-    #    base_template = 'main/base_site.html'
-    #    return render(request, 'utenti/registrazione.html', {'base_template': base_template})
-    #else:
-    #    return HttpResponseRedirect(reverse('main:index'))
+
 @login_required(login_url='/utenti/login')
 def logout_user(request):
 
@@ -155,7 +143,6 @@ def view_profile(request,oid):
     user_profile = Profile.objects.filter(user=user.pk).first()
     if user_profile is None:
         raise Http404
-    #user_profile.generi_preferiti=user_profile.generi_preferiti.replace('[','').replace(']','').replace("\'",'')
 
     recensioni_num = Recensione.objects.filter(user_recensito=user).count()
     voti = Recensione.objects.all().filter(user_recensito=user).aggregate(Avg('voto'))
@@ -250,13 +237,6 @@ def edit_profile(request, oid):
 
 @login_required(login_url='/utenti/login/')
 def elimina_profilo(request, oid):
-    """
-    Permette agli utenti di eliminare il proprio profilo, mostrando prima una pagina di conferma.
-
-    :param request: request utente.
-    :param oid: id dell'utente da eliminare (con controllo che sia == all'id dell'utente loggato).
-    :return: render della pagina elimina_profilo.
-    """
 
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -272,13 +252,6 @@ def elimina_profilo(request, oid):
 
 @login_required(login_url='/utenti/login/')
 def elimina_profilo_conferma(request, oid):
-    """
-    Dopo aver confermato, elimina effettivamente il profilo utente.
-
-    :param request: request utente.
-    :param oid: id dell'utente da eliminare.
-    :return: render della pagina principale.
-    """
 
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -295,17 +268,13 @@ def elimina_profilo_conferma(request, oid):
 @login_required(login_url='/utenti/login/')
 def oauth_utente(request):
 
-
     if nega_accesso_senza_profilo(request) == False:
         Profile.objects.get(user=request.user.id)
         return HttpResponseRedirect(reverse('main:index'))
 
-    # Se la richiesta è di tipo POST, allora possiamo processare i dati
     if request.method == "POST":
-        # Creiamo l'istanza del form e la popoliamo con i dati della POST request (processo di "binding")
         cineform = UtenteCineDateForm(request.POST, request.FILES)
         if cineform.is_valid():
-            # a questo punto possiamo usare i dati validi
             utente_loggato = User.objects.get(id=request.user.id)
             profile = Profile.objects.get_or_create(user=utente_loggato)
             profile = profile[0]
@@ -334,8 +303,6 @@ def oauth_utente(request):
     else:
         cineform = UtenteCineDateForm()
 
-    # arriviamo a questo punto se si tratta della prima volta che la pagina viene richiesta(con metodo GET),
-    # o se il form non è valido e ha errori
     context = {
         "profileForm": cineform,
         "base_template": "main/base_site.html"

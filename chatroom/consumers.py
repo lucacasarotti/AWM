@@ -7,7 +7,6 @@ import json
 from django.conf import settings
 
 from chatroom.exceptions import ClientError
-from chatroom.utils import get_room_or_error
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):

@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
@@ -13,7 +13,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from CineDate import settings
 from feedback.forms import  FeedbackForm
 from feedback.models import Recensione
 from feedback.serializer import FeedbackModelSerializer
@@ -99,7 +98,16 @@ class FeedbackModelViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
+        """
+        CONTROLLARE
+        """
+        try:
+            User.objects.get(id=request.GET['user_recensito'])
+        except:
+                return HttpResponseNotFound()
+
         self.queryset = self.queryset.filter(Q(user_recensito=request.GET['user_recensito']))
+
         page=self.paginate_queryset(self.queryset)
 
         if page is not None:

@@ -134,12 +134,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AnagraficaSerializer(serializers.ModelSerializer):
-    '''
-    classe per effettuare la serializzazione dei dati.
-    I Serializers permettono la conversione di tipi di dato complessi come :
-    istanze di modelli o queryset in tipi di dato nativi di Python,
-    facilitandone il rendering in formati a noi utili come ad esempio JSON
-    '''
+
     foto_profilo = serializers.FileField(read_only=True)
 
     class Meta:
@@ -317,7 +312,6 @@ class DatiUtenteCompleti(serializers.ModelSerializer):
         v = instance.user.username
         dati_utente= validated_data.pop('user')
         utente_richiedente = Profile.objects.get(user=instance.user)
-        # username, first_name, last_name, email
         instance.user.username = dati_utente['username']
         instance.user.set_password(dati_utente['password'])
         instance.user.first_name = dati_utente['first_name']
@@ -372,7 +366,7 @@ class CompletaDatiDjangoUser(serializers.ModelSerializer):
             return data
 
 
-class CompletaRegUtenteNormale(serializers.ModelSerializer):
+class CompletaRegUtente(serializers.ModelSerializer):
     user = CompletaDatiDjangoUser(many=False)
     foto_profilo = serializers.FileField(read_only=True)
     generi_preferiti=StringListField()
@@ -438,7 +432,6 @@ class CompletaRegUtenteNormale(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        print(validated_data)
         v = instance.user.username
         dati_utente = validated_data.pop('user')
         utente_richiedente = Profile.objects.get(user=instance.user)

@@ -16,7 +16,7 @@ from chatroom.models import MessageModel,Room
 from feedback.models import Recensione
 from inviti.models import Invito
 from .permissions import *
-from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtenteNormale, MessageModelSerializer, \
+from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtente, MessageModelSerializer, \
     RoomModelSerializer
 from utenti.models import Profile
 
@@ -29,11 +29,7 @@ class userInfoLogin(generics.RetrieveAPIView):
     serializer_class = DatiUtenteCompleti
 
     def get_object(self):
-        """
 
-        Modifico il query set in modo da ottenere l'utente con l'id
-        prelevato dall'url
-        """
         oid = self.kwargs['pk']
         return Profile.objects.get(user=oid)
 
@@ -55,12 +51,12 @@ class selfUserInfoLogin(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-class completaRegUtentenormale(generics.RetrieveUpdateAPIView):
+class completaRegUtente(generics.RetrieveUpdateAPIView):
     '''
-    completa l'inserimento dei dati per un utente normale
+    completa l'inserimento dei dati per un utente
     '''
     permission_classes = [IsSameUserOrReadOnly, IsUserLogged]
-    serializer_class = CompletaRegUtenteNormale
+    serializer_class = CompletaRegUtente
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
@@ -92,7 +88,6 @@ class cercaUtente(generics.ListAPIView):
 class recensisciUtente(generics.CreateAPIView):
     serializer_class = RecensioniSerializer
     permission_classes = [IsUserLogged]
-    message=''
     def perform_create(self, serializer):
         nickname_recensore = self.request.user.username
 
@@ -124,18 +119,16 @@ class recensisciUtente(generics.CreateAPIView):
         else:
             raise exceptions.PermissionDenied(detail="Non puoi recensire te stesso")
 
-class FeedbackPagination(PageNumberPagination):
+class SmallPagination(PageNumberPagination):
     """
     Limit message prefetch to one page.
     """
-
     page_size = 5
 
 class recensioniRicevute(generics.ListAPIView):
     serializer_class = RecensioniSerializer
-    pagination_class = FeedbackPagination
+    pagination_class = SmallPagination
     def get_queryset(self):
-        # lista_recensioni = []
         nickname_cercato = self.kwargs['utente']
         try:
             recensito = User.objects.get(username=nickname_cercato)
@@ -150,7 +143,6 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     Django's session framework for authentication which requires CSRF to be
     checked. In this case we are going to disable CSRF tokens for the API.
     """
-
     def enforce_csrf(self, request):
         return
 
@@ -158,7 +150,6 @@ class MessagePagination(PageNumberPagination):
     """
     Limit message prefetch to one page.
     """
-
     page_size = settings.MESSAGES_TO_LOAD
 
 
@@ -167,7 +158,7 @@ class RoomModelViewSet(generics.ListAPIView):
     serializer_class = RoomModelSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = [IsUserLogged,]
-    pagination_class = FeedbackPagination
+    pagination_class = SmallPagination
     def get_queryset(self):
         rooms_trovate = self.queryset.filter(users=self.request.user)
         i = Q(id__in=rooms_trovate,invito__data__gte=datetime.today())
@@ -209,12 +200,6 @@ class RetrieveMessageViewSet(generics.ListAPIView):
 
 
 def check_username(request):
-    """
-    Controlla se uno username passato come parametro GET non sia già registrato nel model.
-
-    :param request: request utente.
-    :return: False (username già registrato), True (username non registrato).
-    """
     if request.method == "GET":
         p = request.GET.copy()
         if 'username' in p:

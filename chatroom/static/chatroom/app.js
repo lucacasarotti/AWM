@@ -20,9 +20,7 @@ function drawMessage(message) {
 
 function getMessageById(message) {
     id = JSON.parse(message).message;
-    console.log(myurl);
     $.getJSON(myurl+`${id}/`, function (data) {
-        console.log(data);
         drawMessage(data);
         messageList.animate({scrollTop: messageList.prop('scrollHeight')});
     });
@@ -34,7 +32,6 @@ function sendMessage(recipient, body) {
         recipient: recipient,
         body: body
     }).fail(function () {
-        alert('Error! Check console!');
     });
 }
 
@@ -44,18 +41,15 @@ $(document).ready(function () {
 
     var socket = new WebSocket(
         'ws://' + window.location.host + '/ws'+window.location.pathname);
-    console.log(socket);
     var params={};
     params['target']=currentRecipient;
-    console.log(params);
-    console.log(myurl);
+
     $.ajax({
             'method': 'GET',
             'url': myurl,
             'data': params,
             success: function (data) {
                  nextPage=data.next;
-                console.log(data);
 
                 messageList.children('.message').remove();
                 for (let i = data['results'].length - 1; i >= 0; i--) {
@@ -64,7 +58,6 @@ $(document).ready(function () {
                 messageList.animate({scrollTop: messageList.prop('scrollHeight')});
             },
             error: function (e) {
-                console.log(e);
                 alert('Error Occured');
             }
         });
@@ -84,7 +77,6 @@ $(document).ready(function () {
     });
 
     socket.onmessage = function (e) {
-        console.log(e.data);
         getMessageById(e.data);
     };
 });
@@ -98,7 +90,6 @@ $(messageList).on('scroll', function() {
        }
        var lastMsg = $('#messages:last-child');
        $.getJSON(nextPage, function (data) {
-        console.log(data);
 
         nextPage=data.next;
 

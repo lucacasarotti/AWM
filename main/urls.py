@@ -6,6 +6,5 @@ app_name='main'
 urlpatterns = [
     # /
     path('', InvitiHome.as_view(), name='index'),
-    # path('', views.index, name='index'),
 
 ]
