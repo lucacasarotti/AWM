@@ -38,7 +38,6 @@ class TestViews(TestCase):
     def test_nuovo_feedback(self):
         response = self.user_login.get(reverse('feedback:nuovo_feedback', kwargs={'oid': 1}))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'feedback/nuovo_feedback.html')
 
 
     def test_nuovo_feedback_unauthenticated(self):

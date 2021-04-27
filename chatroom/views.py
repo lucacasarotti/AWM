@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import Http404
+
 from utenti.models import Profile
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
@@ -19,7 +21,10 @@ from chatroom.serializers import MessageModelSerializer, UserModelSerializer
 
 @login_required(login_url='/utenti/login/')
 def chat(request,room_id):
-    room=Room.objects.get(id=room_id)
+    try:
+        room=Room.objects.get(id=room_id)
+    except:
+        raise Http404
     if request.user not in room.users.all():
         raise PermissionDenied
 
@@ -59,8 +64,10 @@ class MessageModelViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
-        room = Room.objects.get(id=request.GET['target'])
-
+        try:
+            room = Room.objects.get(id=request.GET['target'])
+        except:
+            raise Http404
         if request.user in room.users.all():
             self.queryset = self.queryset.filter(Q(recipient=request.GET['target']))
             page=self.paginate_queryset(self.queryset)
@@ -83,7 +90,10 @@ class RetrieveMessageViewSet(ModelViewSet):
     pagination_class = MessagePagination
 
     def retrieve(self, request, *args, **kwargs):
-        room = Room.objects.get(id=kwargs['room_name'])
+        try:
+            room = Room.objects.get(id=kwargs['room_name'])
+        except:
+            raise Http404
         if request.user in room.users.all():
             msg = get_object_or_404(
                 self.queryset.filter(Q(recipient=kwargs['room_name']),
