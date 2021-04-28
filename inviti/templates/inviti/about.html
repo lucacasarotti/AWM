@@ -1,89 +1,67 @@
 {% extends 'main/base_site.html' %}
 {% load static %}
-{% load my_tags %}
+
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{% static 'inviti/style.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.2/jquery.min.js"></script>
-    <script src="{% static 'inviti/inviti.js' %}"></script>
-
-    <style>
-    body {
-        /* The image used */
-        background-image: url({% static 'images/bg-pattern.jpg' %});
-
-        /* Center and scale the image nicely */
-
+<style>
+    .carousel-item {
+        height: 36rem;
+        color: white;
+    }
+    .container2{
+        background: #747884;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding-left: 50px;
+        padding-top: 20px;
+        padding-bottom: 30px;
+    }
+    .image{
+        background-position: center;
+        background-repeat: no-repeat;
         background-size: cover;
-        background-attachment: fixed;
     }
-    button {
-        outline: 0;
-        color: #fff;
-        background: rgba(116,120,132, 0.4);
-    }
-
-    </style>
-    <script>
-        let num_pages = {{ num_pages }};
-        let generi = '{{ user_profile.generi_preferiti }}'.split(", ");
-    </script>
+    h1{ color: whitesmoke; }
+</style>
 {% endblock head %}
 
 {% block body %}
-    <main role="main" class="container">
-        <div class="row">
-            <!-- left column with content -->
-            <div class="col-md-8">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}"></div>
-                        {{ message }}
-                    {% endfor %}
-                {% endif %}
 
-                {% include 'inviti/inviti_list_serialized.html' %}
-
-                <div class="pagination">
-                    <div class="page-item" id="fp"><a class="page-cursor" id="first" data-value="1">1</a></div>
-                    <div class="page-item" id="pp"><a class="page-cursor" id="prev" data-value="0">&#8249;</a></div>
-                    <div class="page-item" id="np"><a class="page-cursor" id="next" data-value="2">&#8250;</a></div>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" style="margin-right: 13rem; margin-left: 13rem;">
+        <ol class="carousel-indicators">
+            <li data-target="myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="myCarousel" data-slide-to="1"></li>
+            <li data-target="myCarousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" style="border-radius: 2rem; ">
+            <div class="carousel-item active image" style="background-image: url('/static/images/proiettore_image.jpg');">
+                <div class="container2">
+                    <h1>Condividi i tuoi film preferiti!</h1>
+                    <p>Crea i tuoi inviti e guarda i film che ti interessano con chi vuoi!</p>
                 </div>
-
             </div>
-            <!-- right column with sidebar -->
-            <div class="col-md-4">
-                <div class="right-col">
-                    {% if user.is_authenticated %}
-                        <div class="content-section">
-                            <img src="{{ user_profile.foto_profilo_or_default }}" class="rounded-circle" style="width: 5rem; height: 5rem; border: 0.4rem solid #9c113d;">
-                            <a style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ciao, </a>
-                            <a style=" font-weight: bold; color: #9c113d; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">{{ user.username }}</a>
-                            {% if filtro_generi %}
-                                <div class="genere-filter-container" style="margin-top: 1rem;">
-                                    <div class="row-fluid">
-                                        {% for g in user_profile.generi_preferiti %}
-                                            <button class="span2 btn genere" id="{{ g }}">{{ g }}</button>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                        </div>
-                    {% endif %}
-                    <div class="content-section">
-                        <ul class="list-group" style="border-top: 1rem;">
-                            <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-home' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Prossimi Inviti</a></li>
-                            <li class="list-group-item list-group-item-light"><a href="{% url 'generi-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Inviti per Genere</a></li>
-                            <li class="list-group-item list-group-item-light"><a href="{% url 'inviti-filter' %}" style="color: #444444; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Ricerca per Film, Data...</a></li>
-                        </ul>
-                    </div>
-
+            <div class="carousel-item image" style="background-image: url('/static/images/chilling_image.jpg');">
+                <div class="container2">
+                    <h1>Al cinema o a casa tua</h1>
+                    <p>Pianifica uscite o TeleParty sulle tue piattaforme preferite</p>
                 </div>
-
-
+            </div>
+            <div class="carousel-item image" style="background-image: url('/static/images/chat_image.jpg');">
+                <div class="container2">
+                    <h1>Chatta e fai nuove amicizie!</h1>
+                    <p>Rimani sempre collegato con i tuoi nuovi cine-friends!</p>
                 </div>
-
+            </div>
         </div>
-    </main>
+        <a href="#myCarousel" class="carousel-control-prev" role="button" data-slide="prev">
+            <span class="sr-only">Previous</span>
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </a>
+        <a href="#myCarousel" class="carousel-control-next" role="button" data-slide="next">
+            <span class="sr-only">Next</span>
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </a>
+    </div>
 
 {% endblock body %}

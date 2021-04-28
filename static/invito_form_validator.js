@@ -12,8 +12,6 @@ jQuery.validator.addMethod("safeString",function(value, element){
   return this.optional(element) || reg.test(value);
 }, "Attenzione ai caratteri");
 
-
-
 jQuery.validator.addMethod("notInThePast", function(value, element) {
     return this.optional(element) || moment(value,"DD/MM/YYYY") > moment();
 }, "Viaggi nel tempo per caso?");

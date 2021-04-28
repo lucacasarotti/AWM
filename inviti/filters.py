@@ -1,17 +1,8 @@
 import django_filters
-from django import forms
-from crispy_forms.bootstrap import InlineRadios, InlineCheckboxes
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, MultiField, Fieldset, HTML, Row, Column, Submit,Field
-from .models import *
 from .forms import *
 from static import GeoList, GenreList, CinemaList, TipologiaList
-from django.utils.translation import ugettext_lazy as _
-
 from math import sin, cos, sqrt, atan2, radians
-from utenti.views import calcola_lat_lon
 from utenti.models import Profile
-from django.db.models import Case, When, Value, IntegerField
 
 
 def get_vicini(user_profile, inviti, distanza_massima = 40):

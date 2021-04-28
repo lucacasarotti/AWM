@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from chatroom.models import Room
 from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Invito
-from .forms import InvitoForm
+from .forms import InvitoForm, InvitoFormUpdate
 from static import GeoList, GenreList, CinemaList, TipologiaList
 from django import forms
 import functools
@@ -158,20 +158,8 @@ class About(ViewPaginatorMixin, View):
     '''
 
     def get(self, request):
-        if request.is_ajax():
-            inviti = create_queryset(request.GET)
-            serialized = InvitoSerializer(inviti, many=True)
-            page_no = request.GET.get('page_no')
-            resources = self.paginate(serialized.data, page=page_no, limit=10)
-            return JsonResponse({"resources": resources})
-
-        inviti = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
-        serialized = InvitoSerializer(inviti, many=True)
-        resources = self.paginate(serialized.data, limit=10)
-
-        context = {'inviti': resources['data'], 'num_pages': resources['pages'], 'filtro_generi': True}
         if request.user and request.user.is_authenticated:
-            context['user_profile'] = Profile.objects.get(pk=request.user.id)
+            context = {'user_profile': Profile.objects.get(pk=request.user.id)}
 
         return render(request, 'inviti/about.html', context=context)
 
@@ -243,7 +231,6 @@ class PrenotazioniUtente(LoginRequiredMixin, UserPassesTestMixin, ViewPaginatorM
     login_url = '/utenti/login/'
 
     def get(self, request, *args, **kwargs):
-        # inviti = Invito.objects.filter(Q(partecipanti__username=self.kwargs.get('username'))).order_by('data')
         i = Q(partecipanti__username=self.kwargs.get('username'), data__gte=datetime.today())
         s = Q(partecipanti__username=self.kwargs.get('username'), data__lt=datetime.today())
         inviti = (Invito.objects.filter(i | s).annotate(
@@ -417,7 +404,7 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     View di update dell'invito
     '''
     model = Invito
-    form_class = InvitoForm
+    form_class = InvitoFormUpdate
     login_url = '/utenti/login/'
 
     def form_valid(self, form):
@@ -426,6 +413,7 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         invito = self.get_object()
+        print(invito.data)
         if self.request.user == invito.utente:
             return True
         return False
