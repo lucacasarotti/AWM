@@ -29,7 +29,7 @@ urlpatterns = [
     path('inviti/', include('inviti.urls')),
     url('', include('social_django.urls', namespace='social')),
     path('chat/', include('chatroom.urls')),
-    path('feedback/',include('feedback.urls',namespace='feedback')),
+    path('feedback/',include('feedback.urls', namespace='feedback')),
     path('api/inviti/', include('inviti.api.urls', 'inviti_api')),
     path('api/',include('API.urls',namespace='API')),
     path('api/rest-auth/', include("rest_auth.urls")),
@@ -42,3 +42,4 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'main.views.error_404_view'
 handler500 = 'main.views.error_500_view'
+handler403 = 'main.views.error_403_view'
