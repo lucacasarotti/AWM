@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from chatroom.models import Room
@@ -7,7 +7,6 @@ from django.views.generic import View, ListView, DetailView, CreateView, UpdateV
 from .models import Invito
 from .forms import InvitoForm, InvitoFormUpdate
 from static import GeoList, GenreList, CinemaList, TipologiaList
-from django import forms
 import functools
 import operator
 from django.db.models import Q, Case, When, Value, IntegerField
@@ -17,9 +16,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from inviti.api.serializers import InvitoSerializer
 from datetime import datetime
-from itertools import chain
 from math import sin, cos, sqrt, atan2, radians
-from utenti.views import calcola_lat_lon
 from utenti.models import Profile
 
 
@@ -158,6 +155,7 @@ class About(ViewPaginatorMixin, View):
     '''
 
     def get(self, request):
+        context = {}
         if request.user and request.user.is_authenticated:
             context = {'user_profile': Profile.objects.get(pk=request.user.id)}
 
@@ -266,6 +264,8 @@ class InvitiGenere(ViewPaginatorMixin, View):
     '''
 
     def get(self, request, *args, **kwargs):
+        if self.kwargs.get('genere') not in GenreList.GenreList.generi_value_list:
+            raise Http404("Il genere cercato non esiste")
         inviti = Invito.objects.filter(Q(genere__contains=self.kwargs.get('genere')),
                                        data__gte=datetime.today()).order_by('data')
         serialized = InvitoSerializer(inviti, many=True)

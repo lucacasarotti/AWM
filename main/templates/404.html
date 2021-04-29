@@ -1,0 +1,25 @@
+{% extends 'main/base_site.html' %}
+{% block title %}Errore 404{% endblock %}
+{% load static %}
+
+{% block head %}
+<style>
+    .outer-container{
+        margin-inline: 9rem;
+    }
+</style>
+{% endblock head %}
+
+{% block body %}
+
+    <div class="outer-container">
+        <div class="jumbotron">
+            <h1 class="display-4">Page Not Found</h1>
+            <p>Oops, la pagina che hai cercato non esiste!</p>
+            <hr class="my-4">
+            <a href="{% url 'inviti-home' %}" class="btn btn-outline-info btn-lg">Vai alla HomePage</a>
+        </div>
+    </div>
+
+
+{% endblock body %}
