@@ -1,6 +1,6 @@
 import django_filters
 from .forms import *
-from static import GeoList, GenreList, CinemaList, TipologiaList
+from static import GenreList, TipologiaList
 from math import sin, cos, sqrt, atan2, radians
 from utenti.models import Profile
 

@@ -1,11 +1,10 @@
-from django.core.exceptions import ValidationError
+from datetime import datetime
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User
-from static import GeoList, GenreList, CinemaList, TipologiaList
+from static import GenreList, TipologiaList
 from multiselectfield import MultiSelectField
-from datetime import datetime
 from . import validators
 
 

@@ -1,23 +1,73 @@
 import re
-
 import magic
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
 from chatroom.models import Room, MessageModel
 from feedback.models import Recensione
-from inviti.api.serializers import InvitoSerializer
+from inviti.models import Invito
 from utenti.models import Profile
 from utenti.views import calcola_lat_lon
-from django.utils.translation import ugettext_lazy as _
+
 
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 MIME_TYPES = ['image/jpeg', 'image/png']
 CONTENT_TYPES = ['image', 'video']
 MAX_UPLOAD_SIZE = "5242880"
+
+
+class SmallUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username',]
+
+
+class StringListField(serializers.ListField):
+    genere = serializers.CharField()
+
+
+class InvitoSerializer(serializers.ModelSerializer):
+    utente = SmallUserSerializer()
+    data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
+    orario = serializers.TimeField(format="%H:%M", input_formats=['%H:%M', 'iso-8601'])
+    posti_rimasti = serializers.ReadOnlyField()
+    genere = StringListField()
+    scaduto = serializers.ReadOnlyField()
+    partecipanti = SmallUserSerializer(many=True)
+
+    class Meta:
+        model = Invito
+        fields = '__all__'
+
+
+class InvitoSimpleSerializer(serializers.ModelSerializer):
+    data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
+    orario = serializers.TimeField(format="%H:%M", input_formats=['%H:%M', 'iso-8601'])
+    genere = StringListField()
+
+    class Meta:
+        model = Invito
+        fields = '__all__'
+
+
+class InvitoCreateSerializer(serializers.ModelSerializer):
+    data = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
+    orario = serializers.TimeField(format="%H:%M", input_formats=['%H:%M', 'iso-8601'])
+    genere = StringListField()
+
+    class Meta:
+        model = Invito
+        fields = ['data', 'orario', 'genere', 'tipologia', 'cinema', 'film', 'limite_persone', 'commento']
+
+
+class PartecipantiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invito
+        fields = ['partecipanti']
 
 
 def aggiornaLatLng(user, request):
@@ -46,9 +96,6 @@ def calcolaNumeroVotiUtente(profilo):
     recensioni = Recensione.objects.filter(user_recensito=utente)
     return len(recensioni)
 
-
-class StringListField(serializers.ListField):
-    genere = serializers.CharField()
 
 class UsernameOnlySerializer(serializers.ModelSerializer):
     class Meta:
@@ -455,6 +502,7 @@ class CompletaRegUtente(serializers.ModelSerializer):
         aggiornaLatLng(instance.user, self.context['request'])
         return instance
 
+
 class MessageModelSerializer(serializers.ModelSerializer):
 
     user = serializers.CharField(source='user.username', read_only=True)
@@ -474,7 +522,6 @@ class MessageModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageModel
         fields = ('id', 'user', 'recipient', 'timestamp', 'body')
-
 
 
 class RoomModelSerializer(serializers.ModelSerializer):

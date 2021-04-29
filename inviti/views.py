@@ -1,23 +1,24 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, Http404
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
-from chatroom.models import Room
-from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Invito
-from .forms import InvitoForm, InvitoFormUpdate
-from static import GeoList, GenreList, CinemaList, TipologiaList
 import functools
 import operator
-from django.db.models import Q, Case, When, Value, IntegerField
-from django_filters.views import FilterView
-from .filters import InvitoFilter, InvitoFilterFormHelper
-from django.http import JsonResponse
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from inviti.api.serializers import InvitoSerializer
 from datetime import datetime
 from math import sin, cos, sqrt, atan2, radians
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q, Case, When, Value, IntegerField
+from django.http import Http404, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import View, DetailView, CreateView, UpdateView, DeleteView
+from django_filters.views import FilterView
+
+from chatroom.models import Room
 from utenti.models import Profile
+from .models import Invito
+from API.serializers import InvitoSerializer
+from .forms import InvitoForm, InvitoFormUpdate
+from static import GenreList, TipologiaList
+from .filters import InvitoFilter, InvitoFilterFormHelper
 
 
 def ordina_inviti(user_profile, inviti):

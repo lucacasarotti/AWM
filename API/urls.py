@@ -1,4 +1,3 @@
-from django.conf.urls import url
 from django.urls import path
 
 from .views import *
@@ -6,6 +5,15 @@ from .views import *
 app_name = 'API'
 
 urlpatterns = [
+
+    path('inviti/list/', InvitiListView.as_view(), name="api-list-view"),
+    path('inviti/create/', InvitoCreateView.as_view(), name="api-create-view"),
+    path('inviti/detail/<pk>/', InvitoDetailUpdateDelete.as_view(), name="api-detail-view"),
+    path('inviti/partecipa/<pk>/', PartecipaInvito.as_view(), name="api-partecipa-view"),
+    path('inviti/cerca/<str:titolo>/', CercaFilm.as_view(), name='api-cerca-film'),
+
+    path('inviti/utente/<str:username>/', InvitiUtenteListView.as_view(), name='api-inviti-utente'),
+    path('inviti/prenotazioni/<str:username>/', PrenotazioniListView.as_view(), name='api-prenotazioni-utente'),
 
     # prende le informazioni di un utente
     # /API/utenti/profilo/<int:oid> metodi ammessi :GET

@@ -1,16 +1,13 @@
-from django import forms
-from django.forms import ModelForm, Textarea
-from static import CinemaList, GenreList
-from .models import Invito
-from datetime import datetime
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 import re
-from multiselectfield import MultiSelectField, MultiSelectFormField
-from crispy_forms.bootstrap import InlineRadios, InlineCheckboxes
+from datetime import datetime
+from crispy_forms.bootstrap import InlineCheckboxes
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, MultiField, Fieldset, HTML, Row, Column, Submit,Field
-from static import GeoList, GenreList, CinemaList, TipologiaList
+from crispy_forms.layout import Layout, Row, Column, Submit
+from django import forms
+from django.core.exceptions import ValidationError
+from django.forms import Textarea
+from django.utils.translation import ugettext_lazy as _
+from .models import Invito
 
 
 class DateInput(forms.DateInput):
