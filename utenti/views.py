@@ -24,6 +24,13 @@ import requests
 
 
 def check_username(request):
+    """
+    Controlla se uno username, passato come parametro GET, non sia già registrato nel model.
+
+    :param request: request utente.
+    :return: False (username già registrato), True (username non registrato).
+    """
+
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
 
@@ -39,6 +46,14 @@ def check_username(request):
                 return HttpResponse(True)
 
 def calcola_lat_lon(request, profile):
+    """
+    Dato il profilo di un utente con i dati relativi alla sua abitazione, viene fatta una query a MapQuest Open che
+    recupera latitudine e longitudine relative alla sua posizione.
+
+    :param request: request utente.
+    :param profile: profilo utente.
+    :return: latitudine, longitudine restituite dall'API.
+    """
 
     response = requests.get('https://open.mapquestapi.com/geocoding/v1/address?'
                             'key=pnGtLbDVt29CZbfiqMMyjUmZHACj4gNX&location=' + profile.indirizzo.replace("/", "")
@@ -50,6 +65,12 @@ def calcola_lat_lon(request, profile):
 
 
 def login_user(request):
+    """
+    Permette agli utenti di effettuare il login.
+
+    :param request: request utente.
+    :return: render della pagina login.
+    """
 
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('main:index'))
@@ -73,6 +94,12 @@ def login_user(request):
 
 
 def registrazione(request):
+    """
+    Permette agli utenti di registrarsi al sito.
+
+    :param request: request utente.
+    :return: render della pagina di registrazione o redirect a pagina principale.
+    """
 
     if nega_accesso_senza_profilo(request):
        return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -128,11 +155,25 @@ def registrazione(request):
 
 @login_required(login_url='/utenti/login')
 def logout_user(request):
+    """
+    Permette agli utenti di effettuare il logout.
 
+    :param request: request utente.
+    :return: render della pagina principale.
+    """
     logout(request)
     return HttpResponseRedirect(reverse('main:index'))
 
 def view_profile(request,oid):
+    """
+    Mostra il profilo di un utente, con la possibilità di visualizzare i suoi inviti, le recensioni ricevute e, se
+    profilo utente == utente loggato, di modificare o eliminare il proprio profilo.
+
+    :param request: request utente.
+    :param oid: id dell'utente di cui mostrare il profilo.
+    :return: render della pagina di visualizzazione profilo utente.
+    """
+
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
     user = User.objects.filter(id=oid).first()
@@ -163,6 +204,14 @@ def view_profile(request,oid):
 
 @login_required(login_url='/utenti/login/')
 def edit_profile(request, oid):
+    """
+    Permette agli utenti di modificare il proprio profilo, cambiando i loro dati personali.
+
+    :param request: request utente.
+    :param oid: id dell'utente di cui si vuole modificare il profilo (con controllo che sia == all'id
+    dell'utente loggato).
+    :return: render pagina modifica profilo o errore 404.
+    """
 
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -237,6 +286,13 @@ def edit_profile(request, oid):
 
 @login_required(login_url='/utenti/login/')
 def elimina_profilo(request, oid):
+    """
+    Permette agli utenti di eliminare il proprio profilo, mostrando prima una pagina di conferma.
+
+    :param request: request utente.
+    :param oid: id dell'utente da eliminare (con controllo che sia == all'id dell'utente loggato).
+    :return: render della pagina elimina_profilo o errore 404.
+    """
 
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -252,6 +308,13 @@ def elimina_profilo(request, oid):
 
 @login_required(login_url='/utenti/login/')
 def elimina_profilo_conferma(request, oid):
+    """
+    Dopo aver confermato, elimina effettivamente il profilo utente.
+
+    :param request: request utente.
+    :param oid: id dell'utente da eliminare ((con controllo che sia == all'id dell'utente loggato).
+    :return: render della pagina principale o errore 404.
+    """
 
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
@@ -267,6 +330,12 @@ def elimina_profilo_conferma(request, oid):
 
 @login_required(login_url='/utenti/login/')
 def oauth_utente(request):
+    """
+    Permette agli utenti di creare un profilo utilizzando il login con Oauth di Google.
+
+    :param request: request utente.
+    :return: render della pagina di creazione profilo.
+    """
 
     if nega_accesso_senza_profilo(request) == False:
         Profile.objects.get(user=request.user.id)

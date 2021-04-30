@@ -21,6 +21,15 @@ from chatroom.serializers import MessageModelSerializer, UserModelSerializer
 
 @login_required(login_url='/utenti/login/')
 def chat(request,room_id):
+    """
+    Permette agli utenti di accedere alla chatroom dell'invito.
+    Controlla che l'utente abbia effettivamente accesso alla chatroom (partecipazione all'invito)
+
+    :param request: request utente.
+    :param room_id: id della stanza (che corrisponde all'id dell'invito)
+    :return: render della pagina di creazione profilo o permesso negato(403).
+    """
+
     try:
         room=Room.objects.get(id=room_id)
     except:
@@ -57,6 +66,12 @@ class MessagePagination(PageNumberPagination):
 
 
 class MessageModelViewSet(ModelViewSet):
+    """
+    View che gestisce i Messaggi della room.
+    Permette di recuperare i messaggi passati (serializzati) e di inviare un nuovo messaggio.
+    Per entrambe le operazioni viene controllato che l'utente abbia il permesso
+    di inviare un messaggio in quella chat.
+    """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
     allowed_methods = ('GET', 'POST', 'HEAD', 'OPTIONS')
@@ -83,6 +98,11 @@ class MessageModelViewSet(ModelViewSet):
 
 
 class RetrieveMessageViewSet(ModelViewSet):
+    """
+    View che gestisce i messaggi inviati alla socket.
+    Controlla che la chatroom esista e che l'utente abbia permesso di accedervi.
+    In caso positivo, invia all'utente il nuovo messaggio.
+    """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
     allowed_methods = ('GET', 'POST', 'HEAD', 'OPTIONS')

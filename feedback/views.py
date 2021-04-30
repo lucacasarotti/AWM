@@ -41,10 +41,18 @@ class MessagePagination(PageNumberPagination):
 
 
 
-
-
 @login_required(login_url='/utenti/login/')
 def nuovo_feedback(request, oid):
+    """
+    Permette a un utente di inserire un feedback nei confronti di un altro utente.
+    Per poter eseguire l'operazione viene controllato che il recensito non abbia già ricevuto una recensione dal
+    recensore e che ci sia stato tra i due un invito valido (accettato e che sia passato almeno un giorno dalla data invito ).
+
+    :param request: request utente.
+    :param oid: id dell'utente recensito.
+    :return: render della pagina nuovo_feedback.
+    """
+
     if nega_accesso_senza_profilo(request):
         return HttpResponseRedirect(reverse('utenti:oauth_utente'))
 
@@ -78,8 +86,6 @@ def nuovo_feedback(request, oid):
         feedback.titolo = form.cleaned_data['titolo']
         feedback.descrizione = form.cleaned_data['descrizione']
         feedback.voto = form.cleaned_data['voto']
-        #feedback.timestamp=datetime.now()
-
         feedback.save()
 
         return HttpResponseRedirect(reverse('main:index'))
@@ -91,20 +97,24 @@ def nuovo_feedback(request, oid):
 
 
 class FeedbackModelViewSet(ModelViewSet):
+    '''
+    View per Feedback ricevuti da un utente, il cui id è passato come parametro
+    nella richiesta GET.
+    Se l'utente non esiste, viene ritornato errore 404, altrimenti vengono serializzati
+    le recensioni che ha ricevuto.
+    '''
     queryset = Recensione.objects.all()
     serializer_class = FeedbackModelSerializer
-    allowed_methods = ('GET', 'POST', 'HEAD', 'OPTIONS')
+    allowed_methods = ('GET')
     authentication_classes = (CsrfExemptSessionAuthentication,)
     pagination_class = MessagePagination
 
     def list(self, request, *args, **kwargs):
-        """
-        CONTROLLARE
-        """
+
         try:
             User.objects.get(id=request.GET['user_recensito'])
         except:
-                return HttpResponseNotFound()
+            return HttpResponseNotFound()
 
         self.queryset = self.queryset.filter(Q(user_recensito=request.GET['user_recensito']))
 
@@ -118,8 +128,12 @@ class FeedbackModelViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
+    """
+    
+    
     def retrieve(self, request, *args, **kwargs):
         feedback = get_object_or_404(
             self.queryset.filter(user_recensito=kwargs['oid']).order_by('-timestamp'))
         serializer = self.get_serializer(feedback)
         return Response(serializer.data)
+    """

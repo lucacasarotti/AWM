@@ -181,10 +181,10 @@ class PrenotazioniListView(generics.ListAPIView):
                                       output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
         return inviti
 
-
+# PATH /api/utenti/profilo/<int:pk>/
 class userInfoLogin(generics.RetrieveAPIView):
     """
-    Questa view restituisce la lista completa degli utenti registrati
+    Questa view restituisce il profilo corrispondete alla pk
     """
     serializer_class = DatiUtenteCompleti
 
@@ -193,7 +193,7 @@ class userInfoLogin(generics.RetrieveAPIView):
         oid = self.kwargs['pk']
         return Profile.objects.get(user=oid)
 
-
+# PATH /api/utenti/profilo/
 class selfUserInfoLogin(generics.RetrieveUpdateDestroyAPIView):
     '''
     restituisco di default il profilo dell'utente loggato
@@ -210,7 +210,7 @@ class selfUserInfoLogin(generics.RetrieveUpdateDestroyAPIView):
         profilo_da_eliminare.save()
         logout(self.request)
 
-
+# PATH /api/utenti/registra/utente/
 class completaRegUtente(generics.RetrieveUpdateAPIView):
     '''
     completa l'inserimento dei dati per un utente
@@ -221,8 +221,13 @@ class completaRegUtente(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
 
-
+# PATH /api/utenti/cerca/<str:name>/
 class cercaUtente(generics.ListAPIView):
+    """
+    restituisce la lista di utenti che matchano con name.
+    Prima controlla che l'utente abbia inserito l'esatto username,
+    in caso negativo rilassa il vincolo di ricerca
+    """
     serializer_class = DatiUtenteCompleti
 
     def get_queryset(self):
@@ -244,8 +249,14 @@ class cercaUtente(generics.ListAPIView):
                 profili.append(p)
             return profili
 
-
+# PATH /api/recensioni/nuova/<str:utente>/
 class recensisciUtente(generics.CreateAPIView):
+    """
+    View che permette di inserire una nuova recensione.
+    Per poter eseguire l'operazione viene controllato che il recensito non abbia già ricevuto una recensione dal
+    recensore e che ci sia stato tra i due un invito valido (accettato e che sia passato almeno un giorno dalla data invito ).
+    Controlla anche che il recensore non stia provando a recensirsi da solo.
+    """
     serializer_class = RecensioniSerializer
     permission_classes = [IsUserLogged]
 
@@ -287,8 +298,11 @@ class SmallPagination(PageNumberPagination):
     """
     page_size = 5
 
-
+# PATH /api/recensioni/ricevute/<str:utente>/
 class recensioniRicevute(generics.ListAPIView):
+    """
+    View che restituisce le recensioni ricevute da un utente
+    """
     serializer_class = RecensioniSerializer
     pagination_class = SmallPagination
 
@@ -318,8 +332,11 @@ class MessagePagination(PageNumberPagination):
     """
     page_size = settings.MESSAGES_TO_LOAD
 
-
+# PATH /api/chat/
 class RoomModelViewSet(generics.ListAPIView):
+    """
+    View che restituisce le chatroom disponibili per un utente
+    """
     queryset = Room.objects.all()
     serializer_class = RoomModelSerializer
     authentication_classes = (TokenAuthentication,)
@@ -336,8 +353,11 @@ class RoomModelViewSet(generics.ListAPIView):
 
         return rooms_trovate
 
-
+# PATH /api/chat/<int:room_name>/messages/
 class MessageModelViewSet(generics.ListCreateAPIView):
+    """
+    View che permette all'utente di recuperare i messaggi della chatroom e di inviarne di nuovi
+    """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
     authentication_classes = (TokenAuthentication,CsrfExemptSessionAuthentication)
@@ -347,8 +367,12 @@ class MessageModelViewSet(generics.ListCreateAPIView):
         self.queryset = self.queryset.filter(Q(recipient=self.kwargs['room_name']))
         return self.queryset
 
-
+# PATH /api/chat/<int:room_name>/messages/<int:id>/
 class RetrieveMessageViewSet(generics.ListAPIView):
+    """
+    View che gestisce la ricezione da parte degli utenti connessi alla websocket
+    per un nuovo messaggio
+    """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
     authentication_classes = (TokenAuthentication,CsrfExemptSessionAuthentication)
@@ -359,8 +383,14 @@ class RetrieveMessageViewSet(generics.ListAPIView):
                                      Q(pk=self.kwargs['id']))
         return msg
 
-
+# PATH /api/utento/check_username/
 def check_username(request):
+    """
+    Controlla se uno username, passato come parametro GET, non sia già registrato nel model.
+
+    :param request: request utente.
+    :return: falso se username già registrato, vero se username non registrato.
+    """
     if request.method == "GET":
         p = request.GET.copy()
         if 'username' in p:
