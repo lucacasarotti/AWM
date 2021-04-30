@@ -13,7 +13,6 @@ from utenti.models import Profile
 from utenti.views import calcola_lat_lon
 
 
-
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 MIME_TYPES = ['image/jpeg', 'image/png']
 CONTENT_TYPES = ['image', 'video']
@@ -179,7 +178,6 @@ class UserSerializer(serializers.ModelSerializer):
             return data
 
 
-
 class AnagraficaSerializer(serializers.ModelSerializer):
 
     foto_profilo = serializers.FileField(read_only=True)
@@ -246,7 +244,6 @@ class AnagraficaSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class RecensioniSerializer(serializers.ModelSerializer):
     user_recensore = serializers.CharField(max_length=30, allow_null=True, allow_blank=True, required=False)
     user_recensito = serializers.CharField(max_length=30, allow_null=True, allow_blank=True, required=False)
@@ -254,18 +251,11 @@ class RecensioniSerializer(serializers.ModelSerializer):
         model = Recensione
         fields ='__all__'
 
-    def validate_descrizione(self, data):
-        # controllo descrizione
-        if not re.match("^[A-Za-z0-9 ,.'èòàùì]+$", data):
-            raise serializers.ValidationError(_('Errore: la descrizione può contenere solo lettere, '
-                                               'numeri, punti, virgole e spazi.'))
-        return data
-
     def validate_titolo(self, data):
         if not re.match("^[A-Za-z0-9 .,'èòàùì]+$", data):
             raise serializers.ValidationError(_('Errore: il titolo può contenere solo lettere, numeri e spazi.'))
-        if not (1 <= len(data) <= 95):
-            raise serializers.ValidationError(_('Errore: il titolo deve avere lunghezza fra 1 e 95 caratteri.'))
+        if not (1 <= len(data) <= 30):
+            raise serializers.ValidationError(_('Errore: il titolo deve avere lunghezza fra 1 e 30 caratteri.'))
         return data
 
 

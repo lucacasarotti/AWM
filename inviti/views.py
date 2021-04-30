@@ -1,13 +1,12 @@
 import functools
 import operator
 from datetime import datetime
-from math import sin, cos, sqrt, atan2, radians
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Case, When, Value, IntegerField
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, DetailView, CreateView, UpdateView, DeleteView
 from django_filters.views import FilterView
@@ -20,59 +19,9 @@ from .forms import InvitoForm, InvitoFormUpdate
 from static import GenreList, TipologiaList
 from .filters import InvitoFilter, InvitoFilterFormHelper
 
-
-def ordina_inviti(user_profile, inviti):
-    """
-    Ordina gli annunci per distanza geografica secondo la selezione fatta dall'utente.
-    :param user_profile: profilo utente.
-    :param inviti: lista degli inviti da ordinare.
-    :return: queryset con gli annunci ordinati.
-    """
-    lat_user = 0
-    lng_user = 0
-    if user_profile.latitudine is not None and user_profile.longitudine is not None:
-        lat_user = user_profile.latitudine
-        lng_user = user_profile.longitudine
-    distanze = []
-    indici = []
-
-    # raggio della terra approssimato, in km
-    r = 6373.0
-
-    lat1 = radians(lat_user)
-    lon1 = radians(lng_user)
-
-    # Calcola le distanze di tutti gli annunci
-    for i, annuncio in enumerate(inviti):
-        indici.append(i)
-        annuncio_profilo = Profile.objects.get(pk=annuncio.utente.id)
-
-        if annuncio_profilo.latitudine is not None and annuncio_profilo.longitudine is not None:
-            lat2 = radians(annuncio_profilo.latitudine)
-            lon2 = radians(annuncio_profilo.longitudine)
-        else:
-            lat2 = 0
-            lon2 = 0
-
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-
-        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-        c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-        d = r * c
-        distanze.append(d)
-
-    distanze, indici = (list(t) for t in zip(*sorted(zip(distanze, indici))))
-
-    id_ordinati = []
-    for i in indici:
-        id_ordinati.append(inviti[i].id)
-
-    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(id_ordinati)])
-    qs = Invito.objects.filter(pk__in=id_ordinati).order_by(preserved)
-
-    return qs
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
 
 
 def create_queryset(dict):
@@ -138,16 +87,6 @@ class ViewPaginatorMixin(object):
             'data': list(objects),
         }
         return data
-
-
-'''def about(request):
-    context = {
-        'title': 'About',
-        'inviti': Invito.objects.filter(data__gte=datetime.today()).order_by('data')
-    }
-    if request.user and request.user.is_authenticated:
-        context['user_profile'] = Profile.objects.get(pk=request.user.id)
-    return render(request, 'inviti/about.html', context)'''
 
 
 class About(ViewPaginatorMixin, View):
@@ -410,11 +349,28 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.utente = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        '''invito = self.get_object()
+        for p in invito.partecipanti.all():
+            template = render_to_string(
+                'inviti/email_update.html',
+                {
+                    'name': p,
+                    'invito': invito,
+                }
+            )
+            email = EmailMessage(
+                'Attenzione! Prenotazione modificata',
+                template,
+                settings.EMAIL_HOST_USER,
+                [p.email]
+                )
+            email.fail_silently = False
+            email.send()'''
+        return response
 
     def test_func(self):
         invito = self.get_object()
-        print(invito.data)
         if self.request.user == invito.utente:
             return True
         return False
@@ -515,3 +471,25 @@ class InvitoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user and self.request.user.is_authenticated:
             context['user_profile'] = Profile.objects.get(pk=self.request.user.id)
         return context
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        '''for p in self.object.partecipanti.all():
+            template = render_to_string(
+                'inviti/email_delete.html',
+                {
+                    'name': p,
+                    'invito': self.object,
+                }
+            )
+            email = EmailMessage(
+                'Attenzione! Prenotazione rimossa',
+                template,
+                settings.EMAIL_HOST_USER,
+                [p.email]
+            )
+            email.fail_silently = False
+            email.send()'''
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
