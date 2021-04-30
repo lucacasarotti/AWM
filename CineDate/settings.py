@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'inviti.apps.InvitiConfig',
     'chatroom.apps.ChatroomConfig',
     'feedback.apps.FeedbackConfig',
+    'contactus.apps.ContactusConfig',
     'crispy_forms',
     'multiselectfield',
     'django_static_fontawesome',
@@ -225,4 +226,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-

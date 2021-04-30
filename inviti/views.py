@@ -350,7 +350,7 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         form.instance.utente = self.request.user
         response = super().form_valid(form)
-        '''invito = self.get_object()
+        invito = self.get_object()
         for p in invito.partecipanti.all():
             template = render_to_string(
                 'inviti/email_update.html',
@@ -365,8 +365,12 @@ class InvitoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 settings.EMAIL_HOST_USER,
                 [p.email]
                 )
-            email.fail_silently = False
-            email.send()'''
+            try:
+                email.fail_silently = True
+                email.send()
+            except TimeoutError:
+                print('Email was probably not valid')
+
         return response
 
     def test_func(self):
