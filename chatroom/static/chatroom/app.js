@@ -5,13 +5,14 @@ let nextPage='';
 function drawMessage(message) {
     let position = 'left';
     const date = new Date(message.timestamp);
+    const date_formatted = date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
     if (message.user === currentUser) position = 'right';
     const messageItem = `
             <li class="message ${position}">
                 <div class="avatar">${message.user}</div>
                     <div class="text_wrapper">
                         <div class="text">${message.body}<br>
-                            <span class="small">${date}</span>
+                            <span class="small" style="font-size: 10px">${date_formatted}</span>
                     </div>
                 </div>
             </li>`;
