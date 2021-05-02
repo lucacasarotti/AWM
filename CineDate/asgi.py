@@ -15,6 +15,10 @@ from django.core.asgi import get_asgi_application
 import chatroom.routing
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CineDate.settings')
 
+"""
+applicazione ASGI che dice a Channels che codice eseguire quando una
+richiesta HTTP è ricevuta dal server Channels
+"""
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
