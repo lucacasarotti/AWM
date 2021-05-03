@@ -17,7 +17,6 @@ from .views import (
 
 #app_name = 'inviti'
 urlpatterns = [
-    #path('', views.home, name='inviti-home'),
     # /inviti/
     path('', InvitiHome.as_view(), name='inviti-home'),
     # /inviti/nuovo

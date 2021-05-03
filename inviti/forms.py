@@ -19,7 +19,6 @@ class TimeInput(forms.TimeInput):
 
 
 class InvitoForm(forms.ModelForm):
-
     class Meta:
         model = Invito
         fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'limite_persone', 'genere', 'commento']
@@ -87,7 +86,6 @@ class InvitoForm(forms.ModelForm):
 
 
 class InvitoFormUpdate(forms.ModelForm):
-
     class Meta:
         model = Invito
         fields = ['tipologia', 'cinema', 'film', 'data', 'orario', 'genere', 'commento']

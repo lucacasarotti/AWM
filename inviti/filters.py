@@ -8,6 +8,7 @@ from utenti.models import Profile
 def get_vicini(user_profile, inviti, distanza_massima = 40):
     '''
     Seleziona solo gli inviti vicini all'utente per distanza geografica < distanza_massima (in km).
+
     :param user_profile: profilo utente.
     :param inviti: queryset contenente gli inviti da filtrare.
     :param distanza_massima: indica la massima distanza per cui filtrare gli inviti.
@@ -46,7 +47,6 @@ def get_vicini(user_profile, inviti, distanza_massima = 40):
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
         d = r * c
-        # print(d, invito.utente, invito_profilo.indirizzo)
         if d < distanza_massima:
             indici.append(invito.id)
 
@@ -75,10 +75,10 @@ class InvitoFilter(django_filters.FilterSet):
         self.filters['vicini_a_me'].label = 'Solo inviti vicini a me'
 
     def vicini(self, queryset, name, value):
-        '''
+        """
         Se l'utente è autenticato e il parametro è selezionato ritorna un
-        queryset ristretto agli inviti nel raggio di 30 km
-        '''
+        queryset ristretto agli inviti nel raggio di 40 km
+        """
         user = getattr(self.request, 'user', None)
         if user and user.is_authenticated and value:
             p = Profile.objects.get(pk=user.id)
