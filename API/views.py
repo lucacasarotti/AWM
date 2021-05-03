@@ -21,6 +21,9 @@ from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRe
 from utenti.models import Profile
 from inviti.filters import InvitoFilter
 
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+
 
 class SmallResultsSetPagination(PageNumberPagination):
     """
@@ -78,6 +81,22 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
         invito = Invito.objects.get(pk=instance.pk)
         # elimina solo se creatore dell'annuncio
         if invito.utente == self.request.user:
+            '''for p in invito.partecipanti.all():
+                template = render_to_string(
+                    'inviti/email_delete.html',
+                    {
+                        'name': p,
+                        'invito': invito,
+                    }
+                )
+                email = EmailMessage(
+                    'Attenzione! Prenotazione rimossa',
+                    template,
+                    settings.EMAIL_HOST_USER,
+                    [p.email]
+                )
+                email.fail_silently = False
+                email.send()'''
             invito.delete()
         else:
             raise PermissionDenied()
@@ -87,6 +106,25 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
         # update solo se creatore dell'annuncio
         if invito.utente == self.request.user:
             serializer.save()
+            '''for p in invito.partecipanti.all():
+                template = render_to_string(
+                    'inviti/email_update.html',
+                    {
+                        'name': p,
+                        'invito': invito,
+                    }
+                )
+                email = EmailMessage(
+                    'Attenzione! Prenotazione modificata',
+                    template,
+                    settings.EMAIL_HOST_USER,
+                    [p.email]
+                )
+                try:
+                    email.fail_silently = True
+                    email.send()
+                except TimeoutError:
+                    print('Email was probably not valid')'''
         else:
             raise PermissionDenied()
 
