@@ -13,6 +13,8 @@
                         {% csrf_token %}
                         <fieldset class="form-group">
                             <legend class="border-bottom mb-4">Contattaci!</legend>
+                            <div style="font-size: small; color: gray; letter-spacing: 1px">Hai qualche suggerimento da darci? Facci sapere quello che pensi!</div>
+                            <br>
                             {% crispy form %}
                             <button type="submit" class="btn btn-outline-info">Invia</button>
                         </fieldset>
