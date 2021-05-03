@@ -1,4 +1,3 @@
-
 class GenreList:
     ListaGeneri=[("Animazione", "Animazione"), ("Avventura", "Avventura"), ("Azione", "Azione"),
                  ("Biografico", "Biografico"), ("Commedia", "Commedia"),

@@ -1,6 +1,5 @@
-
 class TipologiaList:
-    ListaTipologia=[
+    ListaTipologia = [
         ('Cinema', 'Cinema'),
         ('Netflix', 'Netflix'),
         ('Prime Video', 'Prime Video'),
