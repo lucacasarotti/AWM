@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class IsSameAnagraficaUserOrReadOnly(permissions.BasePermission):
     """
-    update e delete concessi solo ai proprietari dei dati loggati.
+    Update e delete concessi solo ai proprietari dei dati loggati.
     """
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -17,7 +17,7 @@ class IsSameAnagraficaUserOrReadOnly(permissions.BasePermission):
 
 class IsSameUserOrReadOnly(permissions.BasePermission):
     """
-    update e delete concessi solo ai proprietari dei dati loggati.
+    Update e delete concessi solo ai proprietari dei dati loggati.
     """
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
@@ -39,7 +39,7 @@ class IsUserLogged(permissions.BasePermission):
 
 class IsCreatorOrReadOnly(permissions.BasePermission):
     """
-    update e delete concessi solo ai creatori degli inviti.
+    Update e delete concessi solo ai creatori degli inviti.
     """
     def has_object_permission(self, request, view, obj):
         # permesso a tutti il get
@@ -51,7 +51,7 @@ class IsCreatorOrReadOnly(permissions.BasePermission):
 
 class IsCompatibleUser(permissions.BasePermission):
     '''
-    Controllo che la persona che vuole partecipare all'invito non sia già iscritto e non sia il proprietario
+    Controllo che la persona che vuole partecipare all'invito non sia già iscritta e non sia il proprietario
     '''
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

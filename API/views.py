@@ -17,21 +17,25 @@ from feedback.models import Recensione
 from inviti.models import Invito
 from .permissions import *
 from API.serializers import DatiUtenteCompleti, RecensioniSerializer, CompletaRegUtente, MessageModelSerializer, \
-    RoomModelSerializer, InvitoSerializer, InvitoCreateSerializer, InvitoSimpleSerializer, PartecipantiSerializer
+    RoomModelSerializer, InvitoSerializer, InvitoCreateSerializer, PartecipantiSerializer
 from utenti.models import Profile
 from inviti.filters import InvitoFilter
 
 
 class SmallResultsSetPagination(PageNumberPagination):
+    """
+    Paginazione customizzata a 20 risultati.
+    """
     page_size = 20
     page_size_query_param = 'page_size'
 
 
 # PATH /api/inviti/list/
 class InvitiListView(generics.ListAPIView):
-    '''
-    API per la lista di tutti gli inviti futuri
-    '''
+    """
+    API per la lista di tutti gli inviti futuri.
+    La richiesta segue il filtraggio specificao in InvitoFilter.
+    """
     pagination_class = SmallResultsSetPagination
     # queryset = Invito.objects.all().order_by('data')
     queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
@@ -42,9 +46,9 @@ class InvitiListView(generics.ListAPIView):
 
 # PATH /api/inviti/create/
 class InvitoCreateView(generics.CreateAPIView):
-    '''
-    API per la creazione di un invito
-    '''
+    """
+    API per la creazione di un invito e room corrispondente.
+    """
     permission_classes = [IsUserLogged]
     serializer_class = InvitoCreateSerializer
     queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
@@ -60,8 +64,8 @@ class InvitoCreateView(generics.CreateAPIView):
 # PATH /api/inviti/detail/<pk>/
 class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     """
-    Questa view restituisce l'invito avente ID passato
-    La modifica/delete è permessa solo in caso di utente auth e proprietario
+    La view restituisce l'invito avente ID passato.
+    La modifica/delete è permessa solo in caso di utente auth e proprietario.
     """
     serializer_class = InvitoSerializer
     permission_classes = [IsCreatorOrReadOnly]
@@ -89,6 +93,10 @@ class InvitoDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 # PATH /api/inviti/cerca/<str:titolo>/
 class CercaFilm(generics.ListAPIView):
+    """
+    La view restituisce la lista di inviti il cui film matcha con la stringa titolo passata come parametro.
+    Prima controlla che il match esatto, in caso negativo il vincolo di ricerca viene rilassato.
+    """
     serializer_class = InvitoSerializer
 
     def get_queryset(self):
@@ -108,10 +116,11 @@ class CercaFilm(generics.ListAPIView):
             return titoli
 
 
-# PATH /api/inviti/partecipa/<pk>/
+# PATH /api/inviti/partecipa/<int:pk>/
 class PartecipaInvito(generics.RetrieveUpdateAPIView):
     """
-    Questa view serve per partecipare all'invito se non si è già tra i partecipanti oppure per disiscriversi se lo si è già
+    Questa view serve per gestire la partecipazione ad un invito.
+    L'utente autenticato è aggiunto ai partecipanti se non compare nella lista altrimenti viene disiscritto.
     """
     serializer_class = PartecipantiSerializer
     permission_classes = [IsCompatibleUser, IsUserLogged]
@@ -147,9 +156,9 @@ class PartecipaInvito(generics.RetrieveUpdateAPIView):
 
 # PATH /api/inviti/utente/<str:username>/
 class InvitiUtenteListView(generics.ListAPIView):
-    '''
-    API per la lista di tutti gli inviti creati da un utente
-    '''
+    """
+    API per la lista di tutti gli inviti creati dall'utente corrispondente allo username passato come parametro.
+    """
     pagination_class = SmallResultsSetPagination
     # queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
     serializer_class = InvitoSerializer
@@ -166,9 +175,10 @@ class InvitiUtenteListView(generics.ListAPIView):
 
 # PATH /api/inviti/prenotazioni/<str:username>/
 class PrenotazioniListView(generics.ListAPIView):
-    '''
-    API per la lista di tutte le prenotazioni di un utente
-    '''
+    """
+    API per la lista di tutte le prenotazioni dell'utente corrispondente allo username passato come parametro.
+    Server-side la lista è visualizzabile da tutti.
+    """
     pagination_class = SmallResultsSetPagination
     queryset = Invito.objects.filter(data__gte=datetime.today()).order_by('data')
     serializer_class = InvitoSerializer
@@ -181,10 +191,11 @@ class PrenotazioniListView(generics.ListAPIView):
                                       output_field=IntegerField(), )).order_by('-search_type_ordering', 'data'))
         return inviti
 
+
 # PATH /api/utenti/profilo/<int:pk>/
 class userInfoLogin(generics.RetrieveAPIView):
     """
-    Questa view restituisce il profilo corrispondete alla pk
+    La view restituisce il profilo corrispondete alla pk passata come parametro.
     """
     serializer_class = DatiUtenteCompleti
 
@@ -193,11 +204,12 @@ class userInfoLogin(generics.RetrieveAPIView):
         oid = self.kwargs['pk']
         return Profile.objects.get(user=oid)
 
+
 # PATH /api/utenti/profilo/
 class selfUserInfoLogin(generics.RetrieveUpdateDestroyAPIView):
-    '''
-    restituisco di default il profilo dell'utente loggato
-    '''
+    """
+    La view restituisce di default il profilo dell'utente loggato.
+    """
     permission_classes = [IsSameUserOrReadOnly, IsUserLogged]
     serializer_class = DatiUtenteCompleti
 
@@ -210,23 +222,25 @@ class selfUserInfoLogin(generics.RetrieveUpdateDestroyAPIView):
         profilo_da_eliminare.save()
         logout(self.request)
 
+
 # PATH /api/utenti/registra/utente/
 class completaRegUtente(generics.RetrieveUpdateAPIView):
-    '''
-    completa l'inserimento dei dati per un utente
-    '''
+    """
+    La view completa l'inserimento dei dati per un utente.
+    """
     permission_classes = [IsSameUserOrReadOnly, IsUserLogged]
     serializer_class = CompletaRegUtente
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
 
+
 # PATH /api/utenti/cerca/<str:name>/
 class cercaUtente(generics.ListAPIView):
     """
-    restituisce la lista di utenti che matchano con name.
+    La view restituisce la lista di utenti che matchano con la stringa name passata come parametro.
     Prima controlla che l'utente abbia inserito l'esatto username,
-    in caso negativo rilassa il vincolo di ricerca
+    in caso negativo rilassa il vincolo di ricerca.
     """
     serializer_class = DatiUtenteCompleti
 
@@ -254,8 +268,8 @@ class recensisciUtente(generics.CreateAPIView):
     """
     View che permette di inserire una nuova recensione.
     Per poter eseguire l'operazione viene controllato che il recensito non abbia già ricevuto una recensione dal
-    recensore e che ci sia stato tra i due un invito valido (accettato e che sia passato almeno un giorno dalla data invito ).
-    Controlla anche che il recensore non stia provando a recensirsi da solo.
+    recensore e che ci sia stato tra i due un invito valido (accettato e che sia passato almeno un giorno dalla data
+    invito). Controlla anche che il recensore non stia provando a recensirsi da solo.
     """
     serializer_class = RecensioniSerializer
     permission_classes = [IsUserLogged]
@@ -277,15 +291,15 @@ class recensisciUtente(generics.CreateAPIView):
         if len(rec) != 0:
             raise exceptions.PermissionDenied(detail="Hai già recensito l'utente")
 
-        if not Invito.objects.filter(partecipanti__username=recensito, utente=recensore, \
-                                 data__lt=datetime.now() + timedelta(days=1)) | \
+        if not Invito.objects.filter(partecipanti__username=recensito, utente=recensore,
+                                     data__lt=datetime.now() + timedelta(days=1)) | \
                 Invito.objects.filter(utente=recensito, partecipanti__username=recensore,
                                       data__lt=datetime.now() + timedelta(days=1)) | \
                 Invito.objects.filter(partecipanti__username=recensito).filter(
                     partecipanti__username=recensore) \
                         .filter(data__lt=datetime.now() + timedelta(days=1)):
-            raise exceptions.PermissionDenied(detail="Prima di recensire l\'utente devi accettare un suo invito e deve essere trascorso almeno un giorno dalla visione del film")
-
+            raise exceptions.PermissionDenied(detail="Prima di recensire l\'utente devi accettare un suo invito e "
+                                                     "deve essere trascorso almeno un giorno dalla visione del film")
         if recensito != recensore:
             serializer.save(user_recensore=recensore, user_recensito=recensito)
         else:
@@ -294,14 +308,15 @@ class recensisciUtente(generics.CreateAPIView):
 
 class SmallPagination(PageNumberPagination):
     """
-    Limit message prefetch to one page.
+    Paginazione customizzata a 5 risultati.
     """
     page_size = 5
+
 
 # PATH /api/recensioni/ricevute/<str:utente>/
 class recensioniRicevute(generics.ListAPIView):
     """
-    View che restituisce le recensioni ricevute da un utente
+    View che restituisce le recensioni ricevute da un utente, il cui username è passato come parametro.
     """
     serializer_class = RecensioniSerializer
     pagination_class = SmallPagination
@@ -328,20 +343,22 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class MessagePagination(PageNumberPagination):
     """
-    Limit message prefetch to one page.
+    Paginazione customizzata al default specificato nei settings (100).
     """
     page_size = settings.MESSAGES_TO_LOAD
+
 
 # PATH /api/chat/
 class RoomModelViewSet(generics.ListAPIView):
     """
-    View che restituisce le chatroom disponibili per un utente
+    View che restituisce le chatroom disponibili per un utente.
     """
     queryset = Room.objects.all()
     serializer_class = RoomModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = [IsUserLogged,]
+    permission_classes = [IsUserLogged, ]
     pagination_class = SmallPagination
+
     def get_queryset(self):
         rooms_trovate = self.queryset.filter(users=self.request.user)
         i = Q(id__in=rooms_trovate, invito__data__gte=datetime.today())
@@ -353,10 +370,11 @@ class RoomModelViewSet(generics.ListAPIView):
 
         return rooms_trovate
 
+
 # PATH /api/chat/<int:room_name>/messages/
 class MessageModelViewSet(generics.ListCreateAPIView):
     """
-    View che permette all'utente di recuperare i messaggi della chatroom e di inviarne di nuovi
+    View che permette all'utente di recuperare i messaggi della chatroom e di inviarne di nuovi.
     """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
@@ -367,11 +385,11 @@ class MessageModelViewSet(generics.ListCreateAPIView):
         self.queryset = self.queryset.filter(Q(recipient=self.kwargs['room_name']))
         return self.queryset
 
+
 # PATH /api/chat/<int:room_name>/messages/<int:id>/
 class RetrieveMessageViewSet(generics.ListAPIView):
     """
-    View che gestisce la ricezione da parte degli utenti connessi alla websocket
-    per un nuovo messaggio
+    View che gestisce la ricezione da parte degli utenti connessi alla websocket per un nuovo messaggio.
     """
     queryset = MessageModel.objects.all()
     serializer_class = MessageModelSerializer
@@ -382,6 +400,7 @@ class RetrieveMessageViewSet(generics.ListAPIView):
         msg = self.queryset.filter(Q(recipient=self.kwargs['room_name']),
                                      Q(pk=self.kwargs['id']))
         return msg
+
 
 # PATH /api/utento/check_username/
 def check_username(request):
@@ -396,7 +415,6 @@ def check_username(request):
         if 'username' in p:
             name = p['username']
             if User.objects.filter(username__iexact=name):
-
                 return JsonResponse({'result':False})
             else:
                 return JsonResponse({'result':True})

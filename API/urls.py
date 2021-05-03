@@ -17,21 +17,14 @@ urlpatterns = [
 
     path('utenti/profilo/<int:pk>/', userInfoLogin.as_view(), name='API-user-info'),
     path('utenti/profilo/', selfUserInfoLogin.as_view(), name='API-self-user-info'),
-    path('utenti/registra/utente/', completaRegUtente.as_view(),
-        name='API-registra-utente'),
+    path('utenti/registra/utente/', completaRegUtente.as_view(), name='API-registra-utente'),
     path('utenti/cerca/<str:name>/', cercaUtente.as_view(), name='API-cerca-utente'),
-    path('utenti/check_username/',check_username),
+    path('utenti/check_username/', check_username),
 
-    path('recensioni/nuova/<str:utente>/',
-        recensisciUtente.as_view(),
-        name='API-recensisci-utenti'),
-    path('recensioni/ricevute/<str:utente>/',
-        recensioniRicevute.as_view(),
-        name='API-lista-recensioni-utente'),
+    path('recensioni/nuova/<str:utente>/', recensisciUtente.as_view(), name='API-recensisci-utenti'),
+    path('recensioni/ricevute/<str:utente>/', recensioniRicevute.as_view(), name='API-lista-recensioni-utente'),
 
-    path('chat/',RoomModelViewSet.as_view(),name='get-rooms'),
-    path('chat/<int:room_name>/messages/', MessageModelViewSet.as_view(),
-         name='get-messages'),
-    path('chat/<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(),
-         name='get-new_message'),
+    path('chat/', RoomModelViewSet.as_view(),name='get-rooms'),
+    path('chat/<int:room_name>/messages/', MessageModelViewSet.as_view(), name='get-messages'),
+    path('chat/<int:room_name>/messages/<int:id>/', RetrieveMessageViewSet.as_view(), name='get-new_message'),
 ]
