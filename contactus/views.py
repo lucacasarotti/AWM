@@ -19,9 +19,12 @@ def contactView(request):
             subject = form.cleaned_data['oggetto']
             message = form.cleaned_data['messaggio']
             try:
+                print(request.user.email)
                 send_mail(subject, message, request.user.email, [settings.EMAIL_HOST_USER])
             except BadHeaderError:
                 return HttpResponse('Errore nell\'invio del messaggio.')
+            except TimeoutError:
+                return render(request, "contactus/email_form.html", {'success': True, 'timeout': True})
             return render(request, "contactus/email_form.html", {'success': True})
     return render(request, "contactus/email_form.html", {'form': form, 'success': False})
 

@@ -18,19 +18,24 @@
                         </fieldset>
                     </form>
                 {% else %}
-                    <p><strong>La tua mail è stata inviata. Ti risponderemo appena possibile!</strong></p>
+                    {% if timeout %}
+                        <p><strong>Sembra ci sia un problema con la tua email. Controlla i settings del tuo account!</strong></p>
                         Sarai rediretto alla pagina principale entro <span id="countdown">5</span> secondi.
-                        <script>
-                            var seconds = document.getElementById("countdown").textContent;
-                            var countdown = setInterval(function() {
-                                seconds--;
-                            document.getElementById("countdown").textContent = seconds;
-                                if (seconds <= 0) clearInterval(countdown);
-                            }, 1000);
-                            window.setTimeout(function(){
-                                window.location.href = "{% url 'main:index' %}";
-                            }, 5000);
-                        </script>
+                    {% else %}
+                        <p><strong>La tua mail è stata inviata. Ti risponderemo appena possibile!</strong></p>
+                        Sarai rediretto alla pagina principale entro <span id="countdown">5</span> secondi.
+                    {% endif %}
+                    <script>
+                        var seconds = document.getElementById("countdown").textContent;
+                        var countdown = setInterval(function() {
+                            seconds--;
+                        document.getElementById("countdown").textContent = seconds;
+                            if (seconds <= 0) clearInterval(countdown);
+                        }, 1000);
+                        window.setTimeout(function(){
+                            window.location.href = "{% url 'main:index' %}";
+                        }, 5000);
+                    </script>
                 {% endif %}
             </div>
         </div>
