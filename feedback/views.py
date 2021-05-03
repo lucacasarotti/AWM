@@ -118,7 +118,7 @@ class FeedbackModelViewSet(ModelViewSet):
 
         self.queryset = self.queryset.filter(Q(user_recensito=request.GET['user_recensito']))
 
-        page=self.paginate_queryset(self.queryset)
+        page = self.paginate_queryset(self.queryset)
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
